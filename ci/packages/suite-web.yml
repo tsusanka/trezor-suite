@@ -152,7 +152,7 @@ suite-web deploy staging-wallet:
     dependencies:
         - suite-web build beta
         - suite-desktop build mac
-        - suite-desktop build linux
+        - suite-desktop build 
         - suite-desktop build windows
     environment:
         name: ${CI_BUILD_REF_NAME}-staging
