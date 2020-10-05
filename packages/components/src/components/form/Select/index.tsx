@@ -8,7 +8,9 @@ const selectStyle = (
     isSearchable: boolean,
     withDropdownIndicator = true,
     variant: InputVariant,
-    isClean: boolean
+    usePointerCursor: boolean,
+    hideTextCursor: boolean,
+    fontFamily: string
 ) => ({
     singleValue: (base: Record<string, any>) => ({
         ...base,
@@ -16,8 +18,11 @@ const selectStyle = (
         alignItems: 'center',
         width: '100%',
         color: colors.BLACK0,
+        fontSize: variables.NEUE_FONT_SIZE.NORMAL,
+        // explicitly define font-family because elements in <ReactSelect/> can inherit some other fonts unexpectedly
+        fontFamily: `${fontFamily} !important`,
         '&:hover': {
-            cursor: isSearchable ? 'text' : 'pointer',
+            cursor: usePointerCursor || !isSearchable ? 'pointer' : 'text',
         },
     }),
     control: (
@@ -75,9 +80,19 @@ const selectStyle = (
         color: colors.NEUE_TYPE_DARK_GREY,
         background: isFocused ? colors.NEUE_BG_GRAY : colors.WHITE,
         borderRadius: 0,
+        fontSize: variables.NEUE_FONT_SIZE.NORMAL,
+        fontFamily: `${fontFamily} !important`,
         '&:hover': {
             cursor: 'pointer',
-            // background: colors.NEUE_BG_GRAY,
+        },
+    }),
+    input: (base: Record<string, any>) => ({
+        ...base,
+        fontSize: variables.NEUE_FONT_SIZE.NORMAL,
+        color: hideTextCursor ? 'transparent' : colors.BLACK0,
+        '& input': {
+            fontFamily: `${fontFamily} !important`,
+            textShadow: hideTextCursor ? `0 0 0 ${colors.BLACK0} !important` : 'none',
         },
     }),
 });
@@ -95,23 +110,27 @@ const Label = styled.span`
 
 interface Props extends Omit<SelectProps, 'components'> {
     withDropdownIndicator?: boolean;
-    isClean?: boolean;
     label?: React.ReactNode;
     wrapperProps?: Record<string, any>;
     variant?: InputVariant;
     noTopLabel?: boolean;
+    usePointerCursor?: boolean;
+    hideTextCursor?: boolean; // this prop hides blinking text cursor
+    fontFamily?: string;
 }
 
 const Select = ({
     isSearchable = true,
+    usePointerCursor = false,
+    hideTextCursor = false,
     withDropdownIndicator = true,
     className,
     wrapperProps,
-    isClean = false,
     label,
     width,
     variant = 'large',
     noTopLabel = false,
+    fontFamily = variables.FONT_FAMILY.TTHOVES,
     ...props
 }: Props) => {
     // customize control to pass data-test attribute
@@ -144,7 +163,14 @@ const Select = ({
         <Wrapper className={className} width={width} {...wrapperProps}>
             {!noTopLabel && <Label>{label}</Label>}
             <ReactSelect
-                styles={selectStyle(isSearchable, withDropdownIndicator, variant, isClean)}
+                styles={selectStyle(
+                    isSearchable,
+                    withDropdownIndicator,
+                    variant,
+                    usePointerCursor,
+                    hideTextCursor,
+                    fontFamily
+                )}
                 isSearchable={isSearchable}
                 {...props}
                 components={{ Control, Option, ...props.components }}

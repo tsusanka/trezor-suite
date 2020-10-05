@@ -58,7 +58,8 @@ const Settings = ({
                     <TextColumn title={<Translation id="TR_LANGUAGE" />} />
                     <ActionColumn>
                         <ActionSelect
-                            variant="small"
+                            usePointerCursor
+                            hideTextCursor
                             noTopLabel
                             value={{
                                 value: language,
@@ -87,7 +88,8 @@ const Settings = ({
                     <ActionColumn>
                         <ActionSelect
                             noTopLabel
-                            variant="small"
+                            usePointerCursor
+                            hideTextCursor
                             onChange={(option: { value: string; label: string }) => {
                                 setLocalCurrency(option.value);
                                 analytics.report({
