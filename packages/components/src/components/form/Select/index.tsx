@@ -56,6 +56,7 @@ const selectStyle = (
         display: !withDropdownIndicator || isDisabled ? 'none' : 'flex',
         alignItems: 'center',
         color: colors.NEUE_TYPE_LIGHT_GREY,
+        cursor: 'pointer',
         path: '',
         '&:hover': {
             color: colors.BLACK0,
@@ -138,8 +139,6 @@ const Select = ({
     fontFamily = variables.FONT_FAMILY.TTHOVES,
     ...props
 }: Props) => {
-    const selectRef: any = React.useRef(null);
-
     // customize control to pass data-test attribute
     const Control = (controlProps: any) => {
         return (
@@ -166,54 +165,10 @@ const Select = ({
         );
     };
 
-    const getFirstOptionStartingWithChar = (options: [Option], char: string) => {
-        // get all options that start with the character user just pressed on keyboard
-        if (options.length > 0 && char) {
-            const optionsStartingWithChar = options.filter(
-                option => option.value[0].toLowerCase() === char.toLowerCase()
-            );
-            // return the first option
-            return optionsStartingWithChar[0];
-        }
-
-        return undefined;
-    };
-
-    const onKeyDown = (e: React.KeyboardEvent) => {
-        // this function is executed when user presses keyboard
-        // see this tutorial for better code understanding: https://github.com/JedWatson/react-select/issues/3648
-
-        // execute this code only if the component is not searchable (user can't type in values)
-        if (!isSearchable) {
-            // convert key code to char
-            const charValue = String.fromCharCode(e.keyCode);
-
-            if (selectRef) {
-                // get all available options
-                const { options } = selectRef.current.select.props;
-                // filter options and find the first one which starts with the selected char
-                const optionToFocusOn = getFirstOptionStartingWithChar(options, charValue);
-
-                if (optionToFocusOn) {
-                    // scroll and set focus on "optionToFocusOn"
-                    // TODO: make sure that the focused item is on top of the options menu in UI, not at the bottom
-                    selectRef.current.select.scrollToFocusedOptionOnUpdate = true;
-                    selectRef.current.select.inputIsHiddenAfterUpdate = false; // probably not 100% necessary, but it's better to be explicit
-                    selectRef.current.select.setState({
-                        focusedValue: null,
-                        focusedOption: optionToFocusOn,
-                    });
-                }
-            }
-        }
-    };
-
     return (
         <Wrapper className={className} width={width} {...wrapperProps}>
             {!noTopLabel && <Label>{label}</Label>}
             <ReactSelect
-                ref={selectRef}
-                // onKeyDown={onKeyDown}
                 styles={selectStyle(
                     isSearchable,
                     withDropdownIndicator,

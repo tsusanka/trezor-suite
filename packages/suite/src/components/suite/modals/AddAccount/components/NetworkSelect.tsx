@@ -58,6 +58,8 @@ interface Props {
 const NetworkSelect = ({ network, internalNetworks, setSelectedNetwork }: Props) => (
     <Select
         isSearchable
+        usePointerCursor
+        hideTextCursor
         width={250}
         maxMenuHeight={250}
         isClearable={false}

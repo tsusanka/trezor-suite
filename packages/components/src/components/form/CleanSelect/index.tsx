@@ -23,7 +23,14 @@ const getDropdownVisibility = (isDisabled: boolean, isFocused: boolean, isHovere
     return 'none';
 };
 
-const selectStyle = (isDropdownVisible: boolean, isHovered: boolean, minWidth = '50px') => ({
+const selectStyle = (
+    isSearchable: boolean,
+    isDropdownVisible: boolean,
+    isHovered: boolean,
+    minWidth = '50px',
+    usePointerCursor: boolean,
+    hideTextCursor: boolean
+) => ({
     singleValue: (base: Record<string, any>) => ({
         ...base,
         color: colors.NEUE_TYPE_LIGHT_GREY,
@@ -31,6 +38,9 @@ const selectStyle = (isDropdownVisible: boolean, isHovered: boolean, minWidth = 
         display: 'flex',
         width: '100%',
         justifyContent: 'flex-end',
+        '&:hover': {
+            cursor: usePointerCursor || !isSearchable ? 'pointer' : 'text',
+        },
     }),
     container: (base: Record<string, any>) => ({
         ...base,
@@ -74,6 +84,7 @@ const selectStyle = (isDropdownVisible: boolean, isHovered: boolean, minWidth = 
             padding: 0,
             margin: 0,
             border: '0',
+            cursor: 'pointer',
             display: isDropdownVisible
                 ? 'flex'
                 : getDropdownVisibility(isDisabled, isFocused, isHovered),
@@ -100,6 +111,14 @@ const selectStyle = (isDropdownVisible: boolean, isHovered: boolean, minWidth = 
             background: colors.NEUE_BG_GRAY,
         },
     }),
+    input: (base: Record<string, any>) => ({
+        ...base,
+        fontSize: variables.NEUE_FONT_SIZE.NORMAL,
+        color: hideTextCursor ? 'transparent' : colors.BLACK0,
+        '& input': {
+            textShadow: hideTextCursor ? `0 0 0 ${colors.BLACK0} !important` : 'none',
+        },
+    }),
 });
 
 interface Props extends Omit<SelectProps, 'components'> {
@@ -124,6 +143,8 @@ const CleanSelect = ({
     minWidth,
     options,
     maxSearchLength,
+    usePointerCursor,
+    hideTextCursor,
     ...props
 }: Props) => {
     const [isHovered, setIsHovered] = React.useState(isHoveredByDefault);
@@ -132,7 +153,14 @@ const CleanSelect = ({
     return (
         <Wrapper onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
             <ReactSelect
-                styles={selectStyle(isDropdownVisible, isHovered, minWidth)}
+                styles={selectStyle(
+                    isSearchable,
+                    isDropdownVisible,
+                    isHovered,
+                    minWidth,
+                    usePointerCursor,
+                    hideTextCursor
+                )}
                 classNamePrefix="react-select"
                 isSearchable={isSearchable}
                 isDisabled={optionsLength <= 1}
