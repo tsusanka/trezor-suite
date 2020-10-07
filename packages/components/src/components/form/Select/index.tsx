@@ -109,11 +109,6 @@ const Label = styled.span`
     min-height: 32px;
 `;
 
-interface Option {
-    value: string;
-    label: string;
-}
-
 interface Props extends Omit<SelectProps, 'components'> {
     withDropdownIndicator?: boolean;
     label?: React.ReactNode;
