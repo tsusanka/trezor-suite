@@ -32,7 +32,10 @@ const StyledH2 = styled(H2)`
 const AccountTransactions = () => {
     const allTransactions = useSelector(state => state.wallet.coinmarket.trades);
     const selectedAccount = useSelector(state => state.wallet.selectedAccount);
-    const providers = useSelector(state => state.wallet.coinmarket.buy.buyInfo?.providerInfos);
+    const buyProviders = useSelector(state => state.wallet.coinmarket.buy.buyInfo?.providerInfos);
+    const exchangeProviders = useSelector(
+        state => state.wallet.coinmarket.exchange.exchangeInfo?.providerInfos,
+    );
 
     if (selectedAccount.status !== 'loaded') {
         return null;
@@ -70,7 +73,7 @@ const AccountTransactions = () => {
                                         account={account}
                                         key={`${trade.tradeType}-${trade.key}`}
                                         trade={trade}
-                                        providers={providers}
+                                        providers={buyProviders}
                                     />
                                 );
                             }
@@ -80,7 +83,7 @@ const AccountTransactions = () => {
                                     <ExchangeTransaction
                                         key={`${trade.tradeType}-${trade.key}`}
                                         trade={trade}
-                                        providers={providers}
+                                        providers={exchangeProviders}
                                     />
                                 );
                             }

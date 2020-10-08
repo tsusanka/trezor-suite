@@ -138,7 +138,6 @@ const coinmarketReducer = (
             case COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID:
                 draft.exchange.transactionId = action.transactionId;
                 break;
-
             case STORAGE.LOADED:
                 return action.payload.wallet.coinmarket;
             // no default

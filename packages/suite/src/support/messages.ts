@@ -214,17 +214,86 @@ const definedMessages = defineMessages({
         id: 'TR_EXCHANGE_FEES_INCLUDED_INFO',
         defaultMessage: 'All fees included info TODO',
     },
+    TR_EXCHANGE_VALIDATION_ERROR_EMPTY: {
+        defaultMessage: 'TR_EXCHANGE_VALIDATION_ERROR_EMPTY',
+        id: 'TR_EXCHANGE_VALIDATION_ERROR_EMPTY',
+    },
+    TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO: {
+        defaultMessage: 'Minimum is {minimum} {currency}',
+        id: 'TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO',
+    },
+    TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO: {
+        defaultMessage: 'Maximum is {maximum} {currency}',
+        id: 'TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO',
+    },
+    TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER: {
+        defaultMessage: 'TR_BUY_VALIDATION_ERROR_NO_NUMBER',
+        id: 'TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER',
+    },
+    TR_EXCHANGE_SHOW_OFFERS: {
+        defaultMessage: 'Show offers',
+        id: 'TR_EXCHANGE_SHOW_OFFERS',
+    },
+    TR_EXCHANGE_OFFERS_REFRESH: {
+        defaultMessage: 'Refresh in',
+        id: 'TR_EXCHANGE_OFFERS_REFRESH',
+    },
+    TR_EXCHANGE_FOR_YOUR_SAFETY: {
+        defaultMessage: 'For your safety',
+        id: 'TR_EXCHANGE_FOR_YOUR_SAFETY',
+    },
+    TR_EXCHANGE_I_UNDERSTAND: {
+        defaultMessage: 'I understand and agree to all of the above',
+        id: 'TR_EXCHANGE_I_UNDERSTAND',
+    },
+    TR_EXCHANGE_CONFIRM: {
+        defaultMessage: 'Confirm',
+        id: 'TR_EXCHANGE_CONFIRM',
+    },
+    TR_EXCHANGE_TERMS_1: {
+        defaultMessage:
+            "I'm here to exchange cryptocurrency. If you were directed to this site for any other reason, please contact {provider} support before proceeding.",
+        id: 'TR_EXCHANGE_TERMS_1',
+    },
+    TR_EXCHANGE_TERMS_2: {
+        defaultMessage:
+            "I'm using Invity to purchase funds that will be sent to an account under my direct personal control.",
+        id: 'TR_EXCHANGE_TERMS_2',
+    },
+    TR_EXCHANGE_TERMS_3: {
+        defaultMessage:
+            "I'm not using Invity for gambling or any other violation of Invity’s Terms of service.",
+        id: 'TR_EXCHANGE_TERMS_3',
+    },
+    TR_EXCHANGE_TERMS_4: {
+        defaultMessage:
+            'I understand that cryptocurrencies are an emerging financial tool and that regulations may be limited in some areas. This may put me at a higher risk of fraud, theft, or market instability.',
+        id: 'TR_EXCHANGE_TERMS_4',
+    },
+    TR_EXCHANGE_TERMS_5: {
+        defaultMessage:
+            'I understand that cryptocurrency transactions are irreversible and I won’t be able to receive a refund for my purchase.',
+        id: 'TR_EXCHANGE_TERMS_5',
+    },
+    TR_EXCHANGE_SELL: {
+        defaultMessage: 'Exchange',
+        id: 'TR_EXCHANGE_SELL',
+    },
+    TR_EXCHANGE_BUY: {
+        defaultMessage: 'For',
+        id: 'TR_EXCHANGE_BUY',
+    },
+    TR_EXCHANGE_FIXED: {
+        defaultMessage: 'Fixed rate offer',
+        id: 'TR_EXCHANGE_FIXED',
+    },
+    TR_EXCHANGE_FLOAT: {
+        defaultMessage: 'Float rate offer',
+        id: 'TR_EXCHANGE_FLOAT',
+    },
     TR_BUY_STATUS_PENDING: {
         defaultMessage: 'Pending',
         id: 'TR_BUY_STATUS_PENDING',
-    },
-    TR_NAV_EXCHANGE_AND_SPEND: {
-        defaultMessage: 'Exchange, Spend',
-        id: 'TR_NAV_EXCHANGE_AND_SPEND',
-    },
-    TR_NAV_EXCHANGE_SOON: {
-        defaultMessage: 'SOON',
-        id: 'TR_NAV_EXCHANGE_SOON',
     },
     TR_BUY_FOOTER_TEXT_1: {
         defaultMessage:
@@ -3426,6 +3495,10 @@ const definedMessages = defineMessages({
     TR_SEND_COMING_SOON: {
         id: 'TR_SEND_COMING_SOON',
         defaultMessage: 'coming soon',
+    },
+    TR_NAV_SOON: {
+        id: 'TR_NAV_SOON',
+        defaultMessage: 'SOON',
     },
     TR_SHOW_HOLOGRAM_AGAIN: {
         id: 'TR_SHOW_HOLOGRAM_AGAIN',

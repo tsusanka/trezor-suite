@@ -375,3 +375,8 @@ ipcMain.on('buy-receiver', (_event, message) => {
         ),
     );
 });
+
+ipcMain.on('buy-receiver', (_event, message) => {
+    mainWindow.focus();
+    mainWindow.loadURL(path.join(src, message.replace('#', '')));
+});

@@ -8,6 +8,7 @@ import {
 import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
 import { Dispatch } from '@suite-types';
+import * as modalActions from '@suite-actions/modalActions';
 
 export interface ExchangeInfo {
     exchangeList?: ExchangeListResponse;
@@ -74,6 +75,14 @@ export const saveExchangeInfo = (exchangeInfo: ExchangeInfo) => async (dispatch:
         type: COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO,
         exchangeInfo,
     });
+};
+
+// this is only a wrapper for `openDeferredModal` since it doesn't work with `bindActionCreators`
+// used in useCoinmarketExchangeOffers
+export const openCoinmarketExchangeConfirmModal = (provider?: string) => (dispatch: Dispatch) => {
+    return dispatch(
+        modalActions.openDeferredModal({ type: 'coinmarket-exchange-terms', provider }),
+    );
 };
 
 export const saveTrade = (exchangeTrade: ExchangeTrade, account: Account, date: string) => async (

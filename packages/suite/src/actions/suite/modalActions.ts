@@ -68,6 +68,11 @@ export type UserContextPayload =
           decision: Deferred<boolean>;
       }
     | {
+          type: 'coinmarket-exchange-terms';
+          provider?: string;
+          decision: Deferred<boolean>;
+      }
+    | {
           type: 'log';
       }
     | {
@@ -182,7 +187,12 @@ export const openModal = (payload: UserContextPayload): Action => ({
 type DeferredModals = Extract<
     UserContextPayload,
     {
-        type: 'qr-reader' | 'review-transaction' | 'import-transaction' | 'coinmarket-buy-terms';
+        type:
+            | 'qr-reader'
+            | 'review-transaction'
+            | 'import-transaction'
+            | 'coinmarket-buy-terms'
+            | 'coinmarket-exchange-terms';
     }
 >;
 // extract single modal by `type` util

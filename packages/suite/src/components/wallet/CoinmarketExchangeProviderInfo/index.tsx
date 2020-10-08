@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { colors, variables } from '@trezor/components';
-import { BuyProviderInfo } from 'invity-api';
+import { ExchangeProviderInfo } from 'invity-api';
 import invityApi from '@suite-services/invityAPI';
 
 const Wrapper = styled.div`
@@ -22,7 +22,7 @@ const Text = styled.div`
 interface Props {
     exchange?: string;
     providers?: {
-        [name: string]: BuyProviderInfo;
+        [name: string]: ExchangeProviderInfo;
     };
 }
 
@@ -37,7 +37,7 @@ const CoinmarketExchangeProviderInfo = ({ exchange, providers }: Props) => {
                 <>
                     <Icon
                         width="16px"
-                        src={`${invityApi.server}images/exchange/${provider.logo}`}
+                        src={`${invityApi.server}/images/exchange/${provider.logo}`}
                     />
                     <Text>{provider.companyName}</Text>
                 </>

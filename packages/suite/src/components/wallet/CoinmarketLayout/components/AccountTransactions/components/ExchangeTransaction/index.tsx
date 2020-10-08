@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { BuyProviderInfo } from 'invity-api';
+import { ExchangeProviderInfo } from 'invity-api';
 import { colors, variables } from '@trezor/components';
 import { CoinmarketPaymentType, CoinmarketExchangeProviderInfo } from '@wallet-components';
 import { TradeExchange } from '@wallet-reducers/coinmarketReducer';
@@ -9,7 +9,7 @@ import { formatDistance } from 'date-fns';
 interface Props {
     trade: TradeExchange;
     providers?: {
-        [name: string]: BuyProviderInfo;
+        [name: string]: ExchangeProviderInfo;
     };
 }
 
