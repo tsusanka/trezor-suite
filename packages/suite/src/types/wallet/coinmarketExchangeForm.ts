@@ -1,10 +1,9 @@
 import { AppState } from '@suite-types';
-import { FieldError } from 'react-hook-form';
+import { FieldError, UseFormMethods } from 'react-hook-form';
 import { Account, Network } from '@wallet-types';
 import { FeeLevel } from 'trezor-connect';
 import { ExchangeTrade, ExchangeTradeQuoteRequest } from 'invity-api';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
-import { UseFormMethods } from 'react-hook-form';
 import { TypedValidationRules } from './form';
 import { FeeInfo } from '@wallet-types/sendForm';
 
