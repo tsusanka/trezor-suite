@@ -40,7 +40,7 @@ const Inputs = () => {
         exchangeInfo,
     } = useCoinmarketExchangeFormContext();
     const cryptoInput = 'cryptoInput';
-    const cryptoSelect = 'cryptoSelect';
+    const cryptoSelect = 'buyCryptoSelect';
     const fiatSelect = 'fiatSelect';
     const fiatInput = 'fiatInput';
 

@@ -54,8 +54,8 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const onSubmit = async () => {
         const formValues = methods.getValues();
         const sendStringAmount = formValues.cryptoInput || '';
-        const send = formValues.sellCryptoSelect.value;
-        const receive = formValues.cryptoSelect.value;
+        const send = formValues.buyCryptoSelect.value;
+        const receive = formValues.sellCryptoSelect.value;
         const request: ExchangeTradeQuoteRequest = {
             receive,
             send,
