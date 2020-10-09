@@ -1,7 +1,7 @@
 import React from 'react';
 import { CoinmarketLayout, WalletLayout } from '@wallet-components';
 import { AppState } from '@suite-types';
-import { ComponentProps } from '@wallet-types/coinmarketExchangeForm';
+import { ComponentProps, Props } from '@wallet-types/coinmarketExchangeForm';
 import { connect } from 'react-redux';
 import ExchangeForm from './components/ExchangeForm';
 import {
@@ -17,13 +17,8 @@ const mapStateToProps = (state: AppState): ComponentProps => ({
     fees: state.wallet.fees,
 });
 
-const CoinmarketExchange = (props: ComponentProps) => {
+const CoinmarketExchangeLoaded = (props: Props) => {
     const { selectedAccount } = props;
-    if (selectedAccount.status !== 'loaded') {
-        return <WalletLayout title="Coinmarket | exchange" account={selectedAccount} />;
-    }
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const coinmarketExchangeContextValues = useCoinmarketExchangeForm({
         ...props,
         selectedAccount,
@@ -36,6 +31,14 @@ const CoinmarketExchange = (props: ComponentProps) => {
             </ExchangeFormContext.Provider>
         </CoinmarketLayout>
     );
+};
+
+const CoinmarketExchange = (props: ComponentProps) => {
+    const { selectedAccount } = props;
+    if (selectedAccount.status !== 'loaded') {
+        return <WalletLayout title="Coinmarket | exchange" account={selectedAccount} />;
+    }
+    return <CoinmarketExchangeLoaded {...props} selectedAccount={selectedAccount} />;
 };
 
 export default connect(mapStateToProps)(CoinmarketExchange);
