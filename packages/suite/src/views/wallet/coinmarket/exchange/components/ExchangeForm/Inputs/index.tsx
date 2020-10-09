@@ -1,5 +1,5 @@
 import { Icon, variables } from '@trezor/components';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 
@@ -51,22 +51,10 @@ const StyledIcon = styled(Icon)`
 `;
 
 const Inputs = () => {
-    const {
-        trigger,
-        amountLimits,
-        setAmountLimits,
-        account,
-        exchangeInfo,
-    } = useCoinmarketExchangeFormContext();
-    const cryptoInput = 'cryptoInput';
-    const sellCryptoSelect = 'sellCryptoSelect';
-    // const fiatInput = 'fiatInput';
-    const buyCryptoSelect = 'buyCryptoSelect';
-
-    const [activeInput, setActiveInput] = useState<'fiatInput' | 'cryptoInput'>(cryptoInput);
+    const { trigger, amountLimits } = useCoinmarketExchangeFormContext();
 
     useEffect(() => {
-        trigger([cryptoInput]);
+        trigger(['cryptoInput']);
     }, [amountLimits, trigger]);
 
     return (

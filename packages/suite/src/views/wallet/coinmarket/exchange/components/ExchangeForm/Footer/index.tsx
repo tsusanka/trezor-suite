@@ -24,10 +24,7 @@ const StyledButton = styled(Button)`
 const Footer = () => {
     const { formState, watch } = useCoinmarketExchangeFormContext();
 
-    const hasValues =
-        !!watch('cryptoInput') &&
-        !!watch('sellCryptoSelect')?.value &&
-        !!watch('buyCryptoSelect')?.value;
+    const hasValues = !!watch('cryptoInput') && !!watch('sellCryptoSelect')?.value;
 
     return (
         <Wrapper>

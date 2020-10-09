@@ -1,4 +1,4 @@
-import { CleanSelect, Icon, Input, variables, Select } from '@trezor/components';
+import { CleanSelect, Input, variables, Select } from '@trezor/components';
 import React, { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { FIAT } from '@suite-config';
@@ -6,10 +6,7 @@ import styled from 'styled-components';
 import { isDecimalsValid } from '@wallet-utils/validation';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
-import {
-    getBuyCryptoOptions,
-    getSellCryptoOptions,
-} from '@suite/utils/wallet/coinmarket/exchangeUtils';
+import { getSellCryptoOptions } from '@suite/utils/wallet/coinmarket/exchangeUtils';
 
 const Wrapper = styled.div`
     display: flex;
@@ -43,11 +40,9 @@ const Inputs = () => {
         exchangeInfo,
     } = useCoinmarketExchangeFormContext();
     const cryptoInput = 'cryptoInput';
-    const sellCryptoSelect = 'sellCryptoSelect';
-    // const fiatInput = 'fiatInput';
-    const buyCryptoSelect = 'buyCryptoSelect';
-
-    const [activeInput, setActiveInput] = useState<'fiatInput' | 'cryptoInput'>(cryptoInput);
+    const cryptoSelect = 'cryptoSelect';
+    const fiatSelect = 'fiatSelect';
+    const fiatInput = 'fiatInput';
 
     useEffect(() => {
         trigger([cryptoInput]);
@@ -60,7 +55,6 @@ const Inputs = () => {
         <Wrapper>
             <Input
                 onFocus={() => {
-                    setActiveInput(cryptoInput);
                     // setValue(fiatInput, '');
                     // clearErrors(fiatInput);
                     trigger([cryptoInput]);
@@ -74,42 +68,40 @@ const Inputs = () => {
                 noTopLabel
                 innerRef={register({
                     validate: value => {
-                        if (activeInput === cryptoInput) {
-                            if (!value) {
-                                if (formState.isSubmitting) {
-                                    return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_EMPTY" />;
-                                }
-                                return;
+                        if (!value) {
+                            if (formState.isSubmitting) {
+                                return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_EMPTY" />;
                             }
+                            return;
+                        }
 
-                            if (!isDecimalsValid(value, 18)) {
-                                return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER" />;
+                        if (!isDecimalsValid(value, 18)) {
+                            return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER" />;
+                        }
+
+                        if (amountLimits) {
+                            const amount = Number(value);
+                            if (amountLimits.min && amount < amountLimits.min) {
+                                return (
+                                    <Translation
+                                        id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
+                                        values={{
+                                            minimum: amountLimits.min,
+                                            currency: amountLimits.currency,
+                                        }}
+                                    />
+                                );
                             }
-
-                            if (amountLimits) {
-                                const amount = Number(value);
-                                if (amountLimits.min && amount < amountLimits.min) {
-                                    return (
-                                        <Translation
-                                            id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
-                                            values={{
-                                                minimum: amountLimits.min,
-                                                currency: amountLimits.currency,
-                                            }}
-                                        />
-                                    );
-                                }
-                                if (amountLimits.max && amount > amountLimits.max) {
-                                    return (
-                                        <Translation
-                                            id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
-                                            values={{
-                                                maximum: amountLimits.max,
-                                                currency: amountLimits.currency,
-                                            }}
-                                        />
-                                    );
-                                }
+                            if (amountLimits.max && amount > amountLimits.max) {
+                                return (
+                                    <Translation
+                                        id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
+                                        values={{
+                                            maximum: amountLimits.max,
+                                            currency: amountLimits.currency,
+                                        }}
+                                    />
+                                );
                             }
                         }
                     },
@@ -118,7 +110,7 @@ const Inputs = () => {
                 innerAddon={
                     <Controller
                         control={control}
-                        name={sellCryptoSelect}
+                        name={cryptoSelect}
                         defaultValue={{
                             value: uppercaseSymbol,
                             label: uppercaseSymbol,
@@ -144,9 +136,6 @@ const Inputs = () => {
             />
             <Input
                 onFocus={() => {
-                    setActiveInput(cryptoInput);
-                    // setValue(fiatInput, '');
-                    // clearErrors(fiatInput);
                     trigger([cryptoInput]);
                 }}
                 onChange={() => {
@@ -154,55 +143,53 @@ const Inputs = () => {
                     // clearErrors(fiatInput);
                 }}
                 state={errors[cryptoInput] ? 'error' : undefined}
-                name={cryptoInput}
+                name={fiatInput}
                 noTopLabel
                 innerRef={register({
                     validate: value => {
-                        if (activeInput === cryptoInput) {
-                            if (!value) {
-                                if (formState.isSubmitting) {
-                                    return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_EMPTY" />;
-                                }
-                                return;
+                        if (!value) {
+                            if (formState.isSubmitting) {
+                                return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_EMPTY" />;
                             }
+                            return;
+                        }
 
-                            if (!isDecimalsValid(value, 18)) {
-                                return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER" />;
+                        if (!isDecimalsValid(value, 18)) {
+                            return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER" />;
+                        }
+
+                        if (amountLimits) {
+                            const amount = Number(value);
+                            if (amountLimits.min && amount < amountLimits.min) {
+                                return (
+                                    <Translation
+                                        id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
+                                        values={{
+                                            minimum: amountLimits.min,
+                                            currency: amountLimits.currency,
+                                        }}
+                                    />
+                                );
                             }
-
-                            if (amountLimits) {
-                                const amount = Number(value);
-                                if (amountLimits.min && amount < amountLimits.min) {
-                                    return (
-                                        <Translation
-                                            id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
-                                            values={{
-                                                minimum: amountLimits.min,
-                                                currency: amountLimits.currency,
-                                            }}
-                                        />
-                                    );
-                                }
-                                if (amountLimits.max && amount > amountLimits.max) {
-                                    return (
-                                        <Translation
-                                            id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
-                                            values={{
-                                                maximum: amountLimits.max,
-                                                currency: amountLimits.currency,
-                                            }}
-                                        />
-                                    );
-                                }
+                            if (amountLimits.max && amount > amountLimits.max) {
+                                return (
+                                    <Translation
+                                        id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
+                                        values={{
+                                            maximum: amountLimits.max,
+                                            currency: amountLimits.currency,
+                                        }}
+                                    />
+                                );
                             }
                         }
                     },
                 })}
-                bottomText={errors[cryptoInput]?.message}
+                bottomText={errors[fiatInput]?.message}
                 innerAddon={
                     <Controller
                         control={control}
-                        name={sellCryptoSelect}
+                        name={fiatSelect}
                         defaultValue={currencyOptions[0]}
                         render={({ onChange, value }) => {
                             return (

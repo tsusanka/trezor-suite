@@ -23,13 +23,13 @@ const Button = styled.div`
 `;
 
 const Inputs = () => {
-    const { register, fillValue } = useCoinmarketExchangeFormContext();
+    const { fillValue } = useCoinmarketExchangeFormContext();
 
     return (
         <Wrapper>
             <Button onClick={() => fillValue('max')}>All</Button>
-            <Button>1/2</Button>
-            <Button>1/4</Button>
+            <Button onClick={() => fillValue('half')}>1/2</Button>
+            <Button onClick={() => fillValue('quarter')}>1/4</Button>
         </Wrapper>
     );
 };
