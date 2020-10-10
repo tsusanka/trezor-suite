@@ -25,6 +25,12 @@ export const buildCurrencyOptions = () => {
     return result;
 };
 
+const StyledInput = styled(Input)`
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+`;
+
 const CryptoInput = () => {
     const {
         register,
@@ -47,7 +53,7 @@ const CryptoInput = () => {
     const uppercaseSymbol = account.symbol.toUpperCase();
 
     return (
-        <Input
+        <StyledInput
             onFocus={() => {
                 // setValue(fiatInput, '');
                 // clearErrors(fiatInput);

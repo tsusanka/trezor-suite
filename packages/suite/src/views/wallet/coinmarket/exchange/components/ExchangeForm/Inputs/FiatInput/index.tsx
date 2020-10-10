@@ -2,6 +2,7 @@ import { CleanSelect, Input } from '@trezor/components';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { FIAT } from '@suite-config';
+import styled from 'styled-components';
 import { isDecimalsValid } from '@wallet-utils/validation';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
@@ -13,6 +14,11 @@ export const buildCurrencyOptions = () => {
     );
     return result;
 };
+
+const StyledInput = styled(Input)`
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+`;
 
 const Left = () => {
     const {
@@ -31,7 +37,7 @@ const Left = () => {
     const currencyOptions = buildCurrencyOptions();
 
     return (
-        <Input
+        <StyledInput
             onFocus={() => {
                 trigger([fiatInput]);
             }}
