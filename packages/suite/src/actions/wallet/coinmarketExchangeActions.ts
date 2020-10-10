@@ -4,6 +4,7 @@ import {
     ExchangeProviderInfo,
     ExchangeTradeQuoteRequest,
     ExchangeTrade,
+    ExchangeCoinInfo,
 } from 'invity-api';
 import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
@@ -19,6 +20,10 @@ export interface ExchangeInfo {
 
 export type CoinmarketExchangeActions =
     | { type: typeof COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO; exchangeInfo: ExchangeInfo }
+    | {
+          type: typeof COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO;
+          exchangeCoinInfo: ExchangeCoinInfo[];
+      }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST; request: ExchangeTradeQuoteRequest }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID; transactionId: string }
     | { type: typeof COINMARKET_EXCHANGE.VERIFY_ADDRESS; addressVerified: boolean }
@@ -41,39 +46,71 @@ export type CoinmarketExchangeActions =
           };
       };
 
-export async function loadExchangeInfo(): Promise<ExchangeInfo> {
-    const exchangeList = await invityAPI.getExchangeList();
+export async function loadExchangeInfo(): Promise<[ExchangeInfo, ExchangeCoinInfo[]]> {
+    const [exchangeList, exchangeCoinInfo] = await Promise.all([
+        invityAPI.getExchangeList(),
+        invityAPI.getExchangeCoins(),
+    ]);
 
-    if (!exchangeList || exchangeList.length === 0) {
-        return { providerInfos: {}, buySymbols: new Set(), sellSymbols: new Set() };
+    if (
+        !exchangeList ||
+        exchangeList.length === 0 ||
+        !exchangeCoinInfo ||
+        exchangeCoinInfo.length === 0
+    ) {
+        return [{ providerInfos: {}, buySymbols: new Set(), sellSymbols: new Set() }, []];
     }
 
     const providerInfos: { [name: string]: ExchangeProviderInfo } = {};
     exchangeList.forEach(e => (providerInfos[e.name] = e));
 
-    const buySymbols: string[] = [];
-    const sellSymbols: string[] = [];
+    // merge symbols supported by at least one partner
+    const buySymbolsArray: string[] = [];
+    const sellSymbolsArray: string[] = [];
     exchangeList.forEach(p => {
         if (p.buyTickers) {
-            buySymbols.push(...p.buyTickers.map(c => c.toLowerCase()));
+            buySymbolsArray.push(...p.buyTickers.map(c => c.toLowerCase()));
         }
         if (p.sellTickers) {
-            sellSymbols.push(...p.sellTickers.map(c => c.toLowerCase()));
+            sellSymbolsArray.push(...p.sellTickers.map(c => c.toLowerCase()));
         }
     });
 
-    return {
-        exchangeList,
-        providerInfos,
-        buySymbols: new Set(buySymbols),
-        sellSymbols: new Set(sellSymbols),
-    };
+    // allow only symbols which are supported by partners and at the same time in the list of supported coins by invityAPI
+    const allBuySymbols = new Set(buySymbolsArray);
+    const buySymbols = new Set<string>();
+    const allSellSymbols = new Set(sellSymbolsArray);
+    const sellSymbols = new Set<string>();
+    exchangeCoinInfo.forEach(ci => {
+        const symbol = ci.ticker.toLowerCase();
+        if (allBuySymbols.has(symbol)) buySymbols.add(symbol);
+        if (allSellSymbols.has(symbol)) sellSymbols.add(symbol);
+    });
+
+    return [
+        {
+            exchangeList,
+            providerInfos,
+            buySymbols,
+            sellSymbols,
+        },
+        exchangeCoinInfo,
+    ];
 }
 
 export const saveExchangeInfo = (exchangeInfo: ExchangeInfo) => async (dispatch: Dispatch) => {
     dispatch({
         type: COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO,
         exchangeInfo,
+    });
+};
+
+export const saveExchangeCoinInfo = (exchangeCoinInfo: ExchangeCoinInfo[]) => async (
+    dispatch: Dispatch,
+) => {
+    dispatch({
+        type: COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO,
+        exchangeCoinInfo,
     });
 };
 

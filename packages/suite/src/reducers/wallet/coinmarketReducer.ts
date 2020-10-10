@@ -5,6 +5,7 @@ import {
     BuyTradeQuoteRequest,
     ExchangeTradeQuoteRequest,
     ExchangeTrade,
+    ExchangeCoinInfo,
 } from 'invity-api';
 import { BuyInfo } from '@wallet-actions/coinmarketBuyActions';
 import { ExchangeInfo } from '@suite/actions/wallet/coinmarketExchangeActions';
@@ -45,6 +46,7 @@ interface Buy {
 
 interface Exchange {
     exchangeInfo?: ExchangeInfo;
+    exchangeCoinInfo?: ExchangeCoinInfo[];
     quotesRequest?: ExchangeTradeQuoteRequest;
     fixedQuotes: ExchangeTrade[];
     floatQuotes: ExchangeTrade[];
@@ -76,6 +78,7 @@ export const initialState = {
     },
     exchange: {
         exchangeInfo: undefined,
+        exchangeCoinInfo: undefined,
         transactionId: undefined,
         quotesRequest: undefined,
         fixedQuotes: [],
@@ -124,7 +127,9 @@ const coinmarketReducer = (
             case COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO:
                 draft.exchange.exchangeInfo = action.exchangeInfo;
                 break;
-
+            case COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO:
+                draft.exchange.exchangeCoinInfo = action.exchangeCoinInfo;
+                break;
             case COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST:
                 draft.exchange.quotesRequest = action.request;
                 break;

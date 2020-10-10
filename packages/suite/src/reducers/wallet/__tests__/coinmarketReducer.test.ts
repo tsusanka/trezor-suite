@@ -1,8 +1,14 @@
 import reducer, { initialState } from '@wallet-reducers/coinmarketReducer';
 import { STORAGE } from '@suite-actions/constants';
 import { COINMARKET_BUY, COINMARKET_EXCHANGE } from '@wallet-actions/constants';
-import { BuyTrade, BuyTradeQuoteRequest, ExchangeTradeQuoteRequest } from 'invity-api';
+import {
+    BuyTrade,
+    BuyTradeQuoteRequest,
+    ExchangeCoinInfo,
+    ExchangeTradeQuoteRequest,
+} from 'invity-api';
 import { BuyInfo } from '@wallet-actions/coinmarketBuyActions';
+import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 
 describe('settings reducer', () => {
     it('test initial state', () => {
@@ -145,6 +151,32 @@ describe('settings reducer', () => {
                 ...cachedAccountInfo,
             } as any),
         ).toEqual({ ...initialState, buy: { ...initialState.buy, cachedAccountInfo } });
+    });
+
+    it('COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO', () => {
+        const exchangeInfo: ExchangeInfo = {
+            providerInfos: {},
+            buySymbols: new Set(['btc', 'eth']),
+            sellSymbols: new Set(['usd']),
+        };
+        expect(
+            reducer(undefined, {
+                type: COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO,
+                exchangeInfo,
+            } as any),
+        ).toEqual({ ...initialState, exchange: { ...initialState.exchange, exchangeInfo } });
+    });
+
+    it('COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO', () => {
+        const exchangeCoinInfo: ExchangeCoinInfo[] = [
+            { ticker: 'btc', name: 'bitcoin', category: 'popular' },
+        ];
+        expect(
+            reducer(undefined, {
+                type: COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO,
+                exchangeCoinInfo,
+            } as any),
+        ).toEqual({ ...initialState, exchange: { ...initialState.exchange, exchangeCoinInfo } });
     });
 
     it('COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST', () => {

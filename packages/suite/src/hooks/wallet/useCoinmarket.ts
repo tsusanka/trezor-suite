@@ -25,14 +25,20 @@ export const useInvityAPI = () => {
         AppState['wallet']['coinmarket']['exchange']['exchangeInfo']
     >(state => state.wallet.coinmarket.exchange.exchangeInfo);
 
+    const exchangeCoinInfo = useSelector<
+        AppState,
+        AppState['wallet']['coinmarket']['exchange']['exchangeCoinInfo']
+    >(state => state.wallet.coinmarket.exchange.exchangeCoinInfo);
+
     const invityAPIUrl = useSelector<
         AppState,
         AppState['suite']['settings']['debug']['invityAPIUrl']
     >(state => state.suite.settings.debug.invityAPIUrl);
 
     const { saveBuyInfo } = useActions({ saveBuyInfo: coinmarketBuyActions.saveBuyInfo });
-    const { saveExchangeInfo } = useActions({
+    const { saveExchangeInfo, saveExchangeCoinInfo } = useActions({
         saveExchangeInfo: coinmarketExchangeActions.saveExchangeInfo,
+        saveExchangeCoinInfo: coinmarketExchangeActions.saveExchangeCoinInfo,
     });
 
     if (selectedAccount.status === 'loaded') {
@@ -49,15 +55,19 @@ export const useInvityAPI = () => {
         }
 
         if (!exchangeInfo) {
-            coinmarketExchangeActions.loadExchangeInfo().then(exchangeInfo => {
-                saveExchangeInfo(exchangeInfo);
-            });
+            coinmarketExchangeActions
+                .loadExchangeInfo()
+                .then(([exchangeInfo, exchangeCoinInfo]) => {
+                    saveExchangeInfo(exchangeInfo);
+                    saveExchangeCoinInfo(exchangeCoinInfo);
+                });
         }
     }
 
     return {
         buyInfo,
         exchangeInfo,
+        exchangeCoinInfo,
     };
 };
 
