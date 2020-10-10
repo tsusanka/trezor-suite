@@ -3,9 +3,10 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 
-import Left from './Left';
-import Right from './Right';
-import Bottom from './Bottom';
+import CryptoInput from './CryptoInput';
+import FiatInput from './FiatInput';
+import CryptoSelect from './CryptoSelect';
+import Buttons from './Buttons';
 
 const Wrapper = styled.div`
     display: flex;
@@ -61,16 +62,17 @@ const Inputs = () => {
         <Wrapper>
             <Top>
                 <LeftWrapper>
-                    <Left />
+                    <CryptoInput />
+                    <FiatInput />
                 </LeftWrapper>
                 <MiddleWrapper>
                     <StyledIcon icon="TRANSFER" size={16} />
                 </MiddleWrapper>
                 <RightWrapper>
-                    <Right />
+                    <CryptoSelect />
                 </RightWrapper>
             </Top>
-            <Bottom />
+            <Buttons />
         </Wrapper>
     );
 };

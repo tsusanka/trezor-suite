@@ -3059,6 +3059,10 @@ const definedMessages = defineMessages({
         id: 'TR_BUY_RECEIVE_QUESTION_TOOLTIP',
         defaultMessage: 'TR_BUY_RECEIVE_QUESTION_TOOLTIP',
     },
+    TR_COINMARKET_SELECT_COIN: {
+        id: 'TR_COINMARKET_SELECT_COIN',
+        defaultMessage: 'Select a coin...',
+    },
     TR_COINMARKET_BUYS: {
         id: 'TR_COINMARKET_BUYS',
         defaultMessage: 'buys',

@@ -151,6 +151,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
     bottomText?: React.ReactNode;
     monospace?: boolean;
     isDisabled?: boolean;
+    className?: string;
     autoComplete?: string;
     autoCorrect?: string;
     autoCapitalize?: string;
@@ -184,6 +185,7 @@ const Input = ({
     topLabelRight,
     bottomText,
     isDisabled,
+    className,
     autoComplete = 'off',
     autoCorrect = 'off',
     autoCapitalize = 'off',
@@ -254,6 +256,7 @@ const Input = ({
 
                 {isPartiallyHidden && <Overlay />}
                 <StyledInput
+                    className={className}
                     value={value}
                     textIndent={textIndent}
                     type={type}

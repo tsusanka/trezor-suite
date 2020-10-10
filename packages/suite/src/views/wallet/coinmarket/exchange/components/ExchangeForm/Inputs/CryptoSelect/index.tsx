@@ -1,13 +1,10 @@
-import { Icon, variables, Select } from '@trezor/components';
+import { variables, Select } from '@trezor/components';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
-import {
-    getBuyCryptoOptions,
-    getSellCryptoOptions,
-} from '@suite/utils/wallet/coinmarket/exchangeUtils';
+import { getBuyCryptoOptions } from '@suite/utils/wallet/coinmarket/exchangeUtils';
 
 const Wrapper = styled.div`
     display: flex;
@@ -19,29 +16,26 @@ const Wrapper = styled.div`
     }
 `;
 
-const StyledIcon = styled(Icon)`
-    @media screen and (max-width: ${variables.SCREEN_SIZE.LG}) {
-        transform: rotate(90deg);
-    }
+const CoinLogo = styled.img`
+    display: flex;
+    align-items: center;
+    padding-right: 6px;
+    height: 16px;
 `;
 
-const Inputs = () => {
-    const {
-        trigger,
-        control,
-        formState,
-        amountLimits,
-        setAmountLimits,
-        account,
-        exchangeInfo,
-    } = useCoinmarketExchangeFormContext();
-    const sellCryptoSelect = 'sellCryptoSelect';
+const Option = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const SellSelect = () => {
+    const { control, setAmountLimits, account, exchangeInfo } = useCoinmarketExchangeFormContext();
 
     return (
         <Wrapper>
             <Controller
                 control={control}
-                name={sellCryptoSelect}
+                name="sellCryptoSelect"
                 render={({ onChange, value }) => {
                     return (
                         <Select
@@ -54,6 +48,17 @@ const Inputs = () => {
                             isClearable={false}
                             options={getBuyCryptoOptions(account, exchangeInfo)}
                             minWidth="70px"
+                            formatOptionLabel={(option: any) => {
+                                return (
+                                    <Option>
+                                        <CoinLogo
+                                            src={`https://exchange.invity.io/images/coins/${option.label.toUpperCase()}.svg`}
+                                        />
+                                        {option.label}
+                                    </Option>
+                                );
+                            }}
+                            noOptionsMessage={() => <Translation id="TR_COINMARKET_SELECT_COIN" />}
                         />
                     );
                 }}
@@ -62,4 +67,4 @@ const Inputs = () => {
     );
 };
 
-export default Inputs;
+export default SellSelect;

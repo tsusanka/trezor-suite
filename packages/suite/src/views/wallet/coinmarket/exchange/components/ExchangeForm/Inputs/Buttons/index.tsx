@@ -22,7 +22,7 @@ const Button = styled.div`
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
 `;
 
-const Inputs = () => {
+const Bottom = () => {
     const { fillValue } = useCoinmarketExchangeFormContext();
 
     return (
@@ -34,4 +34,4 @@ const Inputs = () => {
     );
 };
 
-export default Inputs;
+export default Bottom;
