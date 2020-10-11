@@ -80,5 +80,11 @@ describe('Metadata', () => {
             'contain',
             'label from another window',
         );
+
+        cy.tick(60);
+        cy.getTestElement('@account-menu/btc/normal/0/label').should(
+            'contain',
+            'label from another window',
+        );
     });
 });

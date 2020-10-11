@@ -224,6 +224,7 @@ export const fetchMetadata = (deviceState: string) => async (
     dispatch: Dispatch,
     getState: GetState,
 ) => {
+    console.log('fetch');
     const provider = await dispatch(getProvider());
     if (!provider) {
         return;
@@ -242,6 +243,7 @@ export const fetchMetadata = (deviceState: string) => async (
     // this triggers renewal of access token if needed. Otherwise multiple requests
     // to renew access token are issued by every provider.getFileContent
     const response = await provider.getCredentials();
+    console.log('response', response);
     if (!response.success) return;
 
     const deviceFileContentP = new Promise((resolve, reject) => {
@@ -342,8 +344,9 @@ export const fetchMetadata = (deviceState: string) => async (
     try {
         await Promise.all(promises);
         // if interval for watching provider is not set, create it
-
         if (!fetchIntervals[deviceState]) {
+            // todo: this interval is never set if working with disconnected (remembered) device
+            // as the entire flow of metadata is triggered by discovery which does not run here!
             fetchIntervals[deviceState] = setInterval(() => {
                 if (!getState().suite.online) {
                     return;
@@ -396,6 +399,7 @@ export const connectProvider = (type: MetadataProviderType) => async (dispatch: 
         provider = createProvider(type);
     }
     const isConnected = await provider.isConnected();
+
     if (provider && !isConnected) {
         const connected = await provider.connect();
         if (!connected) {
@@ -404,6 +408,7 @@ export const connectProvider = (type: MetadataProviderType) => async (dispatch: 
     }
 
     const result = await provider.getCredentials();
+
     if (!result.success) {
         dispatch(handleProviderError(result, ProviderErrorAction.CONNECT));
         return;
@@ -670,6 +675,7 @@ export const init = (force = false) => async (dispatch: Dispatch, getState: GetS
 
         return false;
     }
+
     // if yes, add metadata keys to accounts
     if (getState().metadata.initiating) {
         dispatch(syncMetadataKeys());
