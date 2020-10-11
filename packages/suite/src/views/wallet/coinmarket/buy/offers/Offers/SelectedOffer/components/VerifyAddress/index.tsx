@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { getAccountInfo } from '@wallet-utils/coinmarket/buyUtils';
+import { getAccountInfo } from '@wallet-utils/coinmarket/coinmarketUtils';
 import {
     FiatValue,
     QuestionTooltip,

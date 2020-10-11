@@ -64,27 +64,6 @@ export function processQuotes(allQuotes: BuyTrade[]): [BuyTrade[], BuyTrade[]] {
     return [quotes, alternativeQuotes];
 }
 
-export const getAccountInfo = (account: Account) => {
-    switch (account.networkType) {
-        case 'bitcoin': {
-            const firstUnused = account.addresses?.unused[0];
-            if (firstUnused) {
-                return { address: firstUnused.address, path: firstUnused.path };
-            }
-
-            return { address: undefined, path: undefined };
-        }
-        case 'ripple':
-        case 'ethereum': {
-            return {
-                address: account.descriptor,
-                path: account.path,
-            };
-        }
-        // no default
-    }
-};
-
 export function createQuoteLink(request: BuyTradeQuoteRequest, account: Account): string {
     const assetPrefix = process.env.assetPrefix || '';
     let hash: string;

@@ -1,3 +1,5 @@
+import { Account } from '@wallet-types';
+
 export const buildOption = (currency: string) => {
     return { value: currency, label: currency.toUpperCase() };
 };
@@ -19,3 +21,24 @@ export function formatCryptoAmount(amount: number, decimals = 8): string {
     }
     return amount.toFixed(digits);
 }
+
+export const getAccountInfo = (account: Account) => {
+    switch (account.networkType) {
+        case 'bitcoin': {
+            const firstUnused = account.addresses?.unused[0];
+            if (firstUnused) {
+                return { address: firstUnused.address, path: firstUnused.path };
+            }
+
+            return { address: undefined, path: undefined };
+        }
+        case 'ripple':
+        case 'ethereum': {
+            return {
+                address: account.descriptor,
+                path: account.path,
+            };
+        }
+        // no default
+    }
+};

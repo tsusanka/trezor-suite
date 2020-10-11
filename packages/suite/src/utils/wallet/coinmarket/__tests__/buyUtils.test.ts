@@ -7,7 +7,6 @@ import {
     getCountryLabelParts,
     getCryptoOptions,
     createTxLink,
-    getAccountInfo,
 } from '../buyUtils';
 
 const {
@@ -54,44 +53,6 @@ describe('coinmarket/buy utils', () => {
             withAlternative.filter(q => !q.tags || !q.tags.includes('alternativeCurrency')),
             withAlternative.filter(q => q.tags && q.tags.includes('alternativeCurrency')),
         ]);
-    });
-
-    it('getAccountInfo', () => {
-        const accountMockBtc = {
-            index: 1,
-            accountType: 'segwit',
-            networkType: 'bitcoin',
-            symbol: 'btc',
-            addresses: {
-                unused: [
-                    {
-                        address: '177BUDVZqTTzK1Fogqcrfbb5ketHEUDGSJ',
-                        transfers: 0,
-                        path: "m/44'/0'/3'/0/0",
-                    },
-                ],
-            },
-        };
-        // @ts-ignore
-        expect(getAccountInfo(accountMockBtc)).toStrictEqual({
-            address: '177BUDVZqTTzK1Fogqcrfbb5ketHEUDGSJ',
-            path: "m/44'/0'/3'/0/0",
-        });
-
-        const accountMockEth = {
-            index: 1,
-            accountType: 'normal',
-            networkType: 'ethereum',
-            symbol: 'eth',
-            descriptor: '0x2e0DC981d301cdd443C3987cf19Eb9671CB99ddC',
-            path: "m/44'/60'/0'/0/1",
-        };
-
-        // @ts-ignore
-        expect(getAccountInfo(accountMockEth)).toStrictEqual({
-            address: '0x2e0DC981d301cdd443C3987cf19Eb9671CB99ddC',
-            path: "m/44'/60'/0'/0/1",
-        });
     });
 
     it('createQuoteLink', () => {
