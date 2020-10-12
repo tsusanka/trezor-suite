@@ -17,6 +17,8 @@ export interface Props extends ComponentProps {
     selectedAccount: Extract<AppState['wallet']['selectedAccount'], { status: 'loaded' }>;
 }
 
+export type ExchangeStep = 'RECEIVING_ADDRESS' | 'SEND_TRANSACTION';
+
 export type ContextValues = {
     account: Account;
     fixedQuotes: AppState['wallet']['coinmarket']['exchange']['fixedQuotes'];
@@ -26,8 +28,11 @@ export type ContextValues = {
     REFETCH_INTERVAL: number;
     device: AppState['suite']['device'];
     selectedQuote?: ExchangeTrade;
+    suiteBuyAccounts?: AppState['wallet']['accounts'];
     addressVerified: AppState['wallet']['coinmarket']['exchange']['addressVerified'];
     exchangeInfo?: ExchangeInfo;
+    exchangeStep: ExchangeStep;
+    setExchangeStep: (step: ExchangeStep) => void;
     selectQuote: (quote: ExchangeTrade) => void;
     verifyAddress: (path: string, address: string) => Promise<void>;
     saveTrade: (exchangeTrade: ExchangeTrade, account: Account, date: string) => Promise<void>;

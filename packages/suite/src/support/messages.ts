@@ -275,6 +275,34 @@ const definedMessages = defineMessages({
             'I understand that cryptocurrency transactions are irreversible and I won’t be able to receive a refund for my purchase.',
         id: 'TR_EXCHANGE_TERMS_5',
     },
+    TR_EXCHANGE_RECEIVING_ACCOUNT: {
+        defaultMessage: ' Receiving Account',
+        id: 'TR_EXCHANGE_RECEIVING_ACCOUNT',
+    },
+    TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP: {
+        id: 'TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP',
+        defaultMessage: 'TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP',
+    },
+    TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT: {
+        id: 'TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT',
+        defaultMessage: 'Select {symbol} Receiving Account',
+    },
+    TR_EXCHANGE_RECEIVING_ADDRESS: {
+        defaultMessage: 'Receive Address',
+        id: 'TR_EXCHANGE_RECEIVING_ADDRESS',
+    },
+    TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP: {
+        id: 'TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP',
+        defaultMessage: 'TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP',
+    },
+    TR_EXCHANGE_CREATE_SUITE_ACCOUNT: {
+        defaultMessage: 'Create a new {symbol} Account',
+        id: 'TR_EXCHANGE_CREATE_SUITE_ACCOUNT',
+    },
+    TR_EXCHANGE_USE_NON_SUITE_ACCOUNT: {
+        defaultMessage: 'Use a non-suite {symbol} Account',
+        id: 'TR_EXCHANGE_USE_NON_SUITE_ACCOUNT',
+    },
     TR_EXCHANGE_SELL: {
         defaultMessage: 'Exchange',
         id: 'TR_EXCHANGE_SELL',

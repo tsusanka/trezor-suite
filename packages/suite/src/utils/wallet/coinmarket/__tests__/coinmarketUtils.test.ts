@@ -1,4 +1,9 @@
-import { buildOption, formatCryptoAmount, symbolToInvityApiSymbol } from '../coinmarketUtils';
+import {
+    buildOption,
+    formatCryptoAmount,
+    symbolToInvityApiSymbol,
+    getAccountInfo,
+} from '../coinmarketUtils';
 
 describe('coinmarket utils', () => {
     it('buildOption', () => {
