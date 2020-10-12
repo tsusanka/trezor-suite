@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
 import { getBuyCryptoOptions } from '@suite/utils/wallet/coinmarket/exchangeUtils';
+import invityAPI from '@suite-services/invityAPI';
 
 const Wrapper = styled.div`
     display: flex;
@@ -28,13 +29,14 @@ const Option = styled.div`
     align-items: center;
 `;
 
-const SellSelect = () => {
+const SellCryptoSelect = () => {
     const { control, setAmountLimits, account, exchangeInfo } = useCoinmarketExchangeFormContext();
 
     return (
         <Wrapper>
             <Controller
                 control={control}
+                defaultValue={false}
                 name="sellCryptoSelect"
                 render={({ onChange, value }) => {
                     return (
@@ -52,13 +54,15 @@ const SellSelect = () => {
                                 return (
                                     <Option>
                                         <CoinLogo
-                                            src={`https://exchange.invity.io/images/coins/${option.label.toUpperCase()}.svg`}
+                                            src={`${
+                                                invityAPI.server
+                                            }/images/coins/${option.label.toUpperCase()}.svg`}
                                         />
                                         {option.label}
                                     </Option>
                                 );
                             }}
-                            noOptionsMessage={() => <Translation id="TR_COINMARKET_SELECT_COIN" />}
+                            placeholder={<Translation id="TR_COINMARKET_SELECT_COIN" />}
                         />
                     );
                 }}
@@ -67,4 +71,4 @@ const SellSelect = () => {
     );
 };
 
-export default SellSelect;
+export default SellCryptoSelect;

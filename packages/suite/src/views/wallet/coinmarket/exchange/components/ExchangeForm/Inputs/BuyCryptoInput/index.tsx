@@ -2,11 +2,11 @@ import { Input } from '@trezor/components';
 import React from 'react';
 import { FIAT } from '@suite-config';
 import styled from 'styled-components';
-import { InputError } from '@wallet-components';
 import { isDecimalsValid } from '@wallet-utils/validation';
-import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
-import { Translation } from '@suite/components/suite';
-import FiatSelect from './FiatSelect';
+import { useCoinmarketExchangeFormContext } from '@wallet-hooks/useCoinmarketExchangeForm';
+import { Translation } from '@suite-components';
+import BuyCryptoSelect from './BuyCryptoSelect';
+import { InputError } from '@wallet-components';
 
 export const buildCurrencyOptions = () => {
     const result: { value: string; label: string }[] = [];
@@ -17,34 +17,37 @@ export const buildCurrencyOptions = () => {
 };
 
 const StyledInput = styled(Input)`
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 `;
 
-const FiatInput = () => {
+const BuyCryptoInput = () => {
     const {
         register,
-        network,
-        clearErrors,
         errors,
+        clearErrors,
         trigger,
         formState,
         amountLimits,
-        updateBuyCryptoValue,
+        updateFiatValue,
+        setValue,
     } = useCoinmarketExchangeFormContext();
+    const buyCryptoInput = 'buyCryptoInput';
     const fiatInput = 'fiatInput';
 
     return (
         <StyledInput
             onFocus={() => {
-                trigger([fiatInput]);
+                setValue(fiatInput, '');
+                clearErrors(fiatInput);
+                trigger([buyCryptoInput]);
             }}
             onChange={event => {
-                updateBuyCryptoValue(event.target.value, network.decimals);
+                updateFiatValue(event.target.value);
                 clearErrors(fiatInput);
             }}
-            state={errors[fiatInput] ? 'error' : undefined}
-            name={fiatInput}
+            state={errors[buyCryptoInput] ? 'error' : undefined}
+            name={buyCryptoInput}
             noTopLabel
             innerRef={register({
                 validate: value => {
@@ -86,10 +89,10 @@ const FiatInput = () => {
                     }
                 },
             })}
-            bottomText={<InputError error={errors[fiatInput]} />}
-            innerAddon={<FiatSelect />}
+            bottomText={<InputError error={errors[buyCryptoInput]} />}
+            innerAddon={<BuyCryptoSelect />}
         />
     );
 };
 
-export default FiatInput;
+export default BuyCryptoInput;

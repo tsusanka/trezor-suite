@@ -1,6 +1,7 @@
-import { createContext, useContext, useCallback, useState, useEffect } from 'react';
+import { createContext, useContext, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FeeLevel } from 'trezor-connect';
+import { toFiatCurrency, fromFiatCurrency } from '@wallet-utils/fiatConverterUtils';
 import { getFeeLevels } from '@wallet-utils/sendFormUtils';
 import { useInvityAPI } from '@wallet-hooks/useCoinmarket';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
@@ -33,14 +34,9 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const fiatRates = fiat.coins.find(item => item.symbol === symbol);
     const localCurrencyOption = { value: localCurrency, label: localCurrency.toUpperCase() };
     const methods = useForm<FormState>({ mode: 'onChange' });
-    const { register, setValue, clearErrors, errors } = methods;
-
-    useEffect(() => {
-        register({ name: 'selectedFee', type: 'custom' });
-    }, [register]);
-
+    const { register, setValue, getValues } = methods;
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
-
+    const [selectedFee, selectFee] = useState<FeeLevel['label']>('normal');
     const { saveQuoteRequest, saveQuotes, saveTrade } = useActions({
         saveQuoteRequest: coinmarketExchangeActions.saveQuoteRequest,
         saveQuotes: coinmarketExchangeActions.saveQuotes,
@@ -53,7 +49,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
 
     const onSubmit = async () => {
         const formValues = methods.getValues();
-        const sendStringAmount = formValues.cryptoInput || '';
+        const sendStringAmount = formValues.buyCryptoInput || '';
         const send = formValues.buyCryptoSelect.value;
         const receive = formValues.sellCryptoSelect.value;
         const request: ExchangeTradeQuoteRequest = {
@@ -61,6 +57,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             send,
             sendStringAmount,
         };
+
         await saveQuoteRequest(request);
         const allQuotes = await invityAPI.getExchangeQuotes(request);
         const limits = getAmountLimits(allQuotes);
@@ -78,31 +75,39 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         }
     };
 
-    const changeFeeLevel = useCallback(
-        (currentLevel: FeeLevel, newLevel: FeeLevel) => {
-            if (currentLevel.label === newLevel.label) return;
-            setValue('selectedFee', newLevel.label);
-            const isCustom = newLevel.label === 'custom';
-            // catch first change to custom
-            if (isCustom) {
-                setValue('feePerUnit', currentLevel.feePerUnit);
-                setValue('feeLimit', currentLevel.feeLimit);
-            } else {
-                // when switching from custom FeeLevel which has an error
-                // this error should be cleared and transaction should be precomposed again
-                // response is handled and used in @wallet-views/send/components/Fees (the caller of this function)
-                const shouldCompose = errors.feePerUnit || errors.feeLimit;
-                if (shouldCompose) {
-                    clearErrors(['feePerUnit', 'feeLimit']);
-                }
-                setValue('feePerUnit', '');
-                setValue('feeLimit', '');
+    const fillValue = (type: 'max' | 'half' | 'quarter') => {
+        console.log('type', type);
+    };
 
-                return shouldCompose;
-            }
-        },
-        [setValue, errors, clearErrors],
-    );
+    const composeTransaction = () => {
+        console.log('composeTransaction');
+    };
+
+    const updateFiatValue = (amount: string) => {
+        const currency: { value: string; label: string } = getValues('fiatSelect');
+        if (!fiatRates || !fiatRates.current || !currency) return;
+        const fiatValue = toFiatCurrency(amount, currency.value, fiatRates.current.rates);
+        if (fiatValue) {
+            setValue('fiatInput', fiatValue, { shouldValidate: true });
+        }
+    };
+
+    const updateFiatCurrency = () => {};
+
+    const updateBuyCryptoValue = (amount: string, decimals: number) => {
+        const currency: { value: string; label: string } = getValues('fiatSelect');
+        if (!fiatRates || !fiatRates.current || !currency) return;
+        const cryptoValue = fromFiatCurrency(
+            amount,
+            currency.value,
+            fiatRates.current.rates,
+            decimals,
+        );
+
+        if (cryptoValue) {
+            setValue('buyCryptoInput', cryptoValue, { shouldValidate: true });
+        }
+    };
 
     const typedRegister = useCallback(<T>(rules?: T) => register(rules), [register]);
     const isLoading = !exchangeInfo?.exchangeList || exchangeInfo?.exchangeList.length === 0;
@@ -113,15 +118,21 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         ...methods,
         account,
         onSubmit,
-        changeFeeLevel,
+        updateFiatValue,
         register: typedRegister,
         exchangeInfo,
         saveQuoteRequest,
         saveQuotes,
+        fillValue,
         quotesRequest,
+        localCurrencyOption,
+        selectedFee,
+        updateFiatCurrency,
+        selectFee,
+        updateBuyCryptoValue,
         saveTrade,
         feeInfo,
-        localCurrencyOption,
+        composeTransaction,
         fiatRates,
         amountLimits,
         setAmountLimits,

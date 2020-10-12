@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ExchangeProviderInfo } from 'invity-api';
 import { colors, variables } from '@trezor/components';
-import { CoinmarketPaymentType, CoinmarketExchangeProviderInfo } from '@wallet-components';
+import { CoinmarketExchangeProviderInfo } from '@wallet-components';
 import { TradeExchange } from '@wallet-reducers/coinmarketReducer';
 import { formatDistance } from 'date-fns';
 
@@ -60,14 +60,12 @@ const SmallRow = styled.div`
 
 const ExchangeTransaction = ({ trade, providers }: Props) => {
     const { date, data } = trade;
-    const { receiveStringAmount, exchange, paymentMethod, receiveCurrency } = data;
+    const { receiveStringAmount, exchange } = data;
 
     return (
         <Wrapper>
             <Column>
-                <Row>
-                    {receiveStringAmount} {receiveCurrency}
-                </Row>
+                <Row>{receiveStringAmount}</Row>
                 <SmallRow>
                     {trade.tradeType.toUpperCase()} • {formatDistance(new Date(date), new Date())}{' '}
                     ago •
@@ -77,9 +75,7 @@ const ExchangeTransaction = ({ trade, providers }: Props) => {
                 <Row>
                     <CoinmarketExchangeProviderInfo exchange={exchange} providers={providers} />
                 </Row>
-                <RowSecond>
-                    <CoinmarketPaymentType method={paymentMethod} />
-                </RowSecond>
+                <RowSecond>{/* <CoinmarketPaymentType method={paymentMethod} /> */}</RowSecond>
             </ProviderColumn>
         </Wrapper>
     );

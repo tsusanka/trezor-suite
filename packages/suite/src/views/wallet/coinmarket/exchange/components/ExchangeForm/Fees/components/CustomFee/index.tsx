@@ -45,7 +45,7 @@ const CustomFee = () => {
                 state={getInputState(feePerUnitError, feePerUnitValue)}
                 innerAddon={<Units>{getFeeUnits(network.networkType)}</Units>}
                 onChange={() => {
-                    composeTransaction(inputName);
+                    composeTransaction();
                 }}
                 name={inputName}
                 data-test={inputName}

@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 
-import CryptoInput from './CryptoInput';
+import BuyCryptoInput from './BuyCryptoInput';
 import FiatInput from './FiatInput';
-import CryptoSelect from './CryptoSelect';
+import SellCryptoSelect from './SellCryptoSelect';
 import Buttons from './Buttons';
 
 const Wrapper = styled.div`
@@ -55,21 +55,21 @@ const Inputs = () => {
     const { trigger, amountLimits } = useCoinmarketExchangeFormContext();
 
     useEffect(() => {
-        trigger(['cryptoInput']);
+        trigger(['buyCryptoInput']);
     }, [amountLimits, trigger]);
 
     return (
         <Wrapper>
             <Top>
                 <LeftWrapper>
-                    <CryptoInput />
+                    <BuyCryptoInput />
                     <FiatInput />
                 </LeftWrapper>
                 <MiddleWrapper>
                     <StyledIcon icon="TRANSFER" size={16} />
                 </MiddleWrapper>
                 <RightWrapper>
-                    <CryptoSelect />
+                    <SellCryptoSelect />
                 </RightWrapper>
             </Top>
             <Buttons />

@@ -87,6 +87,13 @@ const FeeAmount = styled.div`
     align-items: flex-end;
     margin-left: 12px;
 `;
+
+const CustomFeeWrapper = styled.div`
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+`;
+
 interface Option {
     label: string;
     value: string;
@@ -103,18 +110,17 @@ const buildFeeOptions = (levels: FeeLevel[]) => {
 
 const Fees = () => {
     const {
-        feeInfo,
-        changeFeeLevel,
         account: { symbol, networkType },
-        composedLevels,
-        getValues,
-        composeTransaction,
+        feeInfo,
+        selectedFee,
+        selectFee,
+        // composeTransaction,
     } = useCoinmarketExchangeFormContext();
 
-    const selectedLabel = 'normal';
-    const selectedLevel = feeInfo.levels.find(level => level.label === selectedLabel)!;
-    const transactionInfo = composedLevels ? composedLevels[selectedLabel] : undefined;
-    const isCustomLevel = selectedLabel === 'custom';
+    const selectedFeeLevel = feeInfo.levels.find(level => level.label === selectedFee);
+    if (!selectedFeeLevel) return null;
+    const transactionInfo = null;
+    const isCustomLevel = selectedFee === 'custom';
 
     return (
         <StyledCard>
@@ -124,31 +130,31 @@ const Fees = () => {
             <Col>
                 <Row>
                     <SelectBar
-                        selectedOption={selectedLabel}
+                        selectedOption={selectedFee}
                         options={buildFeeOptions(feeInfo.levels)}
-                        onChange={value => {
-                            // changeFeeLevel will decide if composeTransaction in needed or not
-                            const shouldCompose = changeFeeLevel(
-                                selectedLevel,
-                                feeInfo.levels.find(level => level.label === value)!,
-                            );
-                            if (shouldCompose) composeTransaction('output[0].amount');
+                        onChange={(value: any) => {
+                            selectFee(value);
                         }}
                     />
+
+                    {isCustomLevel && (
+                        <CustomFeeWrapper>
+                            <CustomFee />
+                        </CustomFeeWrapper>
+                    )}
                 </Row>
                 <Row>
                     <FeeInfo>
-                        {isCustomLevel && <CustomFee />}
                         {networkType === 'bitcoin' && !isCustomLevel && (
                             <EstimatedMiningTimeWrapper>
                                 <EstimatedMiningTime
-                                    seconds={feeInfo.blockTime * selectedLevel.blocks * 60}
+                                    seconds={feeInfo.blockTime * selectedFeeLevel.blocks * 60}
                                 />
                             </EstimatedMiningTimeWrapper>
                         )}
                         <FeeUnits>
                             {!isCustomLevel
-                                ? `${selectedLevel.feePerUnit} ${getFeeUnits(networkType)}`
+                                ? `${selectedFeeLevel.feePerUnit} ${getFeeUnits(networkType)}`
                                 : ' '}
                         </FeeUnits>
                         {networkType === 'bitcoin' &&
