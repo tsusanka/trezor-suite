@@ -97,7 +97,15 @@ export const useOffers = (props: Props) => {
                 const buyNetworks = networks.filter(n => n.symbol === buySymbol);
                 if (buyNetworks.length > 0) {
                     // are there some accounts with the symbol
-                    setSuiteBuyAccounts(accounts.filter(a => a.symbol === buySymbol));
+                    setSuiteBuyAccounts(
+                        accounts.filter(
+                            a =>
+                                a.symbol === buySymbol &&
+                                (!a.empty ||
+                                    a.visible ||
+                                    (a.accountType === 'normal' && a.index === 0)),
+                        ),
+                    );
                 } else {
                     setSuiteBuyAccounts(undefined);
                 }
