@@ -7,6 +7,7 @@ import { useCoinmarketExchangeFormContext } from '@wallet-hooks/useCoinmarketExc
 import { Translation } from '@suite-components';
 import BuyCryptoSelect from './BuyCryptoSelect';
 import { InputError } from '@wallet-components';
+import { formatCryptoAmount } from '@wallet-utils/coinmarket/coinmarketUtils';
 
 export const buildCurrencyOptions = () => {
     const result: { value: string; label: string }[] = [];
@@ -69,7 +70,7 @@ const BuyCryptoInput = () => {
                                 <Translation
                                     id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
                                     values={{
-                                        minimum: amountLimits.min,
+                                        minimum: formatCryptoAmount(amountLimits.min),
                                         currency: amountLimits.currency,
                                     }}
                                 />
@@ -80,7 +81,7 @@ const BuyCryptoInput = () => {
                                 <Translation
                                     id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
                                     values={{
-                                        maximum: amountLimits.max,
+                                        maximum: formatCryptoAmount(amountLimits.max),
                                         currency: amountLimits.currency,
                                     }}
                                 />
