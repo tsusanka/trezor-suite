@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 
 const Form = styled.form``;
 
-const FeesWrapper = styled.form`
+const FeesWrapper = styled.div`
     margin: 25px 0;
     border-top: 1px solid ${colors.NEUE_STROKE_GREY};
     border-bottom: 1px solid ${colors.NEUE_STROKE_GREY};

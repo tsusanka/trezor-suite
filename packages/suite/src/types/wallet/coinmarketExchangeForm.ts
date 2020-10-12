@@ -30,6 +30,7 @@ export type FormState = {
     fiatInput?: string;
     fiatSelectL?: Option;
     sellCryptoSelect: Option;
+    feePerUnit?: string;
 };
 
 export interface AmountLimits {
@@ -47,6 +48,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     selectedFee: FeeLevel['label'];
     selectFee: (feeLevel: FeeLevel['label']) => void;
     composeTransaction: () => void;
+    updateFiatCurrency: (selectedCurrency: { value: string; label: string }) => void;
     updateBuyCryptoValue: (fiatValue: string, decimals: number) => void;
     saveQuoteRequest: (request: ExchangeTradeQuoteRequest) => Promise<void>;
     saveQuotes: (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTrade[]) => Promise<void>;

@@ -1,7 +1,6 @@
 import { CleanSelect, CoinLogo } from '@trezor/components';
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { FIAT } from '@suite-config';
 import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@wallet-hooks/useCoinmarketExchangeForm';
 import { getSellCryptoOptions } from '@wallet-utils/coinmarket/exchangeUtils';
@@ -14,14 +13,6 @@ const Option = styled.div`
 const Label = styled.div`
     padding-left: 10px;
 `;
-
-export const buildCurrencyOptions = () => {
-    const result: { value: string; label: string }[] = [];
-    FIAT.currencies.forEach(currency =>
-        result.push({ value: currency, label: currency.toUpperCase() }),
-    );
-    return result;
-};
 
 const BuyCryptoSelect = () => {
     const { control, setAmountLimits, account, exchangeInfo } = useCoinmarketExchangeFormContext();

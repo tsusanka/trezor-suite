@@ -1,20 +1,11 @@
 import { Input } from '@trezor/components';
 import React from 'react';
-import { FIAT } from '@suite-config';
 import styled from 'styled-components';
 import { InputError } from '@wallet-components';
 import { isDecimalsValid } from '@wallet-utils/validation';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
 import FiatSelect from './FiatSelect';
-
-export const buildCurrencyOptions = () => {
-    const result: { value: string; label: string }[] = [];
-    FIAT.currencies.forEach(currency =>
-        result.push({ value: currency, label: currency.toUpperCase() }),
-    );
-    return result;
-};
 
 const StyledInput = styled(Input)`
     border-top-left-radius: 0;
