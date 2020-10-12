@@ -82,6 +82,7 @@ export const ICONS: IconType[] = [
     'LOG',
     'MENU',
     'MORE',
+    'NON_SUITE',
     'PASSWORDS',
     'PLUS',
     'QR',

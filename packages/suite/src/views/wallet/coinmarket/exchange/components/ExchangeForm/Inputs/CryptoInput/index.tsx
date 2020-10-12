@@ -7,6 +7,7 @@ import { isDecimalsValid } from '@wallet-utils/validation';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
 import { getSellCryptoOptions } from '@suite/utils/wallet/coinmarket/exchangeUtils';
+import { formatCryptoAmount } from '@suite/utils/wallet/coinmarket/coinmarketUtils';
 
 const Option = styled.div`
     display: flex;
@@ -86,7 +87,7 @@ const CryptoInput = () => {
                                 <Translation
                                     id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
                                     values={{
-                                        minimum: amountLimits.min,
+                                        minimum: formatCryptoAmount(amountLimits.min),
                                         currency: amountLimits.currency,
                                     }}
                                 />
@@ -97,7 +98,7 @@ const CryptoInput = () => {
                                 <Translation
                                     id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
                                     values={{
-                                        maximum: amountLimits.max,
+                                        maximum: formatCryptoAmount(amountLimits.max),
                                         currency: amountLimits.currency,
                                     }}
                                 />

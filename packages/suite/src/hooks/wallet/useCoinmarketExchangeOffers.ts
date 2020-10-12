@@ -5,11 +5,12 @@ import { ExchangeTrade } from 'invity-api';
 import * as coinmarketCommonActions from '@wallet-actions/coinmarketCommonActions';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import * as routerActions from '@suite-actions/routerActions';
-import { Props, ContextValues } from '@wallet-types/coinmarketExchangeOffers';
+import { Props, ContextValues, ExchangeStep } from '@wallet-types/coinmarketExchangeOffers';
 import { useSelector } from 'react-redux';
 import { AppState } from '@suite/types/suite';
 // import * as notificationActions from '@suite-actions/notificationActions';
-import { splitToFixedFloatQuotes } from '@suite/utils/wallet/coinmarket/exchangeUtils';
+import { splitToFixedFloatQuotes } from '@wallet-utils/coinmarket/exchangeUtils';
+import networks from '@wallet-config/networks';
 
 export const useOffers = (props: Props) => {
     const REFETCH_INTERVAL = 30000;
@@ -25,8 +26,10 @@ export const useOffers = (props: Props) => {
 
     const { account } = selectedAccount;
     const [selectedQuote, setSelectedQuote] = useState<ExchangeTrade>();
+    const [suiteBuyAccounts, setSuiteBuyAccounts] = useState<ContextValues['suiteBuyAccounts']>();
     const [innerFixedQuotes, setInnerFixedQuotes] = useState<ExchangeTrade[]>(fixedQuotes);
     const [innerFloatQuotes, setInnerFloatQuotes] = useState<ExchangeTrade[]>(floatQuotes);
+    const [exchangeStep, setExchangeStep] = useState<ExchangeStep>('RECEIVING_ADDRESS');
     const [lastFetchDate, setLastFetchDate] = useState(new Date());
     const { goto } = useActions({ goto: routerActions.goto });
     const { verifyAddress } = useActions({ verifyAddress: coinmarketCommonActions.verifyAddress });
@@ -48,6 +51,10 @@ export const useOffers = (props: Props) => {
     if (invityAPIUrl) {
         invityAPI.setInvityAPIServer(invityAPIUrl);
     }
+
+    const accounts = useSelector<AppState, AppState['wallet']['accounts']>(
+        state => state.wallet.accounts,
+    );
 
     useEffect(() => {
         if (!quotesRequest) {
@@ -85,6 +92,15 @@ export const useOffers = (props: Props) => {
         if (quotesRequest) {
             const result = await openCoinmarketExchangeConfirmModal(provider?.companyName);
             if (result) {
+                const buySymbol = quote.receive?.toLowerCase();
+                // is the symbol supported by the suite natively
+                const buyNetworks = networks.filter(n => n.symbol === buySymbol);
+                if (buyNetworks.length > 0) {
+                    // are there some accounts with the symbol
+                    setSuiteBuyAccounts(accounts.filter(a => a.symbol === buySymbol));
+                } else {
+                    setSuiteBuyAccounts(undefined);
+                }
                 setSelectedQuote(quote);
             }
         }
@@ -121,10 +137,13 @@ export const useOffers = (props: Props) => {
     return {
         doTrade,
         selectedQuote,
+        suiteBuyAccounts,
         verifyAddress,
         device,
         lastFetchDate,
         exchangeInfo,
+        exchangeStep,
+        setExchangeStep,
         saveTrade,
         quotesRequest,
         addressVerified,

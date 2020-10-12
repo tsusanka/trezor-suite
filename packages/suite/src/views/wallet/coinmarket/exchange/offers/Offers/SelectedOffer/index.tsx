@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Card, variables } from '@trezor/components';
-import { useCoinmarketExchangeOffersContext } from '@suite/hooks/wallet/useCoinmarketExchangeOffers';
-import CoinmarketExchangeOfferInfo from '@suite/components/wallet/CoinmarketExchangeOfferInfo';
+import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
+import CoinmarketExchangeOfferInfo from '@wallet-components/CoinmarketExchangeOfferInfo';
+import VerifyAddress from './components/VerifyAddress';
 
 const Wrapper = styled.div`
     display: flex;
@@ -19,13 +20,18 @@ const StyledCard = styled(Card)`
 `;
 
 const SelectedOffer = () => {
-    const { account, selectedQuote, exchangeInfo } = useCoinmarketExchangeOffersContext();
+    const {
+        account,
+        selectedQuote,
+        exchangeInfo,
+        exchangeStep,
+    } = useCoinmarketExchangeOffersContext();
     if (!selectedQuote) return null;
 
     return (
         <Wrapper>
             <StyledCard>
-                Selected offer here {/* <VerifyAddress selectedQuote={selectedQuote} /> */}
+                {exchangeStep === 'RECEIVING_ADDRESS' ? <VerifyAddress /> : null}
             </StyledCard>
             <CoinmarketExchangeOfferInfo
                 selectedQuote={selectedQuote}

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
 import { getBuyCryptoOptions } from '@suite/utils/wallet/coinmarket/exchangeUtils';
+import invityAPI from '@suite-services/invityAPI';
 
 const Wrapper = styled.div`
     display: flex;
@@ -52,7 +53,9 @@ const SellSelect = () => {
                                 return (
                                     <Option>
                                         <CoinLogo
-                                            src={`https://exchange.invity.io/images/coins/${option.label.toUpperCase()}.svg`}
+                                            src={`${
+                                                invityAPI.server
+                                            }/images/coins/${option.label.toUpperCase()}.svg`}
                                         />
                                         {option.label}
                                     </Option>

@@ -20,6 +20,7 @@ export const ICONS = {
     LOG: require('../../images/icons/log.svg'),
     MENU: require('../../images/icons/menu.svg'),
     MORE: require('../../images/icons/more.svg'),
+    NON_SUITE: require('../../images/icons/non-suite.svg'),
     PASSWORDS: require('../../images/icons/passwords.svg'),
     PLUS: require('../../images/icons/plus.svg'),
     QR: require('../../images/icons/qr.svg'),
