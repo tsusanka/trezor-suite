@@ -253,12 +253,12 @@ const VerifyAddressComponent = () => {
                     }}
                     isDropdownVisible={selectAccountOptions.length === 1}
                     isDisabled={selectAccountOptions.length === 1}
-                    placeholder={() => (
+                    placeholder={
                         <Translation
                             id="TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT"
                             values={{ symbol: selectedQuote?.receive }}
                         />
-                    )}
+                    }
                 />
 
                 <Input
