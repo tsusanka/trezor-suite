@@ -6,6 +6,7 @@ variables:
         - develop
         - releases
         - schedules
+        - /^release\//
 
 .e2e_artifacts: &e2e_artifacts
     expire_in: 7 days
@@ -154,7 +155,7 @@ suite-web deploy staging-wallet:
         - suite-desktop build linux
         - suite-desktop build windows
     environment:
-        name: ${CI_BUILD_REF_NAME}-staging
+        name: ${CI_BUILD_REF_NAME}-staging-wallet
         url: ${STAGING_WALLET_SERVER_URL}
     before_script: []
     only:
@@ -163,9 +164,9 @@ suite-web deploy staging-wallet:
     script:
         - source ${STAGING_WALLET_DEPLOY_KEYFILE}
         - mkdir -p packages/suite-web/build/static/desktop
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.AppImage ./packages/suite-web/build/static/desktop
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.zip ./packages/suite-web/build/static/desktop
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.exe ./packages/suite-web/build/static/desktop
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.AppImage ./packages/suite-web/build/static/desktop || :'
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.dmg ./packages/suite-web/build/static/desktop || :'
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.exe ./packages/suite-web/build/static/desktop || :'
         - cd packages/suite-web
         - ./scripts/s3sync.sh staging-wallet
     tags:
@@ -180,7 +181,7 @@ suite-web deploy staging-suite:
         - suite-desktop build linux
         - suite-desktop build windows
     environment:
-        name: ${CI_BUILD_REF_NAME}-staging
+        name: ${CI_BUILD_REF_NAME}-staging-suite
         url: ${STAGING_SUITE_SERVER_URL}
     before_script: []
     only:
@@ -189,9 +190,9 @@ suite-web deploy staging-suite:
     script:
         - source ${STAGING_SUITE_DEPLOY_KEYFILE}
         - mkdir -p packages/suite-web/build/static/desktop
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.AppImage ./packages/suite-web/build/static/desktop
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.zip ./packages/suite-web/build/static/desktop
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.exe ./packages/suite-web/build/static/desktop
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.AppImage ./packages/suite-web/build/static/desktop || :'
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.dmg ./packages/suite-web/build/static/desktop || :'
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.exe ./packages/suite-web/build/static/desktop || :'
         - cd packages/suite-web
         - ./scripts/s3sync.sh staging-suite
     tags:

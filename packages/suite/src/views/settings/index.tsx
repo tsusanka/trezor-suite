@@ -13,10 +13,11 @@ import {
 } from '@suite-components/Settings';
 import { FIAT, LANGUAGES } from '@suite-config';
 import { useAnalytics, useDevice } from '@suite-hooks';
-import { Switch } from '@trezor/components';
+import { Button, Tooltip, Switch } from '@trezor/components';
 import { capitalizeFirstLetter } from '@suite-utils/string';
 
 import { Props } from './Container';
+import { getReleaseUrl } from '@suite/services/github';
 
 const buildCurrencyOption = (currency: string) => ({
     value: currency,
@@ -24,9 +25,22 @@ const buildCurrencyOption = (currency: string) => ({
 });
 
 const Version = styled.div`
-    display: flex;
-    align-items: center;
+    span {
+        display: flex;
+        align-items: center;
+    }
 `;
+
+const VersionButton = styled(Button)`
+    padding-left: 1ch;
+`;
+
+const VersionTooltip = styled(Tooltip)`
+    display: inline-flex;
+    margin: 0 2px;
+`;
+
+const VersionLink = styled.a``;
 
 const Settings = ({
     language,
@@ -208,14 +222,50 @@ const Settings = ({
                             <Version>
                                 <Translation
                                     id="TR_YOUR_CURRENT_VERSION"
-                                    values={{ version: process.env.VERSION }}
+                                    values={{
+                                        version: (
+                                            <VersionTooltip content={process.env.COMMITHASH || ''}>
+                                                <VersionLink
+                                                    target="_blank"
+                                                    href={`https://github.com/trezor/trezor-suite/commit/${process.env.COMMITHASH}`}
+                                                >
+                                                    <VersionButton
+                                                        variant="tertiary"
+                                                        icon="EXTERNAL_LINK"
+                                                        alignIcon="right"
+                                                    >
+                                                        {process.env.VERSION}
+                                                    </VersionButton>
+                                                </VersionLink>
+                                            </VersionTooltip>
+                                        ),
+                                    }}
                                 />
-                                {!['checking', 'not-available'].includes(desktopUpdate.state) && (
+                                {!['', 'checking', 'not-available'].includes(
+                                    desktopUpdate.state,
+                                ) && (
                                     <>
                                         &nbsp;
                                         <Translation
                                             id="TR_YOUR_NEW_VERSION"
-                                            values={{ version: desktopUpdate.latest?.version }}
+                                            values={{
+                                                version: (
+                                                    <VersionLink
+                                                        target="_blank"
+                                                        href={getReleaseUrl(
+                                                            desktopUpdate.latest!.version,
+                                                        )}
+                                                    >
+                                                        <VersionButton
+                                                            variant="tertiary"
+                                                            icon="EXTERNAL_LINK"
+                                                            alignIcon="right"
+                                                        >
+                                                            {desktopUpdate.latest!.version}
+                                                        </VersionButton>
+                                                    </VersionLink>
+                                                ),
+                                            }}
                                         />
                                     </>
                                 )}

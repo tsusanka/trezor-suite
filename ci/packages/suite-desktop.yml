@@ -9,6 +9,7 @@
     artifacts:
         paths:
             - ${artifact}
+            - latest*.yml
         expire_in: 1 days
 
 .build_nix: &build_nix
@@ -25,14 +26,20 @@
         - develop
         - releases
         - schedules
+        - /^release\//
+        - /^run\//
 
 suite-desktop build mac:
     only:
         <<: *auto_run_branches
+    when: manual
+    tags:
+        - darwin
     variables:
         artifact: ${DESKTOP_APP_NAME}*
         platform: mac
     <<: *build
+    <<: *build_nix
 
 suite-desktop build mac codesign:
     only:
@@ -99,9 +106,9 @@ suite-desktop deploy dev:
         DEPLOY_DIRECTORY: ${DEPLOY_BASE_DIR}/suite-desktop/${CI_BUILD_REF_NAME}
     script:
         - mkdir -p ${DEPLOY_DIRECTORY}
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.zip "${DEPLOY_DIRECTORY}/"
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.AppImage "${DEPLOY_DIRECTORY}/"
-        - rsync --delete -va "${DESKTOP_APP_NAME}"-*.exe "${DEPLOY_DIRECTORY}/"
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.AppImage "${DEPLOY_DIRECTORY}/" || :'
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.dmg "${DEPLOY_DIRECTORY}/" || :'
+        - 'rsync --delete -va "${DESKTOP_APP_NAME}"-*.exe "${DEPLOY_DIRECTORY}/" || :'
     tags:
         - deploy
 

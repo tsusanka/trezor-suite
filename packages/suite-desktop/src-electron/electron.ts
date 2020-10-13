@@ -2,7 +2,6 @@ import { app, session, BrowserWindow, ipcMain, shell, Menu, dialog } from 'elect
 import isDev from 'electron-is-dev';
 import prepareNext from 'electron-next';
 import { autoUpdater, CancellationToken } from 'electron-updater';
-import electronLogger from 'electron-log';
 import * as path from 'path';
 import * as url from 'url';
 import * as electronLocalshortcut from 'electron-localshortcut';
@@ -28,6 +27,11 @@ const src = isDev
           slashes: true,
       });
 
+// Runtime flags
+const disableCspFlag = app.commandLine.hasSwitch('disable-csp');
+const preReleaseFlag = app.commandLine.hasSwitch('pre-release');
+
+// Updater
 const updateCancellationToken = new CancellationToken();
 
 const registerShortcuts = (window: BrowserWindow) => {
@@ -85,6 +89,16 @@ const init = async () => {
         },
         icon: path.join(res, 'images', 'icons', '512x512.png'),
     });
+
+    // Security warnings
+    if (disableCspFlag) {
+        dialog.showMessageBox({
+            type: 'warning',
+            message:
+                'The application is running with CSP disabled. This is a security risk! If this is not intentional, please close the application immediately.',
+            buttons: ['OK'],
+        });
+    }
 
     Menu.setApplicationMenu(buildMainMenu());
     mainWindow.setMenuBarVisibility(false);
@@ -148,14 +162,16 @@ const init = async () => {
                 callback({ cancel: false, requestHeaders: details.requestHeaders });
             });
 
-            session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-                callback({
-                    responseHeaders: {
-                        'Content-Security-Policy': [config.cspRules.join(';')],
-                        ...details.responseHeaders,
-                    },
+            if (!disableCspFlag) {
+                session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+                    callback({
+                        responseHeaders: {
+                            'Content-Security-Policy': [config.cspRules.join(';')],
+                            ...details.responseHeaders,
+                        },
+                    });
                 });
-            });
+            }
 
             // TODO: implement https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-unresponsive
             session.defaultSession.protocol.interceptFileProtocol(PROTOCOL, (request, callback) => {
@@ -174,9 +190,11 @@ const init = async () => {
 
     // Updates (move in separate file)
     const updateSettings = store.getUpdateSettings();
+    let latestVersion = {};
 
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.allowPrerelease = preReleaseFlag;
 
     if (updateSettings.skipVersion) {
         mainWindow.webContents.send('update/skip', updateSettings.skipVersion);
@@ -187,15 +205,17 @@ const init = async () => {
     });
 
     autoUpdater.on('update-available', ({ version, releaseDate }) => {
+        latestVersion = { version, releaseDate };
         if (updateSettings.skipVersion === version) {
             return;
         }
 
-        mainWindow.webContents.send('update/available', { version, releaseDate });
+        mainWindow.webContents.send('update/available', latestVersion);
     });
 
     autoUpdater.on('update-not-available', ({ version, releaseDate }) => {
-        mainWindow.webContents.send('update/not-available', { version, releaseDate });
+        latestVersion = { version, releaseDate };
+        mainWindow.webContents.send('update/not-available', latestVersion);
     });
 
     autoUpdater.on('error', err => {
@@ -221,72 +241,14 @@ const init = async () => {
         autoUpdater.downloadUpdate(updateCancellationToken);
     });
     ipcMain.on('update/install', () => autoUpdater.quitAndInstall());
-    ipcMain.on('update/cancel', () => updateCancellationToken.cancel());
+    ipcMain.on('update/cancel', () => {
+        mainWindow.webContents.send('update/available', latestVersion);
+        updateCancellationToken.cancel();
+    });
     ipcMain.on('update/skip', (_, version) => {
         mainWindow.webContents.send('update/skip', version);
         updateSettings.skipVersion = version;
         store.setUpdateSettings(updateSettings);
-    });
-
-    // Differential updater hack (https://gist.github.com/the3moon/0e9325228f6334dabac6dadd7a3fc0b9)
-    autoUpdater.logger = electronLogger;
-
-    let diffDown = {
-        percent: 0,
-        bytesPerSecond: 0,
-        total: 0,
-        transferred: 0,
-    };
-    let diffDownHelper = {
-        startTime: 0,
-        lastTime: 0,
-        lastSize: 0,
-    };
-
-    electronLogger.hooks.push((msg, transport) => {
-        if (transport !== electronLogger.transports.console) {
-            return msg;
-        }
-
-        let match = /Full: ([\d,.]+) ([GMKB]+), To download: ([\d,.]+) ([GMKB]+)/.exec(msg.data[0]);
-        if (match) {
-            let multiplier = 1;
-            if (match[4] === 'KB') multiplier *= 1024;
-            if (match[4] === 'MB') multiplier *= 1024 * 1024;
-            if (match[4] === 'GB') multiplier *= 1024 * 1024 * 1024;
-
-            diffDown = {
-                percent: 0,
-                bytesPerSecond: 0,
-                total: Number(match[3].split(',').join('')) * multiplier,
-                transferred: 0,
-            };
-            diffDownHelper = {
-                startTime: Date.now(),
-                lastTime: Date.now(),
-                lastSize: 0,
-            };
-
-            return msg;
-        }
-
-        match = /download range: bytes=(\d+)-(\d+)/.exec(msg.data[0]);
-        if (match) {
-            const currentSize = Number(match[2]) - Number(match[1]);
-            const currentTime = Date.now();
-            const deltaTime = currentTime - diffDownHelper.startTime;
-
-            diffDown.transferred += diffDownHelper.lastSize;
-            diffDown.bytesPerSecond = Math.floor((diffDown.transferred * 1000) / deltaTime);
-            diffDown.percent = (diffDown.transferred * 100) / diffDown.total;
-
-            diffDownHelper.lastSize = currentSize;
-            diffDownHelper.lastTime = currentTime;
-            mainWindow.webContents.send('update/downloading', { ...diffDown });
-            return msg;
-        }
-
-        return msg;
     });
 };
 

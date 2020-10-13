@@ -12,9 +12,9 @@
         "copy-files": "yarn workspace @trezor/suite-data copy-static-files",
         "build:lib": "tsc --project src-electron/tsconfig.json",
         "build:desktop": "rimraf ./build && next build && next export -o build && yarn build:lib",
-        "build:mac": "yarn clean && yarn build:desktop && electron-builder --mac",
-        "build:linux": "yarn clean && yarn build:desktop && electron-builder --linux",
-        "build:win": "yarn clean && yarn build:desktop && electron-builder --win",
+        "build:mac": "yarn clean && yarn build:desktop && electron-builder --mac -p never",
+        "build:linux": "yarn clean && yarn build:desktop && electron-builder --linux -p never",
+        "build:win": "yarn clean && yarn build:desktop && electron-builder --win -p never",
         "publish:all": "yarn clean && yarn build:desktop && electron-builder --publish always --mac --linux --win",
         "publish:linux": "yarn build:linux && electron-builder --publish always --linux",
         "publish:mac": "yarn build:mac && electron-builder --publish always --mac",
@@ -44,7 +44,13 @@
                 "to": "images/icons/512x512.png"
             }
         ],
+        "publish": {
+            "provider": "github",
+            "repo": "trezor-suite",
+            "owner": "trezor"
+        },
         "dmg": {
+            "sign": false,
             "contents": [
                 {
                     "x": 410,
@@ -77,14 +83,15 @@
                 }
             ],
             "icon": "build/static/images/icons/512x512.icns",
-            "artifactName": "${productName}-${version}.${ext}",
+            "artifactName": "Trezor-Suite-${version}-mac.${ext}",
             "hardenedRuntime": true,
             "gatekeeperAssess": false,
             "darkModeSupport": false,
             "entitlements": "entitlements.mac.inherit.plist",
             "entitlementsInherit": "entitlements.mac.inherit.plist",
             "target": [
-                "zip"
+                "zip",
+                "dmg"
             ]
         },
         "win": {
@@ -97,11 +104,10 @@
                     ]
                 }
             ],
-            "icon": "build/static/images/icons/512x512.ico",
-            "artifactName": "${productName}-${version}.${ext}",
+            "icon": "build/static/images/icons/512x512.png",
+            "artifactName": "Trezor-Suite-${version}-win.${ext}",
             "target": [
-                "nsis",
-                "zip"
+                "nsis"
             ]
         },
         "linux": {
@@ -121,20 +127,19 @@
                     ]
                 }
             ],
-            "icon": "build/static/images/icons/512x512.icns",
-            "artifactName": "${productName}-${version}.${ext}",
+            "icon": "build/static/images/icons/512x512.png",
+            "artifactName": "Trezor-Suite-${version}-linux.${ext}",
             "executableName": "trezor-suite",
             "category": "Utility",
             "target": [
-                "AppImage",
-                "tar.gz"
+                "AppImage"
             ]
-        }
+        },
+        "afterSign": "scripts/notarize.js"
     },
     "dependencies": {
         "electron-is-dev": "^1.2.0",
         "electron-localshortcut": "^3.2.1",
-        "electron-log": "^4.2.4",
         "electron-next": "^3.1.5",
         "electron-store": "^5.1.1",
         "electron-updater": "^4.3.5",

@@ -29,8 +29,9 @@ cache:
 
 variables:
     DEV_SERVER_URL: 'https://suite.corp.sldev.cz'
-    STAGING_SERVER_URL: 'http://staging-wallet.trezor.io/wallet'
-    DESKTOP_APP_NAME: 'Trezor Suite'
+    STAGING_WALLET_SERVER_URL: 'https://staging-wallet.trezor.io/wallet'
+    STAGING_SUITE_SERVER_URL: 'https://staging-suite.trezor.io'
+    DESKTOP_APP_NAME: 'Trezor-Suite'
 
 stages:
     - setup environment
@@ -69,4 +70,3 @@ include:
     - ci/packages/rollout.yml
     - ci/packages/landing-page.yml
     - ci/packages/suite-web-landing.yml
-    

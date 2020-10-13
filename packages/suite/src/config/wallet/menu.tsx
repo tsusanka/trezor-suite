@@ -26,8 +26,8 @@ export const ITEMS = [
     },
     {
         route: 'wallet-coinmarket-buy',
-        title: <Translation id="TR_NAV_COINMARKET" />,
-        icon: 'COINMARKET',
+        title: <Translation id="TR_NAV_TRADE" />,
+        icon: 'TRADE',
         isHidden: () => false,
     },
     // {

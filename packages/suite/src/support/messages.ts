@@ -621,7 +621,7 @@ const definedMessages = defineMessages({
 
     TR_ADVANCED_SETTINGS: {
         defaultMessage: 'Advanced settings',
-        description: 'Shows advanced sending form',
+        description: 'Shows advanced coin settings',
         id: 'TR_ADVANCED_SETTINGS',
     },
     TR_ALLOW_ANALYTICS: {
@@ -712,12 +712,6 @@ const definedMessages = defineMessages({
         defaultMessage: 'Enter words on your computer, recovery takes about 2 minutes.',
         description: 'Enter words on your computer, recovery takes about 2 minutes.',
         id: 'TR_BASIC_RECOVERY_OPTION',
-    },
-    TR_SELECT_CONCRETE_RECOVERY_TYPE: {
-        id: 'TR_SELECT_CONCRETE_RECOVERY_TYPE',
-        defaultMessage: 'Select {recoveryType}',
-        description:
-            '{recoveryType} stands for either TR_BASIC_RECOVERY or TR_ADVANCED_RECOVERY. Used as button description',
     },
     TR_BCH_ADDRESS_INFO: {
         defaultMessage:
@@ -836,9 +830,18 @@ const definedMessages = defineMessages({
         id: 'TR_CONNECT_TREZOR',
     },
     TR_CONNECT_YOUR_DEVICE: {
-        defaultMessage: 'Connect your device',
+        defaultMessage: 'Connect your Trezor',
         description: 'Prompt to user to connect his device.',
         id: 'TR_CONNECT_YOUR_DEVICE',
+    },
+    TR_RECONNECT_YOUR_DEVICE: {
+        defaultMessage: 'Reconnect your Trezor',
+        description: 'Prompt to user to reconnect his device.',
+        id: 'TR_RECONNECT_YOUR_DEVICE',
+    },
+    TR_THIS_TREZOR_IS_ALREADY_SET_UP: {
+        defaultMessage: 'This Trezor is already set up',
+        id: 'TR_THIS_TREZOR_IS_ALREADY_SET_UP',
     },
     TR_CONNECT_YOUR_DEVICE_AGAIN: {
         defaultMessage: 'Connect your device again',
@@ -1120,13 +1123,6 @@ const definedMessages = defineMessages({
         defaultMessage: 'Change PIN',
         id: 'TR_DEVICE_SETTINGS_CHANGE_PIN_TITLE',
     },
-    TR_DEVICE_YOU_RECONNECTED_IS_DIFFERENT: {
-        defaultMessage:
-            'Device you reconnected is different from the previous device. Connect the right one.',
-        description:
-            'Text that indicates that user reconnected different device than he was working with before',
-        id: 'TR_DEVICE_YOU_RECONNECTED_IS_DIFFERENT',
-    },
     TR_DID_YOU_PURCHASE: {
         defaultMessage:
             'Please note, that device packaging including holograms have changed over time. You can check packaging details {TR_PACKAGING_LINK}. Also be sure you made your purchase from {TR_RESELLERS_LINK}. Otherwise, the device you are holding in your hands might be a counterfeit. Please {TR_CONTACT_OUR_SUPPORT_LINK}',
@@ -1219,7 +1215,6 @@ const definedMessages = defineMessages({
     },
     TR_FINAL_HEADING: {
         defaultMessage: 'Good job! All done',
-        description: 'Heading in newsletter step',
         id: 'TR_FINAL_HEADING',
     },
     TR_FINAL_SUBHEADING: {
@@ -1249,6 +1244,11 @@ const definedMessages = defineMessages({
         defaultMessage: 'This device has already installed firmware version: {version}',
         description: 'Text to display in case device has firmware installed but it is outdated',
         id: 'TR_FIRMWARE_INSTALLED_TEXT',
+    },
+    TR_INSTALL_FIRMWARE: {
+        defaultMessage: 'Install firmware',
+        description: 'sub heading in onboarding when user is about to install a new firmware',
+        id: 'TR_INSTALL_FIRMWARE',
     },
     TR_FIRMWARE_SUBHEADING: {
         defaultMessage:
@@ -1347,6 +1347,11 @@ const definedMessages = defineMessages({
         description: 'Heading on hologram step page',
         id: 'TR_HOLOGRAM_STEP_HEADING',
     },
+    TR_HOLOGRAM_STEP_HEADING_INTRO: {
+        defaultMessage: 'About your seal',
+        description: 'Heading on hologram step page (intro)',
+        id: 'TR_HOLOGRAM_STEP_HEADING_INTRO',
+    },
     TR_HOLOGRAM_STEP_SUBHEADING: {
         defaultMessage: 'Please make sure hologram protecting your device is authentic',
         description: 'Subheading on hologram step page',
@@ -1382,6 +1387,10 @@ const definedMessages = defineMessages({
         defaultMessage: 'Do not disconnect your device. Installing',
         description: 'Message that is visible when installing process is in progress.',
         id: 'TR_DO_NOT_DISCONNECT',
+    },
+    TR_YOUR_TREZOR_IS_ALMOST_READY: {
+        defaultMessage: 'Your Trezor is almost ready',
+        id: 'TR_YOUR_TREZOR_IS_ALMOST_READY',
     },
     TR_INSTRUCTION_TO_SKIP: {
         defaultMessage:
@@ -1993,6 +2002,11 @@ const definedMessages = defineMessages({
         description: 'Button in security page (skip security setup)',
         id: 'TR_SKIP_SECURITY',
     },
+    TR_SKIP_SECURITY_PIN: {
+        defaultMessage: 'Skip PIN',
+        description: 'Button in security page (skip PIN setup)',
+        id: 'TR_SKIP_SECURITY_PIN',
+    },
     TR_SOLVE_ISSUE: {
         defaultMessage: 'Solve issue',
         id: 'TR_SOLVE_ISSUE',
@@ -2310,6 +2324,10 @@ const definedMessages = defineMessages({
         defaultMessage: 'Choose your path and let the Trezor Force be with you!.',
         id: 'TR_WELCOME_TO_TREZOR_TEXT',
     },
+    TR_WELCOME_TO_TREZOR_TEXT_WALLET_CREATION: {
+        defaultMessage: 'Create a new wallet or restore one from a backup.',
+        id: 'TR_WELCOME_TO_TREZOR_TEXT_WALLET_CREATION',
+    },
     TR_WEST: {
         defaultMessage: 'West',
         id: 'TR_WEST',
@@ -2325,6 +2343,10 @@ const definedMessages = defineMessages({
     TR_WHATS_NEW: {
         defaultMessage: "What's new",
         id: 'TR_WHATS_NEW',
+    },
+    TR_WHATS_NEW_FIRMWARE: {
+        defaultMessage: 'About this firmware',
+        id: 'TR_WHATS_NEW_FIRMWARE',
     },
     TR_WIPING_YOUR_DEVICE: {
         defaultMessage:
@@ -3471,6 +3493,19 @@ const definedMessages = defineMessages({
         defaultMessage:
             'This device is already initialized. You should always be sure that you did device setup yourself. Otherwise you may become victim of phishing. Having initialized device also means that you can not proceed with setup.',
     },
+    ONBOARDING_UNEXPECTED_DEVICE_DIFFERENT_HEADING: {
+        id: 'ONBOARDING_UNEXPECTED_DEVICE_DIFFERENT_HEADING',
+        defaultMessage: 'You are using a different Trezor',
+    },
+    ONBOARDING_UNEXPECTED_DEVICE_DIFFERENT_P1: {
+        id: 'ONBOARDING_UNEXPECTED_DEVICE_DIFFERENT_P1',
+        defaultMessage:
+            "This isn't the same Trezor you've been using. Please reconnect the right one.",
+    },
+    ONBOARDING_UNEXPECTED_DEVICE_DIFFERENT_P2: {
+        id: 'ONBOARDING_UNEXPECTED_DEVICE_DIFFERENT_P2',
+        defaultMessage: 'If you want to use this device instead, start again.',
+    },
     TR_USE_IT_ANYWAY: {
         id: 'TR_USE_IT_ANYWAY',
         defaultMessage: 'Use it anyway',
@@ -3743,6 +3778,10 @@ const definedMessages = defineMessages({
     TR_NAV_COINMARKET: {
         id: 'TR_NAV_COINMARKET',
         defaultMessage: 'Coinmarket',
+    },
+    TR_NAV_TRADE: {
+        id: 'TR_NAV_TRADE',
+        defaultMessage: 'Trade',
     },
     TR_NAV_BUY: {
         id: 'TR_NAV_BUY',
@@ -4189,6 +4228,10 @@ const definedMessages = defineMessages({
         id: 'TR_LABELING_EDIT_LABEL',
         defaultMessage: 'Edit label',
     },
+    TR_LABELING_EDITED_LABEL: {
+        id: 'TR_LABELING_EDITED_LABEL',
+        defaultMessage: 'Renamed',
+    },
     TR_LABELING_REMOVE_LABEL: {
         id: 'TR_LABELING_REMOVE_LABEL',
         defaultMessage: 'Remove label',
@@ -4454,6 +4497,66 @@ const definedMessages = defineMessages({
     SETTINGS_UPDATE_READY: {
         id: 'SETTINGS_UPDATE_READY',
         defaultMessage: 'Install now!',
+    },
+    TR_LOADING: {
+        id: 'TR_LOADING',
+        defaultMessage: 'Loading...',
+    },
+    TR_BACKUP_CHECKBOX_1_TITLE: {
+        id: 'TR_BACKUP_CHECKBOX_1_TITLE',
+        defaultMessage: 'I wrote down the seed properly',
+    },
+    TR_BACKUP_CHECKBOX_1_DESCRIPTION: {
+        id: 'TR_BACKUP_CHECKBOX_1_DESCRIPTION',
+        defaultMessage:
+            'All words must be in the exact order. Make sure the seed won’t get wet or can’t get smudged to make it not readable.',
+    },
+    TR_BACKUP_CHECKBOX_2_TITLE: {
+        id: 'TR_BACKUP_CHECKBOX_2_TITLE',
+        defaultMessage: 'I will never make a digital copy or photo ',
+    },
+
+    TR_BACKUP_CHECKBOX_2_DESCRIPTION: {
+        id: 'TR_BACKUP_CHECKBOX_2_DESCRIPTION',
+        defaultMessage:
+            'Don’t save your seed in a phone or take a picture with any device. A cloud or photo service can be hacked and your seed stolen.',
+    },
+    TR_BACKUP_CHECKBOX_3_TITLE: {
+        id: 'TR_BACKUP_CHECKBOX_3_TITLE',
+        defaultMessage: 'I will hide the seed properly',
+    },
+    TR_BACKUP_CHECKBOX_3_DESCRIPTION: {
+        id: 'TR_BACKUP_CHECKBOX_3_DESCRIPTION',
+        defaultMessage:
+            'Hide your seed properly and/or use further accessories to ensure maximum security of your seed.',
+    },
+    TR_PIN_HEADING_INITIAL: {
+        id: 'TR_PIN_HEADING_INITIAL',
+        defaultMessage: 'Create PIN',
+    },
+    TR_COMPLETE_SETUP: {
+        id: 'TR_COMPLETE_SETUP',
+        defaultMessage: 'Complete setup',
+    },
+    TR_RECOVER_YOUR_WALLET_FROM: {
+        id: 'TR_RECOVER_YOUR_WALLET_FROM',
+        defaultMessage: 'Recover your wallet from seed',
+    },
+    TR_SELECT_RECOVERY_METHOD: {
+        id: 'TR_SELECT_RECOVERY_METHOD',
+        defaultMessage: 'Select recovery method',
+    },
+    TR_WALLET_RECOVERED_FROM_SEED: {
+        id: 'TR_WALLET_RECOVERED_FROM_SEED',
+        defaultMessage: 'Recovery completed',
+    },
+    TR_RECOVERY_FAILED: {
+        id: 'TR_RECOVERY_FAILED',
+        defaultMessage: 'Recovery failed',
+    },
+    TR_ONBOARDING: {
+        id: 'TR_ONBOARDING',
+        defaultMessage: 'Onboarding',
     },
 } as const);
 

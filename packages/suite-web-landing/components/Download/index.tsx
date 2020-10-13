@@ -69,10 +69,10 @@ const dropdownItemsData: DropdownItem[] = [
         platform: 'mac',
         label: 'for MacOS',
         icon: 'OS_MAC',
-        installerExtension: 'zip',
+        installerExtension: 'dmg',
     },
     {
-        platform: 'windows',
+        platform: 'win',
         label: 'for Windows 8+',
         icon: 'OS_WINDOWS',
         installerExtension: 'exe',
@@ -92,7 +92,7 @@ const getIconForCurrentPlatform = (platform: Platform) => {
 const getInstallerURI = (platform: Platform, version: string) => {
     const extension = dropdownItemsData.find(item => platform === item.platform)!
         .installerExtension;
-    return encodeURI(`./web/static/desktop/Trezor Suite-${version}.${extension}`);
+    return encodeURI(`./web/static/desktop/Trezor-Suite-${version}-${platform}.${extension}`);
 };
 
 const Index = () => {
