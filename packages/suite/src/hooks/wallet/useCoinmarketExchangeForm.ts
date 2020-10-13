@@ -92,7 +92,14 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         }
     };
 
-    const updateFiatCurrency = () => {};
+    const updateFiatCurrency = (currency: { label: string; value: string }) => {
+        const amount = getValues('buyCryptoInput') || '0';
+        if (!fiatRates || !fiatRates.current || !currency) return;
+        const fiatValue = toFiatCurrency(amount, currency.value, fiatRates.current.rates);
+        if (fiatValue) {
+            setValue('fiatInput', fiatValue, { shouldValidate: true });
+        }
+    };
 
     const updateBuyCryptoValue = (amount: string, decimals: number) => {
         const currency: { value: string; label: string } = getValues('fiatSelect');

@@ -18,6 +18,7 @@ const FiatSelect = () => {
         control,
         setAmountLimits,
         account,
+        updateFiatCurrency,
         localCurrencyOption,
     } = useCoinmarketExchangeFormContext();
     const fiatSelect = 'fiatSelect';
@@ -33,6 +34,7 @@ const FiatSelect = () => {
                     <CleanSelect
                         onChange={(selected: any) => {
                             onChange(selected);
+                            updateFiatCurrency(selected);
                             setAmountLimits(undefined);
                         }}
                         value={value}
