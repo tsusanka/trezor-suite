@@ -11,6 +11,10 @@ import {
 import { Input, colors, variables, CoinLogo, DeviceImage, Select, Icon } from '@trezor/components';
 import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 import { Account } from '@wallet-types';
+import * as modalActions from '@suite-actions/modalActions';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from '@suite-types';
+import { useTimeoutFn } from 'react-use';
 
 const Wrapper = styled.div`
     display: flex;
@@ -130,6 +134,10 @@ const VerifyAddressComponent = () => {
         addressVerified,
         suiteBuyAccounts,
     } = useCoinmarketExchangeOffersContext();
+    const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
+    const [menuIsOpen, setMenuIsOpen] = useState<boolean | undefined>(undefined);
+
+    const dispatch = useDispatch<Dispatch>();
 
     // const { path, address } = getAccountInfo(account);
 
@@ -147,15 +155,32 @@ const VerifyAddressComponent = () => {
     }
     selectAccountOptions.push({ type: 'NON_SUITE' });
 
-    const [selectedAccountOption, setSelectedAccountOption] = useState<
-        AccountSelectOption | undefined
-    >(selectAccountOptions.length === 1 ? selectAccountOptions[0] : undefined);
-
-    const onChangeAccount = (selected: AccountSelectOption) => {
-        setSelectedAccountOption(selected);
+    const onChangeAccount = (account: AccountSelectOption) => {
+        if (account.type === 'ADD_SUITE') {
+            if (device) {
+                setMenuIsOpen(true);
+                dispatch(
+                    modalActions.openModal({
+                        type: 'add-account',
+                        device: device!,
+                        symbol: selectedQuote?.receive?.toLowerCase() as Account['symbol'],
+                        noRedirect: true,
+                    }),
+                );
+            }
+        } else {
+            setSelectedAccountOption(account);
+            setMenuIsOpen(undefined);
+        }
     };
 
-    console.log('VerifyAddressComponent', selectedAccountOption);
+    // preselect the account after everything is loaded
+    useTimeoutFn(() => {
+        console.log('selectAccountOptions', selectAccountOptions);
+        if (selectAccountOptions.length > 0 && selectAccountOptions[0].type !== 'ADD_SUITE') {
+            setSelectedAccountOption(selectAccountOptions[0]);
+        }
+    }, 100);
 
     return (
         <Wrapper>
@@ -259,6 +284,7 @@ const VerifyAddressComponent = () => {
                             values={{ symbol: selectedQuote?.receive }}
                         />
                     }
+                    menuIsOpen={menuIsOpen}
                 />
 
                 <Input

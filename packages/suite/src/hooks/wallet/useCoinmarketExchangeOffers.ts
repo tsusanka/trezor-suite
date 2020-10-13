@@ -92,27 +92,38 @@ export const useOffers = (props: Props) => {
         if (quotesRequest) {
             const result = await openCoinmarketExchangeConfirmModal(provider?.companyName);
             if (result) {
-                const buySymbol = quote.receive?.toLowerCase();
-                // is the symbol supported by the suite natively
-                const buyNetworks = networks.filter(n => n.symbol === buySymbol);
-                if (buyNetworks.length > 0) {
-                    // are there some accounts with the symbol
-                    setSuiteBuyAccounts(
-                        accounts.filter(
-                            a =>
-                                a.symbol === buySymbol &&
-                                (!a.empty ||
-                                    a.visible ||
-                                    (a.accountType === 'normal' && a.index === 0)),
-                        ),
-                    );
-                } else {
-                    setSuiteBuyAccounts(undefined);
-                }
                 setSelectedQuote(quote);
             }
         }
     };
+
+    useEffect(() => {
+        if (selectedQuote) {
+            const buySymbol = selectedQuote.receive?.toLowerCase();
+            const unavailableCapabilities =
+                device?.features && device?.unavailableCapabilities
+                    ? device.unavailableCapabilities
+                    : {};
+            // is the symbol supported by the suite and the device natively
+            const buyNetworks = networks.filter(
+                n => n.symbol === buySymbol && !unavailableCapabilities[n.symbol],
+            );
+            if (buyNetworks.length > 0) {
+                // are there some accounts with the symbol
+                setSuiteBuyAccounts(
+                    accounts.filter(
+                        a =>
+                            a.symbol === buySymbol &&
+                            (!a.empty ||
+                                a.visible ||
+                                (a.accountType === 'normal' && a.index === 0)),
+                    ),
+                );
+                return;
+            }
+        }
+        setSuiteBuyAccounts(undefined);
+    }, [accounts, device, selectedQuote]);
 
     const doTrade = async (_address: string) => {
         // if (!selectedQuote) return;
