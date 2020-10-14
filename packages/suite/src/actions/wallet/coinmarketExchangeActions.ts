@@ -30,7 +30,7 @@ export type CoinmarketExchangeActions =
       }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST; request: ExchangeTradeQuoteRequest }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID; transactionId: string }
-    | { type: typeof COINMARKET_EXCHANGE.VERIFY_ADDRESS; addressVerified: boolean }
+    | { type: typeof COINMARKET_EXCHANGE.VERIFY_ADDRESS; addressVerified: string }
     | {
           type: typeof COINMARKET_EXCHANGE.SAVE_QUOTES;
           fixedQuotes: ExchangeTrade[];

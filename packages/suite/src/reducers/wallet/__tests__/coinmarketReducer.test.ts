@@ -132,9 +132,9 @@ describe('settings reducer', () => {
         expect(
             reducer(undefined, {
                 type: COINMARKET_BUY.VERIFY_ADDRESS,
-                addressVerified: true,
+                addressVerified: '1abcdef',
             } as any),
-        ).toEqual({ ...initialState, buy: { ...initialState.buy, addressVerified: true } });
+        ).toEqual({ ...initialState, buy: { ...initialState.buy, addressVerified: '1abcdef' } });
     });
 
     it('COINMARKET_BUY.SAVE_CACHED_ACCOUNT_INFO', () => {
@@ -200,11 +200,11 @@ describe('settings reducer', () => {
         expect(
             reducer(undefined, {
                 type: COINMARKET_EXCHANGE.VERIFY_ADDRESS,
-                addressVerified: true,
+                addressVerified: '2efghi',
             } as any),
         ).toEqual({
             ...initialState,
-            exchange: { ...initialState.exchange, addressVerified: true },
+            exchange: { ...initialState.exchange, addressVerified: '2efghi' },
         });
     });
 });

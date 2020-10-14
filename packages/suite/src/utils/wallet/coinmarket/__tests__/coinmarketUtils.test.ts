@@ -2,7 +2,7 @@ import {
     buildOption,
     formatCryptoAmount,
     symbolToInvityApiSymbol,
-    getAccountInfo,
+    getUnusedAddressFromAccount,
 } from '../coinmarketUtils';
 
 describe('coinmarket utils', () => {
@@ -21,7 +21,7 @@ describe('coinmarket utils', () => {
         expect(formatCryptoAmount(Number('0.00123456'))).toStrictEqual('0.00123456');
     });
 
-    it('getAccountInfo', () => {
+    it('getUnusedAddressFromAccount', () => {
         const accountMockBtc = {
             index: 1,
             accountType: 'segwit',
@@ -38,7 +38,7 @@ describe('coinmarket utils', () => {
             },
         };
         // @ts-ignore
-        expect(getAccountInfo(accountMockBtc)).toStrictEqual({
+        expect(getUnusedAddressFromAccount(accountMockBtc)).toStrictEqual({
             address: '177BUDVZqTTzK1Fogqcrfbb5ketHEUDGSJ',
             path: "m/44'/0'/3'/0/0",
         });
@@ -53,7 +53,7 @@ describe('coinmarket utils', () => {
         };
 
         // @ts-ignore
-        expect(getAccountInfo(accountMockEth)).toStrictEqual({
+        expect(getUnusedAddressFromAccount(accountMockEth)).toStrictEqual({
             address: '0x2e0DC981d301cdd443C3987cf19Eb9671CB99ddC',
             path: "m/44'/60'/0'/0/1",
         });

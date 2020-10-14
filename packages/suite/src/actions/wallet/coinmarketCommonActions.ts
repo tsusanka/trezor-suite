@@ -1,16 +1,19 @@
 import TrezorConnect, { UI, ButtonRequestMessage } from 'trezor-connect';
 import * as modalActions from '@suite-actions/modalActions';
 import * as notificationActions from '@suite-actions/notificationActions';
-import { COINMARKET_BUY } from './constants';
+import { COINMARKET_BUY, COINMARKET_EXCHANGE } from './constants';
 import { Dispatch, GetState } from '@suite-types';
+import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { Account } from '@wallet-types';
 
-export const verifyAddress = (path: string, address: string) => async (
+export const verifyAddress = (account: Account, inExchange = false) => async (
     dispatch: Dispatch,
     getState: GetState,
 ) => {
     const { device } = getState().suite;
-    const { account } = getState().wallet.selectedAccount;
     if (!device || !account) return;
+    const { path, address } = getUnusedAddressFromAccount(account);
+    if (!path || !address) return;
 
     const { networkType, symbol } = account;
     const { useEmptyPassphrase, connected, available } = device;
@@ -76,8 +79,8 @@ export const verifyAddress = (path: string, address: string) => async (
 
     if (response.success) {
         dispatch({
-            type: COINMARKET_BUY.VERIFY_ADDRESS,
-            addressVerified: true,
+            type: inExchange ? COINMARKET_EXCHANGE.VERIFY_ADDRESS : COINMARKET_BUY.VERIFY_ADDRESS,
+            addressVerified: address,
         });
     } else {
         // special case: device no-backup permissions not granted

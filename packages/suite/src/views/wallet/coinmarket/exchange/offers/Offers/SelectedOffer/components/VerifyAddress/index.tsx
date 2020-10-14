@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-// import { getAccountInfo } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
 import {
     FiatValue,
     QuestionTooltip,
@@ -8,9 +8,27 @@ import {
     HiddenPlaceholder,
     AccountLabeling,
 } from '@suite-components';
-import { Input, colors, variables, CoinLogo, DeviceImage, Select, Icon } from '@trezor/components';
+import {
+    Input,
+    colors,
+    variables,
+    CoinLogo,
+    DeviceImage,
+    Select,
+    Icon,
+    Button,
+} from '@trezor/components';
+import { InputError } from '@wallet-components';
 import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 import { Account } from '@wallet-types';
+import * as modalActions from '@suite-actions/modalActions';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from '@suite-types';
+import { useTimeoutFn } from 'react-use';
+import { useForm } from 'react-hook-form';
+import { TypedValidationRules } from '@wallet-types/form';
+import addressValidator from 'trezor-address-validator';
+import { isHexValid, isInteger } from '@wallet-utils/validation';
 
 const Wrapper = styled.div`
     display: flex;
@@ -77,25 +95,14 @@ const AccountName = styled.div`
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
 `;
 
-// const FakeInput = styled.div`
-//     display: flex;
-//     margin-bottom: 20px;
-//     padding: 5px;
-//     min-height: 61px;
-//     align-items: center;
-//     border-radius: 4px;
-//     border: solid 2px ${colors.NEUE_STROKE_GREY};
-//     background: ${colors.WHITE};
-// `;
-
-// const ButtonWrapper = styled.div`
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     padding-top: 20px;
-//     border-top: 1px solid ${colors.NEUE_STROKE_GREY};
-//     margin: 20px 0;
-// `;
+const ButtonWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 1px solid ${colors.NEUE_STROKE_GREY};
+    margin: 20px 0;
+`;
 
 const Confirmed = styled.div`
     display: flex;
@@ -122,20 +129,31 @@ type AccountSelectOption = {
     account?: Account;
 };
 
+type FormState = {
+    address?: string;
+    extraField?: string;
+};
+
 const VerifyAddressComponent = () => {
     const {
         device,
-        // verifyAddress,
+        verifyAddress,
+        doTrade,
         selectedQuote,
         addressVerified,
         suiteBuyAccounts,
     } = useCoinmarketExchangeOffersContext();
+    const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
+    const [menuIsOpen, setMenuIsOpen] = useState<boolean | undefined>(undefined);
+    const dispatch = useDispatch<Dispatch>();
+    const { register, watch, errors, setValue, formState } = useForm<FormState>({
+        mode: 'onChange',
+    });
 
-    // const { path, address } = getAccountInfo(account);
-
-    // if (!path || !address || !selectedQuote) {
-    //     return null;
-    // }
+    const typedRegister: (rules?: TypedValidationRules) => (ref: any) => void = useCallback(
+        <T,>(rules?: T) => register(rules),
+        [register],
+    );
 
     const selectAccountOptions: AccountSelectOption[] = [];
 
@@ -147,15 +165,49 @@ const VerifyAddressComponent = () => {
     }
     selectAccountOptions.push({ type: 'NON_SUITE' });
 
-    const [selectedAccountOption, setSelectedAccountOption] = useState<
-        AccountSelectOption | undefined
-    >(selectAccountOptions.length === 1 ? selectAccountOptions[0] : undefined);
-
-    const onChangeAccount = (selected: AccountSelectOption) => {
-        setSelectedAccountOption(selected);
+    const selectAccountOption = (option: AccountSelectOption) => {
+        setSelectedAccountOption(option);
+        if (option.account) {
+            const { address } = getUnusedAddressFromAccount(option.account);
+            setValue('address', address, { shouldValidate: true });
+        }
     };
 
-    console.log('VerifyAddressComponent', selectedAccountOption);
+    const onChangeAccount = (account: AccountSelectOption) => {
+        if (account.type === 'ADD_SUITE') {
+            if (device) {
+                setMenuIsOpen(true);
+                dispatch(
+                    modalActions.openModal({
+                        type: 'add-account',
+                        device: device!,
+                        symbol: selectedQuote?.receive?.toLowerCase() as Account['symbol'],
+                        noRedirect: true,
+                    }),
+                );
+            }
+        } else {
+            selectAccountOption(account);
+            setMenuIsOpen(undefined);
+        }
+    };
+
+    // preselect the account after everything is loaded
+    useTimeoutFn(() => {
+        if (selectAccountOptions.length > 0 && selectAccountOptions[0].type !== 'ADD_SUITE') {
+            selectAccountOption(selectAccountOptions[0]);
+        }
+    }, 100);
+
+    const { address, extraField } = watch();
+
+    const extraFieldDescription = selectedQuote?.extraFieldDescription
+        ? {
+              extraFieldName: selectedQuote?.extraFieldDescription?.name,
+              extraFieldDescription: selectedQuote?.extraFieldDescription?.description,
+              toCurrency: selectedQuote?.receive,
+          }
+        : {};
 
     return (
         <Wrapper>
@@ -259,6 +311,7 @@ const VerifyAddressComponent = () => {
                             values={{ symbol: selectedQuote?.receive }}
                         />
                     }
+                    menuIsOpen={menuIsOpen}
                 />
 
                 <Input
@@ -268,10 +321,26 @@ const VerifyAddressComponent = () => {
                             <StyledQuestionTooltip tooltip="TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP" />
                         </Label>
                     }
-                    // value={address}
-                    readOnly
+                    name="address"
+                    innerRef={typedRegister({
+                        required: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
+                        validate: value => {
+                            if (
+                                selectedAccountOption?.type === 'NON_SUITE' &&
+                                selectedQuote?.receive
+                            ) {
+                                if (!addressValidator.validate(value, selectedQuote?.receive)) {
+                                    return 'TR_EXCHANGE_RECEIVING_ADDRESS_INVALID';
+                                }
+                            }
+                        },
+                    })}
+                    readOnly={selectedAccountOption?.type !== 'NON_SUITE'}
+                    state={errors.address ? 'error' : undefined}
+                    bottomText={<InputError error={errors.address} />}
                 />
-                {addressVerified && (
+
+                {addressVerified && addressVerified === address && (
                     <Confirmed>
                         {device && (
                             <StyledDeviceImage
@@ -279,22 +348,90 @@ const VerifyAddressComponent = () => {
                                 trezorModel={device.features?.major_version === 1 ? 1 : 2}
                             />
                         )}
-                        <Translation id="TR_BUY_CONFIRMED_ON_TREZOR" />
+                        <Translation id="TR_EXCHANGE_CONFIRMED_ON_TREZOR" />
                     </Confirmed>
                 )}
+
+                {selectedQuote?.extraFieldDescription && (
+                    <Input
+                        label={
+                            <Label>
+                                <Translation
+                                    id="TR_EXCHANGE_EXTRA_FIELD"
+                                    values={extraFieldDescription}
+                                />
+                                <StyledQuestionTooltip
+                                    tooltip={
+                                        <Translation
+                                            id="TR_EXCHANGE_EXTRA_FIELD_QUESTION_TOOLTIP"
+                                            values={extraFieldDescription}
+                                        />
+                                    }
+                                />
+                            </Label>
+                        }
+                        name="extraField"
+                        innerRef={typedRegister({
+                            required: (
+                                <Translation
+                                    id="TR_EXCHANGE_EXTRA_FIELD_REQUIRED"
+                                    values={extraFieldDescription}
+                                />
+                            ),
+                            validate: value => {
+                                let valid = true;
+                                if (selectedQuote?.extraFieldDescription?.type === 'hex') {
+                                    valid = isHexValid(value);
+                                } else if (
+                                    selectedQuote?.extraFieldDescription?.type === 'number'
+                                ) {
+                                    valid = isInteger(value);
+                                }
+                                if (!valid) {
+                                    return (
+                                        <Translation
+                                            id="TR_EXCHANGE_EXTRA_FIELD_INVALID"
+                                            values={extraFieldDescription}
+                                        />
+                                    );
+                                }
+                            },
+                        })}
+                        state={errors.extraField ? 'error' : undefined}
+                        bottomText={<InputError error={errors.extraField} />}
+                    />
+                )}
             </CardContent>
-            {/* <ButtonWrapper>
-                {!addressVerified && (
-                    <Button onClick={() => verifyAddress(path, address)}>
-                        <Translation id="TR_BUY_CONFIRM_ON_TREZOR" />
-                    </Button>
-                )}
-                {addressVerified && (
-                    <Button onClick={() => goToPayment(address)}>
-                        <Translation id="TR_BUY_GO_TO_PAYMENT" />
-                    </Button>
-                )}
-            </ButtonWrapper> */}
+
+            {selectedAccountOption && (
+                <ButtonWrapper>
+                    {(!addressVerified || addressVerified !== address) &&
+                        selectedAccountOption.account && (
+                            <Button
+                                onClick={() => {
+                                    if (selectedAccountOption.account) {
+                                        verifyAddress(selectedAccountOption.account, true);
+                                    }
+                                }}
+                            >
+                                <Translation id="TR_EXCHANGE_CONFIRM_ON_TREZOR" />
+                            </Button>
+                        )}
+                    {((addressVerified && addressVerified === address) ||
+                        selectedAccountOption?.type === 'NON_SUITE') && (
+                        <Button
+                            onClick={() => {
+                                if (address) {
+                                    doTrade(address, extraField);
+                                }
+                            }}
+                            isDisabled={!formState.isValid}
+                        >
+                            <Translation id="TR_EXCHANGE_GO_TO_PAYMENT" />
+                        </Button>
+                    )}
+                </ButtonWrapper>
+            )}
         </Wrapper>
     );
 };

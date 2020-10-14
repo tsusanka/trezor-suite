@@ -137,6 +137,8 @@ const getUserContextModal = (props: Props) => {
             return (
                 <AddAccount
                     device={payload.device as AcquiredDevice}
+                    symbol={payload.symbol}
+                    noRedirect={payload.noRedirect}
                     onCancel={modalActions.onCancel}
                 />
             );
