@@ -1,16 +1,17 @@
 import React, { useMemo, useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import invityAPI from '@suite-services/invityAPI';
 import { LayoutContext, Translation } from '@suite-components';
 import { CoinmarketTopPanel, CoinmarketFooter } from '@wallet-components';
-import { variables, Icon, colors } from '@trezor/components';
-import { useCoinmarketExchangeOffersContext } from '@suite/hooks/wallet/useCoinmarketExchangeOffers';
+import { variables, Icon, colors, CoinLogo } from '@trezor/components';
+import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 
 import List from './List';
 import SelectedOffer from './SelectedOffer';
 import { differenceInSeconds } from 'date-fns';
 
 const Wrapper = styled.div`
-    padding: 16px 32px 32px 32px;
+    padding: 0 32px 32px 32px;
 
     @media screen and (max-width: ${variables.SCREEN_SIZE.LG}) {
         padding: 16px;
@@ -27,12 +28,13 @@ const NoQuotes = styled.div`
 `;
 
 const Header = styled.div`
-    margin: 36px 0 24px 0;
+    margin: 18px 0 24px 0;
 `;
 
 const SummaryRow = styled.div`
     display: flex;
     align-items: center;
+    justify-content: space-between;
     font-size: ${variables.FONT_SIZE.H2};
     text-transform: uppercase;
 `;
@@ -49,11 +51,14 @@ const StyledIcon = styled(Icon)`
 
 const Left = styled.div`
     display: flex;
+    align-items: center;
 `;
 
 const Right = styled.div`
     display: flex;
     justify-self: flex-end;
+    align-items: center;
+    font-size: ${variables.FONT_SIZE.SMALL};
 `;
 
 const RefreshLabel = styled.div`
@@ -66,12 +71,22 @@ const RefreshTime = styled.div`
     text-align: right;
 `;
 
+const StyledCoinLogo = styled(CoinLogo)`
+    padding-left: 10px;
+`;
+
+const InvityCoinLogo = styled.img`
+    height: 18px;
+    padding-right: 10px;
+`;
+
 const Offers = () => {
     const {
         fixedQuotes,
         floatQuotes,
         quotesRequest,
         selectedQuote,
+        account,
         lastFetchDate,
         REFETCH_INTERVAL,
     } = useCoinmarketExchangeOffersContext();
@@ -103,7 +118,13 @@ const Offers = () => {
                         <SummaryRow>
                             <Left>
                                 <Text>{`${quotesRequest.sendStringAmount} ${quotesRequest.send}`}</Text>
+                                <StyledCoinLogo size={21} symbol={account.symbol} />
                                 <StyledIcon icon="ARROW_RIGHT" />
+                                <InvityCoinLogo
+                                    src={`${
+                                        invityAPI.server
+                                    }/images/coins/${quotesRequest.receive.toUpperCase()}.svg`}
+                                />
                                 <Text>{quotesRequest.receive}</Text>
                             </Left>
                             <Right>

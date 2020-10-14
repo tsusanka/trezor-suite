@@ -113,8 +113,6 @@ interface Props {
 
 const Quote = ({ className, quote }: Props) => {
     const { selectQuote, exchangeInfo } = useCoinmarketExchangeOffersContext();
-    // TODO - tags are not yet fully supported by the API server
-    // in the future will be taken from quote.tags, will need some algorithm to evaluate them and show only one
     const hasTag = false;
     const { exchange, error, receive, receiveStringAmount } = quote;
 

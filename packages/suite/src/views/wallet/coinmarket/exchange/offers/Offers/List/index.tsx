@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { colors } from '@trezor/components';
+import { colors, variables } from '@trezor/components';
 import Quote from './Quote';
 import { ExchangeTrade } from 'invity-api';
 import { QuestionTooltip, Translation } from '@suite-components';
@@ -16,6 +16,10 @@ const StyledQuote = styled(Quote)`
 const SummaryRow = styled.div`
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    color: ${colors.NEUE_TYPE_DARK_GREY};
+    font-size: ${variables.FONT_SIZE.NORMAL};
+    font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
     padding: 10px 0;
 `;
 
@@ -48,6 +52,12 @@ const StyledQuestionTooltip = styled(QuestionTooltip)`
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
 `;
 
+const RatesRow = styled.div`
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+`;
+
 interface Props {
     quotes?: ExchangeTrade[];
     isFixed?: boolean;
@@ -65,15 +75,15 @@ const List = ({ quotes, isFixed }: Props) => {
             <SummaryRow>
                 <Left>
                     {isFixed ? (
-                        <>
+                        <RatesRow>
                             <Translation id="TR_EXCHANGE_FIXED_OFFERS" />
                             <StyledQuestionTooltip tooltip="TR_EXCHANGE_FIXED_OFFERS_INFO" />
-                        </>
+                        </RatesRow>
                     ) : (
-                        <>
+                        <RatesRow>
                             <Translation id="TR_EXCHANGE_FLOAT_OFFERS" />
                             <StyledQuestionTooltip tooltip="TR_EXCHANGE_FLOAT_OFFERS_INFO" />
-                        </>
+                        </RatesRow>
                     )}
                 </Left>
                 <Right>
