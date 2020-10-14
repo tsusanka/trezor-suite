@@ -125,7 +125,7 @@ export const useOffers = (props: Props) => {
         setSuiteBuyAccounts(undefined);
     }, [accounts, device, selectedQuote]);
 
-    const doTrade = async (_address: string) => {
+    const doTrade = async (_address: string, _extraField?: string) => {
         // if (!selectedQuote) return;
         // const quote = { ...selectedQuote, receiveAddress: address };
         // const response = await invityAPI.doExchangeTrade({

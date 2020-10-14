@@ -303,6 +303,23 @@ const definedMessages = defineMessages({
         id: 'TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP',
         defaultMessage: 'TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP',
     },
+    TR_EXCHANGE_EXTRA_FIELD: {
+        defaultMessage: '{extraFieldName}',
+        id: 'TR_EXCHANGE_EXTRA_FIELD',
+    },
+    TR_EXCHANGE_EXTRA_FIELD_REQUIRED: {
+        defaultMessage: '{extraFieldName} is required',
+        id: 'TR_EXCHANGE_EXTRA_FIELD_REQUIRED',
+    },
+    TR_EXCHANGE_EXTRA_FIELD_INVALID: {
+        defaultMessage: '{extraFieldName} is invalid',
+        id: 'TR_EXCHANGE_EXTRA_FIELD_INVALID',
+    },
+    TR_EXCHANGE_EXTRA_FIELD_QUESTION_TOOLTIP: {
+        defaultMessage:
+            '{extraFieldName} is another way to identify the transaction you\'ll receive; it helps the exchange make sure the right deposit goes to the right account. Some currencies also use the terms "memo", "message", or "payment ID". {extraFieldDescription}',
+        id: 'TR_EXCHANGE_EXTRA_FIELD_QUESTION_TOOLTIP',
+    },
     TR_EXCHANGE_CREATE_SUITE_ACCOUNT: {
         defaultMessage: 'Create a new {symbol} Account',
         id: 'TR_EXCHANGE_CREATE_SUITE_ACCOUNT',

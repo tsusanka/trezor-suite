@@ -28,6 +28,7 @@ import { useTimeoutFn } from 'react-use';
 import { useForm } from 'react-hook-form';
 import { TypedValidationRules } from '@wallet-types/form';
 import addressValidator from 'trezor-address-validator';
+import { isHexValid, isInteger } from '@wallet-utils/validation';
 
 const Wrapper = styled.div`
     display: flex;
@@ -130,6 +131,7 @@ type AccountSelectOption = {
 
 type FormState = {
     address?: string;
+    extraField?: string;
 };
 
 const VerifyAddressComponent = () => {
@@ -197,7 +199,15 @@ const VerifyAddressComponent = () => {
         }
     }, 100);
 
-    const address = watch('address');
+    const { address, extraField } = watch();
+
+    const extraFieldDescription = selectedQuote?.extraFieldDescription
+        ? {
+              extraFieldName: selectedQuote?.extraFieldDescription?.name,
+              extraFieldDescription: selectedQuote?.extraFieldDescription?.description,
+              toCurrency: selectedQuote?.receive,
+          }
+        : {};
 
     return (
         <Wrapper>
@@ -329,6 +339,7 @@ const VerifyAddressComponent = () => {
                     state={errors.address ? 'error' : undefined}
                     bottomText={<InputError error={errors.address} />}
                 />
+
                 {addressVerified && addressVerified === address && (
                     <Confirmed>
                         {device && (
@@ -340,7 +351,58 @@ const VerifyAddressComponent = () => {
                         <Translation id="TR_EXCHANGE_CONFIRMED_ON_TREZOR" />
                     </Confirmed>
                 )}
+
+                {selectedQuote?.extraFieldDescription && (
+                    <Input
+                        label={
+                            <Label>
+                                <Translation
+                                    id="TR_EXCHANGE_EXTRA_FIELD"
+                                    values={extraFieldDescription}
+                                />
+                                <StyledQuestionTooltip
+                                    tooltip={
+                                        <Translation
+                                            id="TR_EXCHANGE_EXTRA_FIELD_QUESTION_TOOLTIP"
+                                            values={extraFieldDescription}
+                                        />
+                                    }
+                                />
+                            </Label>
+                        }
+                        name="extraField"
+                        innerRef={typedRegister({
+                            required: (
+                                <Translation
+                                    id="TR_EXCHANGE_EXTRA_FIELD_REQUIRED"
+                                    values={extraFieldDescription}
+                                />
+                            ),
+                            validate: value => {
+                                let valid = true;
+                                if (selectedQuote?.extraFieldDescription?.type === 'hex') {
+                                    valid = isHexValid(value);
+                                } else if (
+                                    selectedQuote?.extraFieldDescription?.type === 'number'
+                                ) {
+                                    valid = isInteger(value);
+                                }
+                                if (!valid) {
+                                    return (
+                                        <Translation
+                                            id="TR_EXCHANGE_EXTRA_FIELD_INVALID"
+                                            values={extraFieldDescription}
+                                        />
+                                    );
+                                }
+                            },
+                        })}
+                        state={errors.extraField ? 'error' : undefined}
+                        bottomText={<InputError error={errors.extraField} />}
+                    />
+                )}
             </CardContent>
+
             {selectedAccountOption && (
                 <ButtonWrapper>
                     {(!addressVerified || addressVerified !== address) &&
@@ -360,7 +422,7 @@ const VerifyAddressComponent = () => {
                         <Button
                             onClick={() => {
                                 if (address) {
-                                    doTrade(address);
+                                    doTrade(address, extraField);
                                 }
                             }}
                             isDisabled={!formState.isValid}
