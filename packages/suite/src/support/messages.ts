@@ -279,6 +279,14 @@ const definedMessages = defineMessages({
         defaultMessage: ' Receiving Account',
         id: 'TR_EXCHANGE_RECEIVING_ACCOUNT',
     },
+    TR_EXCHANGE_VERIFY_ADDRESS_STEP: {
+        defaultMessage: 'Receive Address',
+        id: 'TR_EXCHANGE_VERIFY_ADDRESS_STEP',
+    },
+    TR_EXCHANGE_CONFIRM_SEND_STEP: {
+        defaultMessage: 'Confirm & Send',
+        id: 'TR_EXCHANGE_CONFIRM_SEND_STEP',
+    },
     TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP: {
         id: 'TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP',
         defaultMessage: 'TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP',

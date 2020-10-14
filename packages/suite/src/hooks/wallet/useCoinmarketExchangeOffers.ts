@@ -8,9 +8,10 @@ import * as routerActions from '@suite-actions/routerActions';
 import { Props, ContextValues, ExchangeStep } from '@wallet-types/coinmarketExchangeOffers';
 import { useSelector } from 'react-redux';
 import { AppState } from '@suite/types/suite';
-// import * as notificationActions from '@suite-actions/notificationActions';
+import * as notificationActions from '@suite-actions/notificationActions';
 import { splitToFixedFloatQuotes } from '@wallet-utils/coinmarket/exchangeUtils';
 import networks from '@wallet-config/networks';
+import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
 
 export const useOffers = (props: Props) => {
     const REFETCH_INTERVAL = 30000;
@@ -33,15 +34,11 @@ export const useOffers = (props: Props) => {
     const [lastFetchDate, setLastFetchDate] = useState(new Date());
     const { goto } = useActions({ goto: routerActions.goto });
     const { verifyAddress } = useActions({ verifyAddress: coinmarketCommonActions.verifyAddress });
-    const {
-        saveTrade,
-        openCoinmarketExchangeConfirmModal,
-        // addNotification,
-    } = useActions({
+    const { saveTrade, openCoinmarketExchangeConfirmModal, addNotification } = useActions({
         saveTrade: coinmarketExchangeActions.saveTrade,
         openCoinmarketExchangeConfirmModal:
             coinmarketExchangeActions.openCoinmarketExchangeConfirmModal,
-        // addNotification: notificationActions.addToast,
+        addNotification: notificationActions.addToast,
     });
 
     const invityAPIUrl = useSelector<
@@ -98,7 +95,7 @@ export const useOffers = (props: Props) => {
     };
 
     useEffect(() => {
-        if (selectedQuote) {
+        if (selectedQuote && exchangeStep === 'RECEIVING_ADDRESS') {
             const buySymbol = selectedQuote.receive?.toLowerCase();
             const unavailableCapabilities =
                 device?.features && device?.unavailableCapabilities
@@ -123,34 +120,34 @@ export const useOffers = (props: Props) => {
             }
         }
         setSuiteBuyAccounts(undefined);
-    }, [accounts, device, selectedQuote]);
+    }, [accounts, device, exchangeStep, selectedQuote]);
 
-    const doTrade = async (_address: string, _extraField?: string) => {
-        // if (!selectedQuote) return;
-        // const quote = { ...selectedQuote, receiveAddress: address };
-        // const response = await invityAPI.doExchangeTrade({
-        //     trade: quote,
-        //     returnUrl: createTxLink(selectedQuote, account),
-        // });
-        // if (!response || !response.trade || !response.trade.paymentId) {
-        //     console.log('invalid response', response);
-        //     addNotification({
-        //         type: 'error',
-        //         error: 'No response from the server',
-        //     });
-        // } else if (response.trade.error) {
-        //     console.log('response error', response.trade.error);
-        //     addNotification({
-        //         type: 'error',
-        //         error: response.trade.error,
-        //     });
-        // } else {
-        //     await saveTrade(response.trade, account, new Date().toISOString());
-        //     // eslint-disable-next-line no-lonely-if
-        //     if (response.tradeForm) {
-        //         submitRequestForm(response.tradeForm);
-        //     }
-        // }
+    const doTrade = async (address: string, extraField?: string) => {
+        const { address: refundAddress } = getUnusedAddressFromAccount(account);
+        if (!selectedQuote || !refundAddress) return;
+        const response = await invityAPI.doExchangeTrade({
+            trade: selectedQuote,
+            receiveAddress: address,
+            refundAddress,
+            extraField,
+        });
+        if (!response) {
+            console.log('invalid response', response);
+            addNotification({
+                type: 'error',
+                error: 'No response from the server',
+            });
+        } else if (response.error || !response.status || !response.orderId) {
+            console.log('response error', response.error);
+            addNotification({
+                type: 'error',
+                error: response.error || 'Invalid response from the server',
+            });
+        } else {
+            // await saveTrade(response, account, new Date().toISOString());
+            setExchangeStep('SEND_TRANSACTION');
+            setSelectedQuote(response);
+        }
     };
 
     return {
