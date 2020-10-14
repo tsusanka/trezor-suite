@@ -26,13 +26,8 @@ const Wrapper = styled.div`
     flex-direction: column;
 `;
 
-const OffersIndex = (props: Props) => {
+const OffersIndexLoaded = (props: Props) => {
     const { selectedAccount } = props;
-    if (props.selectedAccount.status !== 'loaded') {
-        return <WalletLayout title="Coinmarket | exchange" account={selectedAccount} />;
-    }
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const coinmarketOffersValues = useOffers({ ...props, selectedAccount });
 
     return (
@@ -44,5 +39,12 @@ const OffersIndex = (props: Props) => {
     );
 };
 
-// @ts-ignore
+const OffersIndex = (props: ComponentProps) => {
+    const { selectedAccount } = props;
+    if (selectedAccount.status !== 'loaded') {
+        return <WalletLayout title="Coinmarket | exchange" account={selectedAccount} />;
+    }
+    return <OffersIndexLoaded {...props} selectedAccount={selectedAccount} />;
+};
+
 export default connect(mapStateToProps)(OffersIndex);

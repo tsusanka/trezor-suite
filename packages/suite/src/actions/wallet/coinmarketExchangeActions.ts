@@ -1,5 +1,4 @@
 import { Account } from '@wallet-types';
-import { PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 import { FormState, ExchangeFormContextValues } from '@wallet-types/coinmarketExchangeForm';
 import * as exchangeFormBitcoinActions from './exchange/exchangeFormBitcoinActions';
 import * as exchangeFormEthereumActions from './exchange/exchangeFormEthereumActions';
