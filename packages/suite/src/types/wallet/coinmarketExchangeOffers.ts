@@ -34,7 +34,7 @@ export type ContextValues = {
     exchangeStep: ExchangeStep;
     setExchangeStep: (step: ExchangeStep) => void;
     selectQuote: (quote: ExchangeTrade) => void;
-    verifyAddress: (path: string, address: string, inExchange: boolean) => Promise<void>;
+    verifyAddress: (account: Account, inExchange: boolean) => Promise<void>;
     saveTrade: (exchangeTrade: ExchangeTrade, account: Account, date: string) => Promise<void>;
     doTrade: (address: string) => void;
 };

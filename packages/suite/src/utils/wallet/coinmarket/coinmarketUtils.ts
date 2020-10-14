@@ -22,7 +22,7 @@ export function formatCryptoAmount(amount: number, decimals = 8): string {
     return amount.toFixed(digits);
 }
 
-export const getAccountInfo = (account: Account) => {
+export const getUnusedAddressFromAccount = (account: Account) => {
     switch (account.networkType) {
         case 'bitcoin': {
             const firstUnused = account.addresses?.unused[0];

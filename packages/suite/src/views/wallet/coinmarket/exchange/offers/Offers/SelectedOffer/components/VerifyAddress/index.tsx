@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { getAccountInfo } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
 import {
     FiatValue,
     QuestionTooltip,
@@ -144,7 +144,9 @@ const VerifyAddressComponent = () => {
     const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
     const [menuIsOpen, setMenuIsOpen] = useState<boolean | undefined>(undefined);
     const dispatch = useDispatch<Dispatch>();
-    const { register, watch, errors, setValue } = useForm<FormState>({ mode: 'onChange' });
+    const { register, watch, errors, setValue, formState } = useForm<FormState>({
+        mode: 'onChange',
+    });
 
     const typedRegister: (rules?: TypedValidationRules) => (ref: any) => void = useCallback(
         <T,>(rules?: T) => register(rules),
@@ -164,7 +166,7 @@ const VerifyAddressComponent = () => {
     const selectAccountOption = (option: AccountSelectOption) => {
         setSelectedAccountOption(option);
         if (option.account) {
-            const { address } = getAccountInfo(option.account);
+            const { address } = getUnusedAddressFromAccount(option.account);
             setValue('address', address, { shouldValidate: true });
         }
     };
@@ -343,13 +345,7 @@ const VerifyAddressComponent = () => {
                         <Button
                             onClick={() => {
                                 if (selectedAccountOption.account) {
-                                    const { path, address } = getAccountInfo(
-                                        selectedAccountOption.account,
-                                    );
-                                    console.log('verify', path, address);
-                                    if (path && address) {
-                                        verifyAddress(path, address, true);
-                                    }
+                                    verifyAddress(selectedAccountOption.account, true);
                                 }
                             }}
                         >
@@ -364,6 +360,7 @@ const VerifyAddressComponent = () => {
                                     doTrade(address);
                                 }
                             }}
+                            isDisabled={!formState.isValid}
                         >
                             <Translation id="TR_EXCHANGE_GO_TO_PAYMENT" />
                         </Button>

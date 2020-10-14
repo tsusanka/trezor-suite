@@ -3,14 +3,17 @@ import * as modalActions from '@suite-actions/modalActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { COINMARKET_BUY, COINMARKET_EXCHANGE } from './constants';
 import { Dispatch, GetState } from '@suite-types';
+import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { Account } from '@wallet-types';
 
-export const verifyAddress = (path: string, address: string, inExchange = false) => async (
+export const verifyAddress = (account: Account, inExchange = false) => async (
     dispatch: Dispatch,
     getState: GetState,
 ) => {
     const { device } = getState().suite;
-    const { account } = getState().wallet.selectedAccount;
     if (!device || !account) return;
+    const { path, address } = getUnusedAddressFromAccount(account);
+    if (!path || !address) return;
 
     const { networkType, symbol } = account;
     const { useEmptyPassphrase, connected, available } = device;
