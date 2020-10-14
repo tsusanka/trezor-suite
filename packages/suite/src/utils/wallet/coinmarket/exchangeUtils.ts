@@ -1,5 +1,5 @@
-import { ExchangeInfo } from '@suite/actions/wallet/coinmarketExchangeActions';
-import { AmountLimits } from '@suite/types/wallet/coinmarketExchangeForm';
+import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
+import { AmountLimits } from '@wallet-types/coinmarketExchangeForm';
 import { ExchangeTrade } from 'invity-api';
 import { symbolToInvityApiSymbol } from './coinmarketUtils';
 import { Account } from '@wallet-types';
@@ -106,25 +106,6 @@ export const getSellCryptoOptions = (account: Account, exchangeInfo?: ExchangeIn
             }
         });
     }
-
-    return options;
-};
-
-// TODO - split by supported and unsupported, sort and probably add coin name
-export const getBuyCryptoOptions = (account: Account, exchangeInfo?: ExchangeInfo) => {
-    const options: { value: string; label: string }[] = [];
-
-    if (!exchangeInfo) return null;
-
-    exchangeInfo.buySymbols.forEach(token => {
-        if (account.symbol !== token) {
-            const invityToken = symbolToInvityApiSymbol(token);
-            options.push({
-                label: token.toUpperCase(),
-                value: invityToken.toUpperCase(),
-            });
-        }
-    });
 
     return options;
 };
