@@ -1,4 +1,8 @@
 import { Account } from '@wallet-types';
+import { FormState, ExchangeFormContextValues } from '@wallet-types/coinmarketExchangeForm';
+import * as exchangeFormBitcoinActions from './exchange/exchangeFormBitcoinActions';
+import * as exchangeFormEthereumActions from './exchange/exchangeFormEthereumActions';
+import * as exchangeFormRippleActions from './exchange/exchangeFormRippleActions';
 import {
     ExchangeListResponse,
     ExchangeProviderInfo,
@@ -164,4 +168,20 @@ export const saveQuotes = (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTr
         fixedQuotes,
         floatQuotes,
     });
+};
+
+export const composeTransaction = (
+    formValues: FormState,
+    formState: ExchangeFormContextValues,
+) => async (dispatch: Dispatch) => {
+    const { account } = formState;
+    if (account.networkType === 'bitcoin') {
+        return dispatch(exchangeFormBitcoinActions.composeTransaction(formValues, formState));
+    }
+    if (account.networkType === 'ethereum') {
+        return dispatch(exchangeFormEthereumActions.composeTransaction(formValues, formState));
+    }
+    if (account.networkType === 'ripple') {
+        return dispatch(exchangeFormRippleActions.composeTransaction(formValues, formState));
+    }
 };

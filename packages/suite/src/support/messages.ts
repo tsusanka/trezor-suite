@@ -170,6 +170,14 @@ const definedMessages = defineMessages({
         defaultMessage: 'Loading',
         id: 'TR_EXCHANGE_LOADING',
     },
+    TR_EXCHANGE_NATIVE_COINS: {
+        defaultMessage: 'Native',
+        id: 'TR_EXCHANGE_NATIVE_COINS',
+    },
+    TR_EXCHANGE_OTHER_COINS: {
+        defaultMessage: 'Others',
+        id: 'TR_EXCHANGE_OTHER_COINS',
+    },
     TR_EXCHANGE_NO_PROVIDERS: {
         defaultMessage: 'No providers',
         id: 'TR_EXCHANGE_NO_PROVIDERS',
@@ -227,7 +235,7 @@ const definedMessages = defineMessages({
         id: 'TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO',
     },
     TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER: {
-        defaultMessage: 'TR_BUY_VALIDATION_ERROR_NO_NUMBER',
+        defaultMessage: 'Not a number',
         id: 'TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER',
     },
     TR_EXCHANGE_SHOW_OFFERS: {
@@ -446,8 +454,12 @@ const definedMessages = defineMessages({
         defaultMessage: 'Maximum is {maximum} {currency}',
         id: 'TR_BUY_VALIDATION_ERROR_MAXIMUM_FIAT',
     },
+    TR_NAV_EXCHANGE_SOON: {
+        defaultMessage: 'SOON',
+        id: 'TR_NAV_EXCHANGE_SOON',
+    },
     TR_BUY_VALIDATION_ERROR_NOT_NUMBER: {
-        defaultMessage: 'TR_BUY_VALIDATION_ERROR_NO_NUMBER',
+        defaultMessage: 'Not a number',
         id: 'TR_BUY_VALIDATION_ERROR_NO_NUMBER',
     },
     TR_BUY_BUY_AGAIN: {

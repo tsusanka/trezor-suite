@@ -1,10 +1,13 @@
 import { variables, Select } from '@trezor/components';
+import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import React from 'react';
+import { Account } from '@wallet-types';
+import { symbolToInvityApiSymbol } from '@wallet-utils/coinmarket/coinmarketUtils';
 import { Controller } from 'react-hook-form';
 import styled from 'styled-components';
+import { NETWORKS } from '@wallet-config';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
-import { getBuyCryptoOptions } from '@suite/utils/wallet/coinmarket/exchangeUtils';
 import invityAPI from '@suite-services/invityAPI';
 
 const Wrapper = styled.div`
@@ -29,6 +32,44 @@ const Option = styled.div`
     align-items: center;
 `;
 
+const buildOptions = (account: Account, exchangeInfo?: ExchangeInfo) => {
+    if (!exchangeInfo) return null;
+
+    interface Options {
+        label: React.ReactElement;
+        options: { label: string; value: string }[];
+    }
+
+    const native: Options = {
+        label: <Translation id="TR_EXCHANGE_NATIVE_COINS" />,
+        options: [],
+    };
+
+    const other: Options = {
+        label: <Translation id="TR_EXCHANGE_OTHER_COINS" />,
+        options: [],
+    };
+
+    exchangeInfo.buySymbols.forEach(token => {
+        if (account.symbol !== token) {
+            const invityToken = symbolToInvityApiSymbol(token);
+            if (NETWORKS.find(network => network.symbol === invityToken)) {
+                native.options.push({
+                    label: token.toUpperCase(),
+                    value: invityToken.toUpperCase(),
+                });
+            } else {
+                other.options.push({
+                    label: token.toUpperCase(),
+                    value: invityToken.toUpperCase(),
+                });
+            }
+        }
+    });
+
+    return [native, other];
+};
+
 const SellCryptoSelect = () => {
     const { control, setAmountLimits, account, exchangeInfo } = useCoinmarketExchangeFormContext();
 
@@ -48,7 +89,7 @@ const SellCryptoSelect = () => {
                             noTopLabel
                             value={value}
                             isClearable={false}
-                            options={getBuyCryptoOptions(account, exchangeInfo)}
+                            options={buildOptions(account, exchangeInfo)}
                             minWidth="70px"
                             formatOptionLabel={(option: any) => {
                                 return (

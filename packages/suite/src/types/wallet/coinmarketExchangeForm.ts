@@ -1,6 +1,6 @@
 import { AppState } from '@suite-types';
 import { UseFormMethods } from 'react-hook-form';
-import { Account, Network } from '@wallet-types';
+import { Account, Network, CoinFiatRates } from '@wallet-types';
 import { FeeLevel } from 'trezor-connect';
 import { ExchangeTrade, ExchangeTradeQuoteRequest } from 'invity-api';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
@@ -54,6 +54,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     saveQuotes: (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTrade[]) => Promise<void>;
     saveTrade: (exchangeTrade: ExchangeTrade, account: Account, date: string) => Promise<void>;
     amountLimits?: AmountLimits;
+    fiatRates?: CoinFiatRates;
     setAmountLimits: (limits?: AmountLimits) => void;
     quotesRequest: AppState['wallet']['coinmarket']['exchange']['quotesRequest'];
     isLoading: boolean;
