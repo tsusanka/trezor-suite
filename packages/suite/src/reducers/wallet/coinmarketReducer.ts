@@ -41,7 +41,7 @@ interface Buy {
         shouldSubmit?: boolean;
     };
     alternativeQuotes?: BuyTrade[];
-    addressVerified: boolean;
+    addressVerified?: string;
 }
 
 interface Exchange {
@@ -51,7 +51,7 @@ interface Exchange {
     fixedQuotes: ExchangeTrade[];
     floatQuotes: ExchangeTrade[];
     transactionId?: string;
-    addressVerified: boolean;
+    addressVerified?: string;
 }
 
 interface State {
@@ -74,7 +74,7 @@ export const initialState = {
         },
         quotes: [],
         alternativeQuotes: undefined,
-        addressVerified: false,
+        addressVerified: undefined,
     },
     exchange: {
         exchangeInfo: undefined,
@@ -83,7 +83,7 @@ export const initialState = {
         quotesRequest: undefined,
         fixedQuotes: [],
         floatQuotes: [],
-        addressVerified: false,
+        addressVerified: undefined,
     },
     trades: [],
 };
@@ -122,7 +122,7 @@ const coinmarketReducer = (
                 };
                 break;
             case COINMARKET_BUY.DISPOSE:
-                draft.buy.addressVerified = false;
+                draft.buy.addressVerified = undefined;
                 break;
             case COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO:
                 draft.exchange.exchangeInfo = action.exchangeInfo;

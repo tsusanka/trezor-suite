@@ -158,7 +158,7 @@ const VerifyAddressComponent = () => {
                     value={address}
                     readOnly
                 />
-                {addressVerified && (
+                {addressVerified && addressVerified === address && (
                     <Confirmed>
                         {device && (
                             <StyledDeviceImage
@@ -171,12 +171,12 @@ const VerifyAddressComponent = () => {
                 )}
             </CardContent>
             <ButtonWrapper>
-                {!addressVerified && (
+                {(!addressVerified || addressVerified !== address) && (
                     <Button onClick={() => verifyAddress(account)}>
                         <Translation id="TR_BUY_CONFIRM_ON_TREZOR" />
                     </Button>
                 )}
-                {addressVerified && (
+                {addressVerified && addressVerified === address && (
                     <Button onClick={() => goToPayment(address)}>
                         <Translation id="TR_BUY_GO_TO_PAYMENT" />
                     </Button>

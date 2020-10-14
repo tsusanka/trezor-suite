@@ -80,7 +80,7 @@ export const verifyAddress = (account: Account, inExchange = false) => async (
     if (response.success) {
         dispatch({
             type: inExchange ? COINMARKET_EXCHANGE.VERIFY_ADDRESS : COINMARKET_BUY.VERIFY_ADDRESS,
-            addressVerified: true,
+            addressVerified: address,
         });
     } else {
         // special case: device no-backup permissions not granted

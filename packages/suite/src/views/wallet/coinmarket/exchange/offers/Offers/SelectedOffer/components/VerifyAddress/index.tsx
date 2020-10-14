@@ -197,6 +197,8 @@ const VerifyAddressComponent = () => {
         }
     }, 100);
 
+    const address = watch('address');
+
     return (
         <Wrapper>
             <CardContent>
@@ -327,7 +329,7 @@ const VerifyAddressComponent = () => {
                     state={errors.address ? 'error' : undefined}
                     bottomText={<InputError error={errors.address} />}
                 />
-                {addressVerified && (
+                {addressVerified && addressVerified === address && (
                     <Confirmed>
                         {device && (
                             <StyledDeviceImage
@@ -341,21 +343,22 @@ const VerifyAddressComponent = () => {
             </CardContent>
             {selectedAccountOption && (
                 <ButtonWrapper>
-                    {!addressVerified && selectedAccountOption.account && (
+                    {(!addressVerified || addressVerified !== address) &&
+                        selectedAccountOption.account && (
+                            <Button
+                                onClick={() => {
+                                    if (selectedAccountOption.account) {
+                                        verifyAddress(selectedAccountOption.account, true);
+                                    }
+                                }}
+                            >
+                                <Translation id="TR_EXCHANGE_CONFIRM_ON_TREZOR" />
+                            </Button>
+                        )}
+                    {((addressVerified && addressVerified === address) ||
+                        selectedAccountOption?.type === 'NON_SUITE') && (
                         <Button
                             onClick={() => {
-                                if (selectedAccountOption.account) {
-                                    verifyAddress(selectedAccountOption.account, true);
-                                }
-                            }}
-                        >
-                            <Translation id="TR_EXCHANGE_CONFIRM_ON_TREZOR" />
-                        </Button>
-                    )}
-                    {(addressVerified || selectedAccountOption?.type === 'NON_SUITE') && (
-                        <Button
-                            onClick={() => {
-                                const address = watch('address');
                                 if (address) {
                                     doTrade(address);
                                 }
