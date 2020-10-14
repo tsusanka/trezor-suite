@@ -1,10 +1,10 @@
 import TrezorConnect, { UI, ButtonRequestMessage } from 'trezor-connect';
 import * as modalActions from '@suite-actions/modalActions';
 import * as notificationActions from '@suite-actions/notificationActions';
-import { COINMARKET_BUY } from './constants';
+import { COINMARKET_BUY, COINMARKET_EXCHANGE } from './constants';
 import { Dispatch, GetState } from '@suite-types';
 
-export const verifyAddress = (path: string, address: string) => async (
+export const verifyAddress = (path: string, address: string, inExchange = false) => async (
     dispatch: Dispatch,
     getState: GetState,
 ) => {
@@ -76,7 +76,7 @@ export const verifyAddress = (path: string, address: string) => async (
 
     if (response.success) {
         dispatch({
-            type: COINMARKET_BUY.VERIFY_ADDRESS,
+            type: inExchange ? COINMARKET_EXCHANGE.VERIFY_ADDRESS : COINMARKET_BUY.VERIFY_ADDRESS,
             addressVerified: true,
         });
     } else {

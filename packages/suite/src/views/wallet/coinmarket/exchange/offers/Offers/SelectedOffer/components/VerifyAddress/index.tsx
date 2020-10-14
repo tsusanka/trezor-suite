@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-// import { getAccountInfo } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { getAccountInfo } from '@wallet-utils/coinmarket/coinmarketUtils';
 import {
     FiatValue,
     QuestionTooltip,
@@ -8,13 +8,26 @@ import {
     HiddenPlaceholder,
     AccountLabeling,
 } from '@suite-components';
-import { Input, colors, variables, CoinLogo, DeviceImage, Select, Icon } from '@trezor/components';
+import {
+    Input,
+    colors,
+    variables,
+    CoinLogo,
+    DeviceImage,
+    Select,
+    Icon,
+    Button,
+} from '@trezor/components';
+import { InputError } from '@wallet-components';
 import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 import { Account } from '@wallet-types';
 import * as modalActions from '@suite-actions/modalActions';
 import { useDispatch } from 'react-redux';
 import { Dispatch } from '@suite-types';
 import { useTimeoutFn } from 'react-use';
+import { useForm } from 'react-hook-form';
+import { TypedValidationRules } from '@wallet-types/form';
+import addressValidator from 'trezor-address-validator';
 
 const Wrapper = styled.div`
     display: flex;
@@ -81,25 +94,14 @@ const AccountName = styled.div`
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
 `;
 
-// const FakeInput = styled.div`
-//     display: flex;
-//     margin-bottom: 20px;
-//     padding: 5px;
-//     min-height: 61px;
-//     align-items: center;
-//     border-radius: 4px;
-//     border: solid 2px ${colors.NEUE_STROKE_GREY};
-//     background: ${colors.WHITE};
-// `;
-
-// const ButtonWrapper = styled.div`
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     padding-top: 20px;
-//     border-top: 1px solid ${colors.NEUE_STROKE_GREY};
-//     margin: 20px 0;
-// `;
+const ButtonWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 1px solid ${colors.NEUE_STROKE_GREY};
+    margin: 20px 0;
+`;
 
 const Confirmed = styled.div`
     display: flex;
@@ -126,24 +128,28 @@ type AccountSelectOption = {
     account?: Account;
 };
 
+type FormState = {
+    address?: string;
+};
+
 const VerifyAddressComponent = () => {
     const {
         device,
-        // verifyAddress,
+        verifyAddress,
+        doTrade,
         selectedQuote,
         addressVerified,
         suiteBuyAccounts,
     } = useCoinmarketExchangeOffersContext();
     const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
     const [menuIsOpen, setMenuIsOpen] = useState<boolean | undefined>(undefined);
-
     const dispatch = useDispatch<Dispatch>();
+    const { register, watch, errors, setValue } = useForm<FormState>({ mode: 'onChange' });
 
-    // const { path, address } = getAccountInfo(account);
-
-    // if (!path || !address || !selectedQuote) {
-    //     return null;
-    // }
+    const typedRegister: (rules?: TypedValidationRules) => (ref: any) => void = useCallback(
+        <T,>(rules?: T) => register(rules),
+        [register],
+    );
 
     const selectAccountOptions: AccountSelectOption[] = [];
 
@@ -154,6 +160,14 @@ const VerifyAddressComponent = () => {
         selectAccountOptions.push({ type: 'ADD_SUITE' });
     }
     selectAccountOptions.push({ type: 'NON_SUITE' });
+
+    const selectAccountOption = (option: AccountSelectOption) => {
+        setSelectedAccountOption(option);
+        if (option.account) {
+            const { address } = getAccountInfo(option.account);
+            setValue('address', address, { shouldValidate: true });
+        }
+    };
 
     const onChangeAccount = (account: AccountSelectOption) => {
         if (account.type === 'ADD_SUITE') {
@@ -169,16 +183,15 @@ const VerifyAddressComponent = () => {
                 );
             }
         } else {
-            setSelectedAccountOption(account);
+            selectAccountOption(account);
             setMenuIsOpen(undefined);
         }
     };
 
     // preselect the account after everything is loaded
     useTimeoutFn(() => {
-        console.log('selectAccountOptions', selectAccountOptions);
         if (selectAccountOptions.length > 0 && selectAccountOptions[0].type !== 'ADD_SUITE') {
-            setSelectedAccountOption(selectAccountOptions[0]);
+            selectAccountOption(selectAccountOptions[0]);
         }
     }, 100);
 
@@ -294,8 +307,23 @@ const VerifyAddressComponent = () => {
                             <StyledQuestionTooltip tooltip="TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP" />
                         </Label>
                     }
-                    // value={address}
-                    readOnly
+                    name="address"
+                    innerRef={typedRegister({
+                        required: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
+                        validate: value => {
+                            if (
+                                selectedAccountOption?.type === 'NON_SUITE' &&
+                                selectedQuote?.receive
+                            ) {
+                                if (!addressValidator.validate(value, selectedQuote?.receive)) {
+                                    return 'TR_EXCHANGE_RECEIVING_ADDRESS_INVALID';
+                                }
+                            }
+                        },
+                    })}
+                    readOnly={selectedAccountOption?.type !== 'NON_SUITE'}
+                    state={errors.address ? 'error' : undefined}
+                    bottomText={<InputError error={errors.address} />}
                 />
                 {addressVerified && (
                     <Confirmed>
@@ -305,22 +333,43 @@ const VerifyAddressComponent = () => {
                                 trezorModel={device.features?.major_version === 1 ? 1 : 2}
                             />
                         )}
-                        <Translation id="TR_BUY_CONFIRMED_ON_TREZOR" />
+                        <Translation id="TR_EXCHANGE_CONFIRMED_ON_TREZOR" />
                     </Confirmed>
                 )}
             </CardContent>
-            {/* <ButtonWrapper>
-                {!addressVerified && (
-                    <Button onClick={() => verifyAddress(path, address)}>
-                        <Translation id="TR_BUY_CONFIRM_ON_TREZOR" />
-                    </Button>
-                )}
-                {addressVerified && (
-                    <Button onClick={() => goToPayment(address)}>
-                        <Translation id="TR_BUY_GO_TO_PAYMENT" />
-                    </Button>
-                )}
-            </ButtonWrapper> */}
+            {selectedAccountOption && (
+                <ButtonWrapper>
+                    {!addressVerified && selectedAccountOption.account && (
+                        <Button
+                            onClick={() => {
+                                if (selectedAccountOption.account) {
+                                    const { path, address } = getAccountInfo(
+                                        selectedAccountOption.account,
+                                    );
+                                    console.log('verify', path, address);
+                                    if (path && address) {
+                                        verifyAddress(path, address, true);
+                                    }
+                                }
+                            }}
+                        >
+                            <Translation id="TR_EXCHANGE_CONFIRM_ON_TREZOR" />
+                        </Button>
+                    )}
+                    {(addressVerified || selectedAccountOption?.type === 'NON_SUITE') && (
+                        <Button
+                            onClick={() => {
+                                const address = watch('address');
+                                if (address) {
+                                    doTrade(address);
+                                }
+                            }}
+                        >
+                            <Translation id="TR_EXCHANGE_GO_TO_PAYMENT" />
+                        </Button>
+                    )}
+                </ButtonWrapper>
+            )}
         </Wrapper>
     );
 };

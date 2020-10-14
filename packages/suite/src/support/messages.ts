@@ -291,6 +291,14 @@ const definedMessages = defineMessages({
         defaultMessage: 'Receive Address',
         id: 'TR_EXCHANGE_RECEIVING_ADDRESS',
     },
+    TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED: {
+        defaultMessage: 'Receiving address is required',
+        id: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
+    },
+    TR_EXCHANGE_RECEIVING_ADDRESS_INVALID: {
+        defaultMessage: 'Receiving address is invalid',
+        id: 'TR_EXCHANGE_RECEIVING_ADDRESS_INVALID',
+    },
     TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP: {
         id: 'TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP',
         defaultMessage: 'TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP',
@@ -302,6 +310,18 @@ const definedMessages = defineMessages({
     TR_EXCHANGE_USE_NON_SUITE_ACCOUNT: {
         defaultMessage: 'Use a non-suite {symbol} Account',
         id: 'TR_EXCHANGE_USE_NON_SUITE_ACCOUNT',
+    },
+    TR_EXCHANGE_CONFIRMED_ON_TREZOR: {
+        defaultMessage: 'Confirmed on trezor',
+        id: 'TR_EXCHANGE_CONFIRMED_ON_TREZOR',
+    },
+    TR_EXCHANGE_CONFIRM_ON_TREZOR: {
+        defaultMessage: 'Confirm on Trezor',
+        id: 'TR_EXCHANGE_CONFIRM_ON_TREZOR',
+    },
+    TR_EXCHANGE_GO_TO_PAYMENT: {
+        defaultMessage: 'Go to payment',
+        id: 'TR_EXCHANGE_GO_TO_PAYMENT',
     },
     TR_EXCHANGE_SELL: {
         defaultMessage: 'Exchange',
