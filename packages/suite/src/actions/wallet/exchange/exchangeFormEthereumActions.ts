@@ -1,6 +1,7 @@
 import TrezorConnect, { FeeLevel, TokenInfo } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
 import { toWei } from 'web3-utils';
+import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import {
     calculateTotal,
@@ -18,7 +19,7 @@ import {
     PrecomposedTransactionFinal,
     ExternalOutput,
 } from '@wallet-types/sendForm';
-import { FormState, ExchangeFormContextValues } from '@wallet-types/coinmarketExchangeForm';
+import { FormState } from '@wallet-types/coinmarketExchangeForm';
 import { Dispatch, GetState } from '@suite-types';
 
 const calculate = (
@@ -93,12 +94,9 @@ const calculate = (
     return payloadData;
 };
 
-export const composeTransaction = (
-    formValues: FormState,
-    formState: ExchangeFormContextValues,
-) => async () => {
-    const { account, network, feeInfo } = formState;
-    const composeOutputs = getExternalComposeOutput(formValues, account, network);
+export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async () => {
+    const { account, network, feeInfo } = composeTransactionData;
+    const composeOutputs = getExternalComposeOutput(composeTransactionData, account, network);
     if (!composeOutputs) return; // no valid Output
 
     const { output, tokenInfo, decimals } = composeOutputs;
@@ -131,11 +129,11 @@ export const composeTransaction = (
 
     const predefinedLevels = feeInfo.levels.filter(l => l.label !== 'custom');
     // in case when selectedFee is set to 'custom' construct this FeeLevel from values
-    if (formValues.selectedFee === 'custom') {
+    if (composeTransactionData.selectedFee === 'custom') {
         predefinedLevels.push({
             label: 'custom',
-            feePerUnit: formValues.feePerUnit,
-            feeLimit: formValues.feeLimit,
+            feePerUnit: composeTransactionData.feePerUnit,
+            feeLimit: composeTransactionData.feeLimit,
             blocks: -1,
         });
     }

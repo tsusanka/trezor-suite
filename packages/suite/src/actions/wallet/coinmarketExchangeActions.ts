@@ -1,5 +1,5 @@
-import { Account } from '@wallet-types';
-import { FormState, ExchangeFormContextValues } from '@wallet-types/coinmarketExchangeForm';
+import { Account, Network } from '@wallet-types';
+import { FeeLevel } from 'trezor-connect';
 import * as exchangeFormBitcoinActions from './exchange/exchangeFormBitcoinActions';
 import * as exchangeFormEthereumActions from './exchange/exchangeFormEthereumActions';
 import * as exchangeFormRippleActions from './exchange/exchangeFormRippleActions';
@@ -14,6 +14,7 @@ import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
 import { Dispatch } from '@suite-types';
 import * as modalActions from '@suite-actions/modalActions';
+import { FeeInfo } from '@wallet-types/sendForm';
 
 export interface ExchangeInfo {
     exchangeList?: ExchangeListResponse;
@@ -170,18 +171,26 @@ export const saveQuotes = (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTr
     });
 };
 
-export const composeTransaction = (
-    formValues: FormState,
-    formState: ExchangeFormContextValues,
-) => async (dispatch: Dispatch) => {
-    const { account } = formState;
+export interface ComposeTransactionData {
+    account: Account;
+    feeInfo: FeeInfo;
+    feePerUnit: string;
+    feeLimit: string;
+    network: Network;
+    selectedFee: FeeLevel['label'];
+}
+
+export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async (
+    dispatch: Dispatch,
+) => {
+    const { account } = composeTransactionData;
     if (account.networkType === 'bitcoin') {
-        return dispatch(exchangeFormBitcoinActions.composeTransaction(formValues, formState));
+        return dispatch(exchangeFormBitcoinActions.composeTransaction(composeTransactionData));
     }
     if (account.networkType === 'ethereum') {
-        return dispatch(exchangeFormEthereumActions.composeTransaction(formValues, formState));
+        return dispatch(exchangeFormEthereumActions.composeTransaction(composeTransactionData));
     }
     if (account.networkType === 'ripple') {
-        return dispatch(exchangeFormRippleActions.composeTransaction(formValues, formState));
+        return dispatch(exchangeFormRippleActions.composeTransaction(composeTransactionData));
     }
 };

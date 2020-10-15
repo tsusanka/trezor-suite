@@ -1,5 +1,6 @@
 import TrezorConnect, { FeeLevel, RipplePayment } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
+import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import {
     calculateTotal,
@@ -14,14 +15,13 @@ import {
     PrecomposedTransactionFinal,
     ExternalOutput,
 } from '@wallet-types/sendForm';
-import { FormState, ExchangeFormContextValues } from '@wallet-types/coinmarketExchangeForm';
+import { FormState } from '@wallet-types/coinmarketExchangeForm';
 import { Dispatch, GetState } from '@suite-types';
 
 const calculate = (
     availableBalance: string,
     output: ExternalOutput,
     feeLevel: FeeLevel,
-    requiredAmount?: BigNumber,
 ): PrecomposedTransaction => {
     const feeInSatoshi = feeLevel.feePerUnit;
 
@@ -40,14 +40,6 @@ const calculate = (
             type: 'error',
             error: 'AMOUNT_IS_NOT_ENOUGH',
             errorMessage: { id: 'AMOUNT_IS_NOT_ENOUGH' },
-        } as const;
-    }
-
-    if (requiredAmount && requiredAmount.gt(amount)) {
-        return {
-            type: 'error',
-            error: 'AMOUNT_IS_LESS_THAN_RESERVE',
-            // errorMessage declared later
         } as const;
     }
 
@@ -81,47 +73,27 @@ const calculate = (
     return payloadData;
 };
 
-export const composeTransaction = (
-    formValues: FormState,
-    formState: ExchangeFormContextValues,
-) => async () => {
-    const { account, network, feeInfo } = formState;
-    const composeOutputs = getExternalComposeOutput(formValues, account, network);
+export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async () => {
+    const { account, network, feeInfo } = composeTransactionData;
+    const composeOutputs = getExternalComposeOutput(composeTransactionData, account, network);
     if (!composeOutputs) return; // no valid Output
 
     const { output } = composeOutputs;
     const { availableBalance } = account;
-    const { address } = formValues.outputs[0];
-
     const predefinedLevels = feeInfo.levels.filter(l => l.label !== 'custom');
     // in case when selectedFee is set to 'custom' construct this FeeLevel from values
-    if (formValues.selectedFee === 'custom') {
+    if (composeTransactionData.selectedFee === 'custom') {
         predefinedLevels.push({
             label: 'custom',
-            feePerUnit: formValues.feePerUnit,
-            feeLimit: formValues.feeLimit,
+            feePerUnit: composeTransactionData.feePerUnit,
+            feeLimit: composeTransactionData.feeLimit,
             blocks: -1,
         });
     }
 
-    let requiredAmount: BigNumber | undefined;
-    // additional check if recipient address is empty
-    // it will set requiredAmount to recipient account reserve value
-    if (address) {
-        const accountResponse = await TrezorConnect.getAccountInfo({
-            descriptor: address,
-            coin: account.symbol,
-        });
-        if (accountResponse.success && accountResponse.payload.empty) {
-            requiredAmount = new BigNumber(accountResponse.payload.misc!.reserve!);
-        }
-    }
-
     // wrap response into PrecomposedLevels object where key is a FeeLevel label
     const wrappedResponse: PrecomposedLevels = {};
-    const response = predefinedLevels.map(level =>
-        calculate(availableBalance, output, level, requiredAmount),
-    );
+    const response = predefinedLevels.map(level => calculate(availableBalance, output, level));
     response.forEach((tx, index) => {
         const feeLabel = predefinedLevels[index].label as FeeLevel['label'];
         wrappedResponse[feeLabel] = tx;
@@ -141,7 +113,7 @@ export const composeTransaction = (
         }
 
         const customLevelsResponse = customLevels.map(level =>
-            calculate(availableBalance, output, level, requiredAmount),
+            calculate(availableBalance, output, level),
         );
 
         const customValid = customLevelsResponse.findIndex(r => r.type !== 'error');
@@ -156,14 +128,6 @@ export const composeTransaction = (
         const tx = wrappedResponse[key];
         if (tx.type !== 'error' && tx.max) {
             tx.max = formatNetworkAmount(tx.max, account.symbol);
-        }
-        if (tx.type === 'error' && tx.error === 'AMOUNT_IS_LESS_THAN_RESERVE' && requiredAmount) {
-            tx.errorMessage = {
-                id: 'AMOUNT_IS_LESS_THAN_RESERVE',
-                values: {
-                    reserve: formatNetworkAmount(requiredAmount.toString(), account.symbol),
-                },
-            };
         }
     });
 

@@ -1,5 +1,6 @@
 import TrezorConnect, { FeeLevel, SignTransaction } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
+import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { formatNetworkAmount } from '@wallet-utils/accountUtils';
 import { getBitcoinComposeOutputs } from '@wallet-utils/sendFormUtils';
@@ -8,7 +9,7 @@ import {
     BTC_RBF_SEQUENCE,
     BTC_LOCKTIME_SEQUENCE,
 } from '@wallet-constants/sendForm';
-import { FormState, ExchangeFormContextValues } from '@wallet-types/coinmarketExchangeForm';
+import { FormState } from '@wallet-types/coinmarketExchangeForm';
 import {
     PrecomposedLevels,
     PrecomposedTransaction,
@@ -16,22 +17,21 @@ import {
 } from '@wallet-types/sendForm';
 import { Dispatch, GetState } from '@suite-types';
 
-export const composeTransaction = (
-    formValues: FormState,
-    formState: ExchangeFormContextValues,
-) => async (dispatch: Dispatch) => {
-    const { account, feeInfo } = formState;
+export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async (
+    dispatch: Dispatch,
+) => {
+    const { account, feeInfo } = composeTransactionData;
     if (!account.addresses || !account.utxo) return;
 
-    const composeOutputs = getBitcoinComposeOutputs(formValues, account.symbol);
+    const composeOutputs = getBitcoinComposeOutputs(composeTransactionData, account.symbol);
     if (composeOutputs.length < 1) return;
 
     const predefinedLevels = feeInfo.levels.filter(l => l.label !== 'custom');
     // in case when selectedFee is set to 'custom' construct this FeeLevel from values
-    if (formValues.selectedFee === 'custom') {
+    if (composeTransactionData.selectedFee === 'custom') {
         predefinedLevels.push({
             label: 'custom',
-            feePerUnit: formValues.feePerUnit,
+            feePerUnit: composeTransactionData.feePerUnit,
             blocks: -1,
         });
     }
