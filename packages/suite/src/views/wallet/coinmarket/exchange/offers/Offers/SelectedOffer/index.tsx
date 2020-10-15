@@ -4,6 +4,7 @@ import { Card, colors, Icon, variables } from '@trezor/components';
 import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 import CoinmarketExchangeOfferInfo from '@wallet-components/CoinmarketExchangeOfferInfo';
 import VerifyAddress from './components/VerifyAddress';
+import SendTransaction from './components/SendTransaction';
 import { Translation } from '@suite-components';
 
 const Wrapper = styled.div`
@@ -67,6 +68,7 @@ const SelectedOffer = () => {
         selectedQuote,
         exchangeInfo,
         exchangeStep,
+        receiveAccount,
     } = useCoinmarketExchangeOffersContext();
     if (!selectedQuote) return null;
 
@@ -88,12 +90,14 @@ const SelectedOffer = () => {
                         </Step>
                     </Right>
                 </Header>
-                {exchangeStep === 'RECEIVING_ADDRESS' ? <VerifyAddress /> : null}
+                {exchangeStep === 'RECEIVING_ADDRESS' && <VerifyAddress />}
+                {exchangeStep === 'SEND_TRANSACTION' && <SendTransaction />}
             </StyledCard>
             <CoinmarketExchangeOfferInfo
                 selectedQuote={selectedQuote}
                 account={account}
                 exchangeInfo={exchangeInfo}
+                receiveAccount={receiveAccount}
             />
         </Wrapper>
     );

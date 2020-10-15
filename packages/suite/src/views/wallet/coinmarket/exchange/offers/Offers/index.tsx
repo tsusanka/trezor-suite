@@ -121,9 +121,7 @@ const Offers = () => {
                                 <StyledCoinLogo size={21} symbol={account.symbol} />
                                 <StyledIcon icon="ARROW_RIGHT" />
                                 <InvityCoinLogo
-                                    src={`${
-                                        invityAPI.server
-                                    }/images/coins/${quotesRequest.receive.toUpperCase()}.svg`}
+                                    src={`${invityAPI.server}/images/coins/${quotesRequest.receive}.svg`}
                                 />
                                 <Text>{quotesRequest.receive}</Text>
                             </Left>

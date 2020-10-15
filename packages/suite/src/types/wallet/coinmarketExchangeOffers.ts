@@ -35,6 +35,9 @@ export type ContextValues = {
     setExchangeStep: (step: ExchangeStep) => void;
     selectQuote: (quote: ExchangeTrade) => void;
     verifyAddress: (account: Account, inExchange: boolean) => Promise<void>;
+    receiveAccount?: Account;
+    setReceiveAccount: (account?: Account) => void;
     saveTrade: (exchangeTrade: ExchangeTrade, account: Account, date: string) => Promise<void>;
-    doTrade: (address: string, extraField?: string) => void;
+    confirmTrade: (address: string, extraField?: string) => void;
+    sendTransaction: () => void;
 };

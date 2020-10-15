@@ -36,10 +36,15 @@ const Wrapper = styled.div`
     margin-top: 10px;
 `;
 
+const Heading = styled.div`
+    color: ${colors.NEUE_TYPE_LIGHT_GREY};
+    padding: 16px 24px 0 24px;
+`;
+
 const CardContent = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    padding: 0 24px 0 24px;
 `;
 
 const LogoWrapper = styled.div`
@@ -74,7 +79,7 @@ const FiatWrapper = styled.div`
 `;
 
 const CustomLabel = styled(Label)`
-    padding-bottom: 12px;
+    padding: 12px 0;
 `;
 
 const LabelText = styled.div``;
@@ -124,6 +129,10 @@ const AccountType = styled.span`
     padding-left: 5px;
 `;
 
+const Row = styled.div`
+    margin: 12px 0;
+`;
+
 type AccountSelectOption = {
     type: 'SUITE' | 'ADD_SUITE' | 'NON_SUITE';
     account?: Account;
@@ -138,10 +147,11 @@ const VerifyAddressComponent = () => {
     const {
         device,
         verifyAddress,
-        doTrade,
+        confirmTrade,
         selectedQuote,
         addressVerified,
         suiteBuyAccounts,
+        setReceiveAccount,
     } = useCoinmarketExchangeOffersContext();
     const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
     const [menuIsOpen, setMenuIsOpen] = useState<boolean | undefined>(undefined);
@@ -167,6 +177,7 @@ const VerifyAddressComponent = () => {
 
     const selectAccountOption = (option: AccountSelectOption) => {
         setSelectedAccountOption(option);
+        setReceiveAccount(option.account);
         if (option.account) {
             const { address } = getUnusedAddressFromAccount(option.account);
             setValue('address', address, { shouldValidate: true });
@@ -211,198 +222,206 @@ const VerifyAddressComponent = () => {
 
     return (
         <Wrapper>
+            <Heading>
+                <Translation
+                    id="TR_EXCHANGE_RECEIVING_ADDRESS_INFO"
+                    values={{ symbol: selectedQuote?.receive }}
+                />
+            </Heading>
             <CardContent>
-                <CustomLabel>
-                    <LabelText>
-                        <Translation id="TR_EXCHANGE_RECEIVING_ACCOUNT" />
-                    </LabelText>
-                    <StyledQuestionTooltip tooltip="TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP" />
-                </CustomLabel>
-
-                <Select
-                    onChange={(selected: any) => {
-                        onChangeAccount(selected);
-                    }}
-                    noTopLabel
-                    value={selectedAccountOption}
-                    isClearable={false}
-                    options={selectAccountOptions}
-                    minWidth="70px"
-                    formatOptionLabel={(option: AccountSelectOption) => {
-                        switch (option.type) {
-                            case 'SUITE': {
-                                if (!option.account) return null;
-                                const { symbol, formattedBalance } = option.account;
-                                return (
-                                    <Option>
-                                        <LogoWrapper>
-                                            <CoinLogo size={25} symbol={symbol} />
-                                        </LogoWrapper>
-                                        <AccountWrapper>
-                                            <AccountName>
-                                                <AccountLabeling account={option.account} />
-                                                <AccountType>
-                                                    {option.account.accountType !== 'normal'
-                                                        ? option.account.accountType
-                                                        : ''}
-                                                </AccountType>
-                                            </AccountName>
-                                            <Amount>
-                                                <HiddenPlaceholder>
-                                                    {formattedBalance}
-                                                </HiddenPlaceholder>{' '}
-                                                <UpperCase>{symbol}</UpperCase> •
-                                                <FiatWrapper>
-                                                    <FiatValue
-                                                        amount={formattedBalance}
-                                                        symbol={symbol}
-                                                    />
-                                                </FiatWrapper>
-                                            </Amount>
-                                        </AccountWrapper>
-                                    </Option>
-                                );
-                            }
-                            case 'ADD_SUITE':
-                                return (
-                                    <Option>
-                                        <LogoWrapper>
-                                            <Icon
-                                                icon="PLUS"
-                                                size={25}
-                                                color={colors.NEUE_TYPE_DARK_GREY}
-                                            />
-                                        </LogoWrapper>
-                                        <AccountWrapper>
-                                            <Translation
-                                                id="TR_EXCHANGE_CREATE_SUITE_ACCOUNT"
-                                                values={{ symbol: selectedQuote?.receive }}
-                                            />
-                                        </AccountWrapper>
-                                    </Option>
-                                );
-                            case 'NON_SUITE':
-                                return (
-                                    <Option>
-                                        <LogoWrapper>
-                                            <Icon
-                                                icon="NON_SUITE"
-                                                size={25}
-                                                color={colors.NEUE_TYPE_DARK_GREY}
-                                            />
-                                        </LogoWrapper>
-                                        <AccountWrapper>
-                                            <Translation
-                                                id="TR_EXCHANGE_USE_NON_SUITE_ACCOUNT"
-                                                values={{ symbol: selectedQuote?.receive }}
-                                            />
-                                        </AccountWrapper>
-                                    </Option>
-                                );
-                            default:
-                                return null;
-                        }
-                    }}
-                    isDropdownVisible={selectAccountOptions.length === 1}
-                    isDisabled={selectAccountOptions.length === 1}
-                    placeholder={
-                        <Translation
-                            id="TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT"
-                            values={{ symbol: selectedQuote?.receive }}
-                        />
-                    }
-                    menuIsOpen={menuIsOpen}
-                />
-
-                <Input
-                    label={
-                        <Label>
-                            <Translation id="TR_EXCHANGE_RECEIVING_ADDRESS" />
-                            <StyledQuestionTooltip tooltip="TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP" />
-                        </Label>
-                    }
-                    name="address"
-                    innerRef={typedRegister({
-                        required: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
-                        validate: value => {
-                            if (
-                                selectedAccountOption?.type === 'NON_SUITE' &&
-                                selectedQuote?.receive
-                            ) {
-                                if (!addressValidator.validate(value, selectedQuote?.receive)) {
-                                    return 'TR_EXCHANGE_RECEIVING_ADDRESS_INVALID';
+                <Row>
+                    <CustomLabel>
+                        <LabelText>
+                            <Translation id="TR_EXCHANGE_RECEIVING_ACCOUNT" />
+                        </LabelText>
+                        <StyledQuestionTooltip tooltip="TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP" />
+                    </CustomLabel>
+                    <Select
+                        onChange={(selected: any) => {
+                            onChangeAccount(selected);
+                        }}
+                        noTopLabel
+                        value={selectedAccountOption}
+                        isClearable={false}
+                        options={selectAccountOptions}
+                        minWidth="70px"
+                        formatOptionLabel={(option: AccountSelectOption) => {
+                            switch (option.type) {
+                                case 'SUITE': {
+                                    if (!option.account) return null;
+                                    const { symbol, formattedBalance } = option.account;
+                                    return (
+                                        <Option>
+                                            <LogoWrapper>
+                                                <CoinLogo size={25} symbol={symbol} />
+                                            </LogoWrapper>
+                                            <AccountWrapper>
+                                                <AccountName>
+                                                    <AccountLabeling account={option.account} />
+                                                    <AccountType>
+                                                        {option.account.accountType !== 'normal'
+                                                            ? option.account.accountType
+                                                            : ''}
+                                                    </AccountType>
+                                                </AccountName>
+                                                <Amount>
+                                                    <HiddenPlaceholder>
+                                                        {formattedBalance}
+                                                    </HiddenPlaceholder>{' '}
+                                                    <UpperCase>{symbol}</UpperCase> •
+                                                    <FiatWrapper>
+                                                        <FiatValue
+                                                            amount={formattedBalance}
+                                                            symbol={symbol}
+                                                        />
+                                                    </FiatWrapper>
+                                                </Amount>
+                                            </AccountWrapper>
+                                        </Option>
+                                    );
                                 }
+                                case 'ADD_SUITE':
+                                    return (
+                                        <Option>
+                                            <LogoWrapper>
+                                                <Icon
+                                                    icon="PLUS"
+                                                    size={25}
+                                                    color={colors.NEUE_TYPE_DARK_GREY}
+                                                />
+                                            </LogoWrapper>
+                                            <AccountWrapper>
+                                                <Translation
+                                                    id="TR_EXCHANGE_CREATE_SUITE_ACCOUNT"
+                                                    values={{ symbol: selectedQuote?.receive }}
+                                                />
+                                            </AccountWrapper>
+                                        </Option>
+                                    );
+                                case 'NON_SUITE':
+                                    return (
+                                        <Option>
+                                            <LogoWrapper>
+                                                <Icon
+                                                    icon="NON_SUITE"
+                                                    size={25}
+                                                    color={colors.NEUE_TYPE_DARK_GREY}
+                                                />
+                                            </LogoWrapper>
+                                            <AccountWrapper>
+                                                <Translation
+                                                    id="TR_EXCHANGE_USE_NON_SUITE_ACCOUNT"
+                                                    values={{ symbol: selectedQuote?.receive }}
+                                                />
+                                            </AccountWrapper>
+                                        </Option>
+                                    );
+                                default:
+                                    return null;
                             }
-                        },
-                    })}
-                    readOnly={selectedAccountOption?.type !== 'NON_SUITE'}
-                    state={errors.address ? 'error' : undefined}
-                    bottomText={<InputError error={errors.address} />}
-                />
-
-                {addressVerified && addressVerified === address && (
-                    <Confirmed>
-                        {device && (
-                            <StyledDeviceImage
-                                height={25}
-                                trezorModel={device.features?.major_version === 1 ? 1 : 2}
+                        }}
+                        isDropdownVisible={selectAccountOptions.length === 1}
+                        isDisabled={selectAccountOptions.length === 1}
+                        placeholder={
+                            <Translation
+                                id="TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT"
+                                values={{ symbol: selectedQuote?.receive }}
                             />
-                        )}
-                        <Translation id="TR_EXCHANGE_CONFIRMED_ON_TREZOR" />
-                    </Confirmed>
-                )}
-
-                {selectedQuote?.extraFieldDescription && (
+                        }
+                        menuIsOpen={menuIsOpen}
+                    />
+                </Row>
+                <Row>
                     <Input
                         label={
                             <Label>
-                                <Translation
-                                    id="TR_EXCHANGE_EXTRA_FIELD"
-                                    values={extraFieldDescription}
-                                />
-                                <StyledQuestionTooltip
-                                    tooltip={
-                                        <Translation
-                                            id="TR_EXCHANGE_EXTRA_FIELD_QUESTION_TOOLTIP"
-                                            values={extraFieldDescription}
-                                        />
-                                    }
-                                />
+                                <Translation id="TR_EXCHANGE_RECEIVING_ADDRESS" />
+                                <StyledQuestionTooltip tooltip="TR_EXCHANGE_RECEIVE_ADDRESS_QUESTION_TOOLTIP" />
                             </Label>
                         }
-                        name="extraField"
+                        name="address"
                         innerRef={typedRegister({
-                            required: (
-                                <Translation
-                                    id="TR_EXCHANGE_EXTRA_FIELD_REQUIRED"
-                                    values={extraFieldDescription}
-                                />
-                            ),
+                            required: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
                             validate: value => {
-                                let valid = true;
-                                if (selectedQuote?.extraFieldDescription?.type === 'hex') {
-                                    valid = isHexValid(value);
-                                } else if (
-                                    selectedQuote?.extraFieldDescription?.type === 'number'
+                                if (
+                                    selectedAccountOption?.type === 'NON_SUITE' &&
+                                    selectedQuote?.receive
                                 ) {
-                                    valid = isInteger(value);
-                                }
-                                if (!valid) {
-                                    return (
-                                        <Translation
-                                            id="TR_EXCHANGE_EXTRA_FIELD_INVALID"
-                                            values={extraFieldDescription}
-                                        />
-                                    );
+                                    if (!addressValidator.validate(value, selectedQuote?.receive)) {
+                                        return 'TR_EXCHANGE_RECEIVING_ADDRESS_INVALID';
+                                    }
                                 }
                             },
                         })}
-                        state={errors.extraField ? 'error' : undefined}
-                        bottomText={<InputError error={errors.extraField} />}
+                        readOnly={selectedAccountOption?.type !== 'NON_SUITE'}
+                        state={errors.address ? 'error' : undefined}
+                        bottomText={<InputError error={errors.address} />}
                     />
+
+                    {addressVerified && addressVerified === address && (
+                        <Confirmed>
+                            {device && (
+                                <StyledDeviceImage
+                                    height={25}
+                                    trezorModel={device.features?.major_version === 1 ? 1 : 2}
+                                />
+                            )}
+                            <Translation id="TR_EXCHANGE_CONFIRMED_ON_TREZOR" />
+                        </Confirmed>
+                    )}
+                </Row>
+                {selectedQuote?.extraFieldDescription && (
+                    <Row>
+                        <Input
+                            label={
+                                <Label>
+                                    <Translation
+                                        id="TR_EXCHANGE_EXTRA_FIELD"
+                                        values={extraFieldDescription}
+                                    />
+                                    <StyledQuestionTooltip
+                                        tooltip={
+                                            <Translation
+                                                id="TR_EXCHANGE_EXTRA_FIELD_QUESTION_TOOLTIP"
+                                                values={extraFieldDescription}
+                                            />
+                                        }
+                                    />
+                                </Label>
+                            }
+                            name="extraField"
+                            innerRef={typedRegister({
+                                required: (
+                                    <Translation
+                                        id="TR_EXCHANGE_EXTRA_FIELD_REQUIRED"
+                                        values={extraFieldDescription}
+                                    />
+                                ),
+                                validate: value => {
+                                    let valid = true;
+                                    if (selectedQuote?.extraFieldDescription?.type === 'hex') {
+                                        valid = isHexValid(value);
+                                    } else if (
+                                        selectedQuote?.extraFieldDescription?.type === 'number'
+                                    ) {
+                                        valid = isInteger(value);
+                                    }
+                                    if (!valid) {
+                                        return (
+                                            <Translation
+                                                id="TR_EXCHANGE_EXTRA_FIELD_INVALID"
+                                                values={extraFieldDescription}
+                                            />
+                                        );
+                                    }
+                                },
+                            })}
+                            state={errors.extraField ? 'error' : undefined}
+                            bottomText={<InputError error={errors.extraField} />}
+                        />
+                    </Row>
                 )}
             </CardContent>
-
             {selectedAccountOption && (
                 <ButtonWrapper>
                     {(!addressVerified || addressVerified !== address) &&
@@ -422,7 +441,7 @@ const VerifyAddressComponent = () => {
                         <Button
                             onClick={() => {
                                 if (address) {
-                                    doTrade(address, extraField);
+                                    confirmTrade(address, extraField);
                                 }
                             }}
                             isDisabled={!formState.isValid}
