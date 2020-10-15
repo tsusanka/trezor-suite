@@ -1,4 +1,4 @@
-import { variables, Select } from '@trezor/components';
+import { variables, Select, colors } from '@trezor/components';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import React from 'react';
 import { Controller } from 'react-hook-form';
@@ -11,7 +11,7 @@ import invityAPI from '@suite-services/invityAPI';
 const Wrapper = styled.div`
     display: flex;
     flex: 1;
-    min-width: 160px;
+    min-width: 230px;
 
     @media screen and (max-width: ${variables.SCREEN_SIZE.LG}) {
         flex-direction: column;
@@ -30,12 +30,21 @@ const Option = styled.div`
     align-items: center;
 `;
 
+const OptionName = styled.div`
+    display: flex;
+    color: ${colors.NEUE_TYPE_LIGHT_GREY};
+`;
+
+const OptionLabel = styled.div`
+    min-width: 70px;
+`;
+
 const buildOptions = (exchangeCoinInfo?: ExchangeCoinInfo[], exchangeInfo?: ExchangeInfo) => {
     if (!exchangeInfo || !exchangeCoinInfo) return null;
 
     interface Options {
         label: React.ReactElement;
-        options: { label: string; value: string }[];
+        options: { label: string; value: string; name: string }[];
     }
 
     const popular: Options = {
@@ -58,22 +67,25 @@ const buildOptions = (exchangeCoinInfo?: ExchangeCoinInfo[], exchangeInfo?: Exch
 
         if (info.category === 'Popular currencies') {
             popular.options.push({
-                label: `${info.ticker.toUpperCase()} ${info.name}`,
+                label: info.ticker.toUpperCase(),
                 value: info.ticker.toUpperCase(),
+                name: info.name,
             });
         }
 
         if (info.category === 'Stablecoins') {
             stable.options.push({
-                label: `${info.ticker.toUpperCase()} ${info.name}`,
+                label: `${info.ticker.toUpperCase()}`,
                 value: info.ticker.toUpperCase(),
+                name: info.name,
             });
         }
 
         if (info.category === 'All currencies') {
             all.options.push({
-                label: `${info.ticker.toUpperCase()} ${info.name}`,
+                label: `${info.ticker.toUpperCase()}`,
                 value: info.ticker.toUpperCase(),
+                name: info.name,
             });
         }
     });
@@ -115,7 +127,8 @@ const SellCryptoSelect = () => {
                                                 invityAPI.server
                                             }/images/coins/${option.value.toUpperCase()}.svg`}
                                         />
-                                        {option.label}
+                                        <OptionLabel>{option.label}</OptionLabel>
+                                        <OptionName>{option.name}</OptionName>
                                     </Option>
                                 );
                             }}
