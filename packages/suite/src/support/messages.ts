@@ -170,13 +170,17 @@ const definedMessages = defineMessages({
         defaultMessage: 'Loading',
         id: 'TR_EXCHANGE_LOADING',
     },
-    TR_EXCHANGE_NATIVE_COINS: {
-        defaultMessage: 'Native',
-        id: 'TR_EXCHANGE_NATIVE_COINS',
-    },
     TR_EXCHANGE_OTHER_COINS: {
-        defaultMessage: 'Others',
+        defaultMessage: 'All other currencies',
         id: 'TR_EXCHANGE_OTHER_COINS',
+    },
+    TR_EXCHANGE_POPULAR_COINS: {
+        defaultMessage: 'Popular coins',
+        id: 'TR_EXCHANGE_POPULAR_COINS',
+    },
+    TR_EXCHANGE_STABLE_COINS: {
+        defaultMessage: 'Stable coins',
+        id: 'TR_EXCHANGE_STABLE_COINS',
     },
     TR_EXCHANGE_NO_PROVIDERS: {
         defaultMessage: 'No providers',

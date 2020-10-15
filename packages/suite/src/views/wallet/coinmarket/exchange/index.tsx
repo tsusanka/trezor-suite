@@ -12,6 +12,7 @@ import {
 const mapStateToProps = (state: AppState): ComponentProps => ({
     selectedAccount: state.wallet.selectedAccount,
     quotesRequest: state.wallet.coinmarket.exchange.quotesRequest,
+    exchangeCoinInfo: state.wallet.coinmarket.exchange.exchangeCoinInfo,
     fiat: state.wallet.fiat,
     localCurrency: state.wallet.settings.localCurrency,
     fees: state.wallet.fees,

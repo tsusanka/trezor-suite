@@ -2,7 +2,7 @@ import { AppState } from '@suite-types';
 import { UseFormMethods } from 'react-hook-form';
 import { Account, Network, CoinFiatRates } from '@wallet-types';
 import { FeeLevel } from 'trezor-connect';
-import { ExchangeTrade, ExchangeTradeQuoteRequest } from 'invity-api';
+import { ExchangeTrade, ExchangeTradeQuoteRequest, ExchangeCoinInfo } from 'invity-api';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import { TypedValidationRules } from './form';
 import { FeeInfo } from '@wallet-types/sendForm';
@@ -16,6 +16,7 @@ export interface ComponentProps {
     localCurrency: AppState['wallet']['settings']['localCurrency'];
     fees: AppState['wallet']['fees'];
     quotesRequest: AppState['wallet']['coinmarket']['exchange']['quotesRequest'];
+    exchangeCoinInfo: AppState['wallet']['coinmarket']['exchange']['exchangeCoinInfo'];
 }
 
 export type ButtonTypes = 'max' | 'half' | 'quarter';
@@ -44,6 +45,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     onSubmit: () => void;
     account: Account;
     exchangeInfo?: ExchangeInfo;
+    exchangeCoinInfo?: ExchangeCoinInfo[];
     localCurrencyOption: { label: string; value: string };
     selectedFee: FeeLevel['label'];
     selectFee: (feeLevel: FeeLevel['label']) => void;

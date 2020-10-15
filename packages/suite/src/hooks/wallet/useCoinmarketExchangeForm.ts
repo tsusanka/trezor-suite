@@ -25,7 +25,7 @@ ExchangeFormContext.displayName = 'CoinmarketExchangeContext';
 
 export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValues => {
     const { exchangeInfo } = useInvityAPI();
-    const { selectedAccount, quotesRequest, fees, fiat, localCurrency } = props;
+    const { selectedAccount, quotesRequest, fees, fiat, localCurrency, exchangeCoinInfo } = props;
     const { account, network } = selectedAccount;
     const { symbol, networkType } = account;
     const coinFees = fees[symbol];
@@ -133,6 +133,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         fillValue,
         quotesRequest,
         localCurrencyOption,
+        exchangeCoinInfo,
         selectedFee,
         updateFiatCurrency,
         selectFee,

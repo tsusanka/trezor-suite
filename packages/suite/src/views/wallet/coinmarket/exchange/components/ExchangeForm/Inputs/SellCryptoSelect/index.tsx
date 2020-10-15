@@ -1,11 +1,9 @@
 import { variables, Select } from '@trezor/components';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import React from 'react';
-import { Account } from '@wallet-types';
-import { symbolToInvityApiSymbol } from '@wallet-utils/coinmarket/coinmarketUtils';
 import { Controller } from 'react-hook-form';
 import styled from 'styled-components';
-import { NETWORKS } from '@wallet-config';
+import { ExchangeCoinInfo } from 'invity-api';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 import { Translation } from '@suite/components/suite';
 import invityAPI from '@suite-services/invityAPI';
@@ -32,46 +30,64 @@ const Option = styled.div`
     align-items: center;
 `;
 
-const buildOptions = (account: Account, exchangeInfo?: ExchangeInfo) => {
-    if (!exchangeInfo) return null;
+const buildOptions = (exchangeCoinInfo?: ExchangeCoinInfo[], exchangeInfo?: ExchangeInfo) => {
+    if (!exchangeInfo || !exchangeCoinInfo) return null;
 
     interface Options {
         label: React.ReactElement;
         options: { label: string; value: string }[];
     }
 
-    const native: Options = {
-        label: <Translation id="TR_EXCHANGE_NATIVE_COINS" />,
+    const popular: Options = {
+        label: <Translation id="TR_EXCHANGE_POPULAR_COINS" />,
         options: [],
     };
 
-    const other: Options = {
+    const stable: Options = {
+        label: <Translation id="TR_EXCHANGE_STABLE_COINS" />,
+        options: [],
+    };
+
+    const all: Options = {
         label: <Translation id="TR_EXCHANGE_OTHER_COINS" />,
         options: [],
     };
 
-    exchangeInfo.buySymbols.forEach(token => {
-        if (account.symbol !== token) {
-            const invityToken = symbolToInvityApiSymbol(token);
-            if (NETWORKS.find(network => network.symbol === invityToken)) {
-                native.options.push({
-                    label: token.toUpperCase(),
-                    value: invityToken.toUpperCase(),
-                });
-            } else {
-                other.options.push({
-                    label: token.toUpperCase(),
-                    value: invityToken.toUpperCase(),
-                });
-            }
+    exchangeCoinInfo.forEach(info => {
+        if (!exchangeInfo.buySymbols.has(info.ticker.toLowerCase())) return false;
+
+        if (info.category === 'Popular currencies') {
+            popular.options.push({
+                label: `${info.ticker.toUpperCase()} ${info.name}`,
+                value: info.ticker.toUpperCase(),
+            });
+        }
+
+        if (info.category === 'Stablecoins') {
+            stable.options.push({
+                label: `${info.ticker.toUpperCase()} ${info.name}`,
+                value: info.ticker.toUpperCase(),
+            });
+        }
+
+        if (info.category === 'All currencies') {
+            all.options.push({
+                label: `${info.ticker.toUpperCase()} ${info.name}`,
+                value: info.ticker.toUpperCase(),
+            });
         }
     });
 
-    return [native, other];
+    return [popular, stable, all];
 };
 
 const SellCryptoSelect = () => {
-    const { control, setAmountLimits, account, exchangeInfo } = useCoinmarketExchangeFormContext();
+    const {
+        control,
+        setAmountLimits,
+        exchangeInfo,
+        exchangeCoinInfo,
+    } = useCoinmarketExchangeFormContext();
 
     return (
         <Wrapper>
@@ -89,7 +105,7 @@ const SellCryptoSelect = () => {
                             noTopLabel
                             value={value}
                             isClearable={false}
-                            options={buildOptions(account, exchangeInfo)}
+                            options={buildOptions(exchangeCoinInfo, exchangeInfo)}
                             minWidth="70px"
                             formatOptionLabel={(option: any) => {
                                 return (
@@ -97,7 +113,7 @@ const SellCryptoSelect = () => {
                                         <CoinLogo
                                             src={`${
                                                 invityAPI.server
-                                            }/images/coins/${option.label.toUpperCase()}.svg`}
+                                            }/images/coins/${option.value.toUpperCase()}.svg`}
                                         />
                                         {option.label}
                                     </Option>
