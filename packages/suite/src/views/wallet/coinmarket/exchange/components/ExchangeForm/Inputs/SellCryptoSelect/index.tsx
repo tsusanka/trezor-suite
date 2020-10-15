@@ -5,7 +5,8 @@ import { Controller } from 'react-hook-form';
 import styled from 'styled-components';
 import { ExchangeCoinInfo } from 'invity-api';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
-import { Translation } from '@suite/components/suite';
+import { Translation } from '@suite-components';
+import { Account } from '@wallet-types';
 import invityAPI from '@suite-services/invityAPI';
 
 const Wrapper = styled.div`
@@ -39,7 +40,11 @@ const OptionLabel = styled.div`
     min-width: 70px;
 `;
 
-const buildOptions = (exchangeCoinInfo?: ExchangeCoinInfo[], exchangeInfo?: ExchangeInfo) => {
+const buildOptions = (
+    account: Account,
+    exchangeCoinInfo?: ExchangeCoinInfo[],
+    exchangeInfo?: ExchangeInfo,
+) => {
     if (!exchangeInfo || !exchangeCoinInfo) return null;
 
     interface Options {
@@ -62,7 +67,11 @@ const buildOptions = (exchangeCoinInfo?: ExchangeCoinInfo[], exchangeInfo?: Exch
         options: [],
     };
 
-    exchangeCoinInfo.forEach(info => {
+    const filteredExchangeCoins = exchangeCoinInfo.filter(
+        coin => coin.ticker.toLowerCase() !== account.symbol,
+    );
+
+    filteredExchangeCoins.forEach(info => {
         if (!exchangeInfo.buySymbols.has(info.ticker.toLowerCase())) return false;
 
         if (info.category === 'Popular currencies') {
@@ -99,6 +108,7 @@ const SellCryptoSelect = () => {
         setAmountLimits,
         exchangeInfo,
         exchangeCoinInfo,
+        account,
     } = useCoinmarketExchangeFormContext();
 
     return (
@@ -117,7 +127,7 @@ const SellCryptoSelect = () => {
                             noTopLabel
                             value={value}
                             isClearable={false}
-                            options={buildOptions(exchangeCoinInfo, exchangeInfo)}
+                            options={buildOptions(account, exchangeCoinInfo, exchangeInfo)}
                             minWidth="70px"
                             formatOptionLabel={(option: any) => {
                                 return (
