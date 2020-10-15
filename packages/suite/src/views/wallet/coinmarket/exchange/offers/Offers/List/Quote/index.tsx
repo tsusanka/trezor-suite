@@ -55,12 +55,17 @@ const Details = styled.div`
     padding: 10px 30px;
 `;
 
-const Column = styled.div`
+interface ColumnProps {
+    maxWidth?: string;
+}
+
+const Column = styled.div<ColumnProps>`
     display: flex;
     padding: 10px 0;
     flex: 1;
     flex-direction: column;
     justify-content: flex-start;
+    max-width: ${props => (props.maxWidth ? props.maxWidth : '100%')};
 `;
 
 const Heading = styled.div`
@@ -134,7 +139,7 @@ const Quote = ({ className, quote }: Props) => {
                 </Right>
             </Main>
             <Details>
-                <Column>
+                <Column maxWidth="250px">
                     <Heading>
                         <Translation id="TR_EXCHANGE_PROVIDER" />
                     </Heading>
