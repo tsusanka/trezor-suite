@@ -155,6 +155,11 @@ export const useOffers = (props: Props) => {
         if (selectedQuote) {
             // TODO - create and sign transaction and send it to the network
             await saveTrade(selectedQuote, account, new Date().toISOString());
+            goto('wallet-coinmarket-exchange-detail', {
+                symbol: account.symbol,
+                accountIndex: account.index,
+                accountType: account.accountType,
+            });
         }
     };
 

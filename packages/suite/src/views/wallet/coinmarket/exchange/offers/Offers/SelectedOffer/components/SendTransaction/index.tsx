@@ -34,7 +34,12 @@ const Row = styled.div`
 const Address = styled.div``;
 
 const SendTransactionComponent = () => {
-    const { account, selectedQuote, exchangeInfo } = useCoinmarketExchangeOffersContext();
+    const {
+        account,
+        selectedQuote,
+        exchangeInfo,
+        sendTransaction,
+    } = useCoinmarketExchangeOffersContext();
     if (!selectedQuote) return null;
     const { exchange, sendAddress } = selectedQuote;
     if (!exchange) return null;
@@ -60,7 +65,7 @@ const SendTransactionComponent = () => {
             </Row>
 
             <ButtonWrapper>
-                <Button onClick={() => {}}>
+                <Button onClick={sendTransaction}>
                     <Translation id="TR_EXCHANGE_CONFIRM_ON_TREZOR_SEND" />
                 </Button>
             </ButtonWrapper>
