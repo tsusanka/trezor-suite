@@ -2,11 +2,8 @@ import TrezorConnect, { FeeLevel, RipplePayment } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
 import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
-import {
-    calculateTotal,
-    calculateMax,
-    getExternalComposeOutput,
-} from '@wallet-utils/sendFormUtils';
+import { calculateTotal, calculateMax } from '@wallet-utils/sendFormUtils';
+import { getExternalComposeOutput } from '@wallet-utils/exchangeFormUtils';
 import { networkAmountToSatoshi, formatNetworkAmount } from '@wallet-utils/accountUtils';
 import { XRP_FLAG } from '@wallet-constants/sendForm';
 import {
@@ -74,8 +71,8 @@ const calculate = (
 };
 
 export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async () => {
-    const { account, network, feeInfo } = composeTransactionData;
-    const composeOutputs = getExternalComposeOutput(composeTransactionData, account, network);
+    const { account, feeInfo } = composeTransactionData;
+    const composeOutputs = getExternalComposeOutput(composeTransactionData);
     if (!composeOutputs) return; // no valid Output
 
     const { output } = composeOutputs;

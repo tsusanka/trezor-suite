@@ -173,11 +173,15 @@ export const saveQuotes = (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTr
 
 export interface ComposeTransactionData {
     account: Account;
+    amount: string;
     feeInfo: FeeInfo;
     feePerUnit: string;
     feeLimit: string;
     network: Network;
     selectedFee: FeeLevel['label'];
+    isMaxActive: boolean;
+    address?: string;
+    token?: string;
 }
 
 export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async (
