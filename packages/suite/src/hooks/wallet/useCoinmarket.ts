@@ -1,12 +1,12 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { BuyTradeStatus } from 'invity-api';
+import { BuyTradeStatus, ExchangeTradeStatus } from 'invity-api';
 import { useUnmount, useTimeoutFn } from 'react-use';
 import invityAPI from '@suite-services/invityAPI';
 import * as coinmarketBuyActions from '@wallet-actions/coinmarketBuyActions';
 import { Account } from '@wallet-types';
 import { useActions } from '@suite-hooks';
-import { TradeBuy } from '@wallet-reducers/coinmarketReducer';
+import { TradeBuy, TradeExchange } from '@wallet-reducers/coinmarketReducer';
 import { AppState } from '@suite-types';
 import { loadBuyInfo } from '@wallet-actions/coinmarketBuyActions';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
@@ -73,7 +73,7 @@ export const useInvityAPI = () => {
 
 const BuyTradeFinalStatuses: BuyTradeStatus[] = ['SUCCESS', 'ERROR', 'BLOCKED'];
 
-const shouldRefresh = (trade?: TradeBuy) => {
+const shouldRefreshBuyTrade = (trade?: TradeBuy) => {
     return trade && trade.data.status && !BuyTradeFinalStatuses.includes(trade.data.status);
 };
 
@@ -83,7 +83,7 @@ export const useWatchBuyTrade = (account: Account, trade: TradeBuy) => {
     const { saveTrade } = useActions({ saveTrade: coinmarketBuyActions.saveTrade });
     const [refreshCount, setRefreshCount] = useState(0);
     const invokeRefresh = () => {
-        if (shouldRefresh(trade)) {
+        if (shouldRefreshBuyTrade(trade)) {
             setRefreshCount(prevValue => prevValue + 1);
         }
     };
@@ -94,7 +94,7 @@ export const useWatchBuyTrade = (account: Account, trade: TradeBuy) => {
     });
 
     useEffect(() => {
-        if (trade && shouldRefresh(trade)) {
+        if (trade && shouldRefreshBuyTrade(trade)) {
             cancelRefresh();
             invityAPI.createInvityAPIKey(account.descriptor);
             invityAPI.watchBuyTrade(trade.data, refreshCount).then(response => {
@@ -124,5 +124,61 @@ export const useWatchBuyTrade = (account: Account, trade: TradeBuy) => {
         }
     }, [account, cancelRefresh, refreshCount, resetRefresh, saveTrade, trade]);
 
-    return [updatedTrade];
+    return updatedTrade;
+};
+
+export const ExchangeTradeFinalStatuses: ExchangeTradeStatus[] = ['SUCCESS', 'ERROR', 'KYC'];
+
+const shouldRefreshExchangeTrade = (trade?: TradeExchange) => {
+    return trade && trade.data.status && !ExchangeTradeFinalStatuses.includes(trade.data.status);
+};
+
+export const useWatchExchangeTrade = (account: Account, trade: TradeExchange) => {
+    const REFRESH_SECONDS = 30;
+    const [updatedTrade, setUpdatedTrade] = useState<TradeExchange | undefined>(trade);
+    const { saveTrade } = useActions({ saveTrade: coinmarketExchangeActions.saveTrade });
+    const [refreshCount, setRefreshCount] = useState(0);
+    const invokeRefresh = () => {
+        if (shouldRefreshExchangeTrade(trade)) {
+            setRefreshCount(prevValue => prevValue + 1);
+        }
+    };
+    const [, cancelRefresh, resetRefresh] = useTimeoutFn(invokeRefresh, REFRESH_SECONDS * 1000);
+
+    useUnmount(() => {
+        cancelRefresh();
+    });
+
+    useEffect(() => {
+        if (trade && shouldRefreshExchangeTrade(trade)) {
+            cancelRefresh();
+            invityAPI.createInvityAPIKey(account.descriptor);
+            invityAPI.watchExchangeTrade(trade.data, refreshCount).then(response => {
+                if (response.status && response.status !== trade.data.status) {
+                    const newDate = new Date().toISOString();
+                    const tradeData = {
+                        ...trade.data,
+                        status: response.status,
+                        error: response.error,
+                    };
+                    saveTrade(tradeData, account, newDate);
+                    setUpdatedTrade({
+                        tradeType: 'exchange',
+                        key: trade.data.orderId,
+                        date: newDate,
+                        data: tradeData,
+                        account: {
+                            descriptor: account.descriptor,
+                            symbol: account.symbol,
+                            accountType: account.accountType,
+                            accountIndex: account.index,
+                        },
+                    });
+                }
+            });
+            resetRefresh();
+        }
+    }, [account, cancelRefresh, refreshCount, resetRefresh, saveTrade, trade]);
+
+    return updatedTrade;
 };

@@ -5,7 +5,9 @@ import { formatCryptoAmount } from '@wallet-utils/coinmarket/coinmarketUtils';
 import { colors, variables, CoinLogo } from '@trezor/components';
 import { CoinmarketExchangeProviderInfo, CoinmarketTransactionId } from '@wallet-components';
 import { Account } from '@wallet-types';
-import { AccountLabeling, QuestionTooltip, Translation } from '@suite-components';
+import { AccountLabeling, Translation } from '@suite-components';
+// hitting issue https://github.com/styled-components/styled-components/issues/213 in unit test when importing directly from @suite-components
+import QuestionTooltip from '@suite-components/QuestionTooltip';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import invityAPI from '@suite-services/invityAPI';
 

@@ -129,7 +129,7 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
     });
     const country = useSelector(state => state.wallet.coinmarket.buy.buyInfo?.buyInfo?.country);
     const [isGettingOffers, setIsGettingOffers] = useState(false);
-    const [updatedTrade] = useWatchBuyTrade(account, trade);
+    const updatedTrade = useWatchBuyTrade(account, trade);
     if (!updatedTrade) return null;
 
     const { date, data } = updatedTrade;

@@ -287,6 +287,71 @@ const definedMessages = defineMessages({
             'I understand that cryptocurrency transactions are irreversible and I won’t be able to receive a refund for my purchase.',
         id: 'TR_EXCHANGE_TERMS_5',
     },
+    TR_EXCHANGE_DETAIL_SUCCESS_TITLE: {
+        defaultMessage: 'Trade success',
+        id: 'TR_EXCHANGE_DETAIL_SUCCESS_TITLE',
+    },
+    TR_EXCHANGE_DETAIL_SUCCESS_TEXT: {
+        defaultMessage: 'The transaction finished successfully.',
+        id: 'TR_EXCHANGE_DETAIL_SUCCESS_TEXT',
+    },
+    TR_EXCHANGE_DETAIL_SUCCESS_BUTTON: {
+        defaultMessage: 'Back to Account',
+        id: 'TR_EXCHANGE_DETAIL_SUCCESS_BUTTON',
+    },
+    TR_EXCHANGE_DETAIL_ERROR_TITLE: {
+        defaultMessage: 'The transaction failed',
+        id: 'TR_EXCHANGE_DETAIL_ERROR_TITLE',
+    },
+    TR_EXCHANGE_DETAIL_ERROR_TEXT: {
+        defaultMessage: 'Unfortunately, your transaction was rejected or has failed.',
+        id: 'TR_EXCHANGE_DETAIL_ERROR_TEXT',
+    },
+    TR_EXCHANGE_DETAIL_ERROR_SUPPORT: {
+        defaultMessage: "Open partner's support site",
+        id: 'TR_BUY_DETAIL_ERROR_SUPPORT',
+    },
+    TR_EXCHANGE_DETAIL_ERROR_BUTTON: {
+        defaultMessage: 'Back to Account',
+        id: 'TR_EXCHANGE_DETAIL_ERROR_BUTTON',
+    },
+    TR_EXCHANGE_DETAIL_KYC_TITLE: {
+        defaultMessage: 'KYC problem',
+        id: 'TR_EXCHANGE_DETAIL_KYC_TITLE',
+    },
+    TR_EXCHANGE_DETAIL_KYC_TEXT: {
+        defaultMessage:
+            'This trade has been marked as "suspicious" by the exchange. The exchange might require undergoing the KYC process to finish the trade. Contact the exchange for further details, please.',
+        id: 'TR_EXCHANGE_DETAIL_KYC_TEXT',
+    },
+    TR_EXCHANGE_DETAIL_KYC_SUPPORT: {
+        defaultMessage: "Open partner's support site",
+        id: 'TR_BUY_DETAIL_ERROR_SUPPORT',
+    },
+    TR_EXCHANGE_DETAIL_KYC_INFO_LINK: {
+        defaultMessage: "Open partner's info on KYC",
+        id: 'TR_BUY_DETAIL_ERROR_SUPPORT',
+    },
+    TR_EXCHANGE_DETAIL_KYC_BUTTON: {
+        defaultMessage: 'Back to Account',
+        id: 'TR_EXCHANGE_DETAIL_ERROR_BUTTON',
+    },
+    TR_EXCHANGE_DETAIL_SENDING_TITLE: {
+        defaultMessage: 'Waiting for confirmation...',
+        id: 'TR_EXCHANGE_DETAIL_SENDING_TITLE',
+    },
+    TR_EXCHANGE_DETAIL_SENDING_SUPPORT: {
+        defaultMessage: "Open partner's support site",
+        id: 'TR_EXCHANGE_DETAIL_SENDING_SUPPORT',
+    },
+    TR_EXCHANGE_DETAIL_CONVERTING_TITLE: {
+        defaultMessage: 'Converting...',
+        id: 'TR_EXCHANGE_DETAIL_CONVERTING_TITLE',
+    },
+    TR_EXCHANGE_DETAIL_CONVERTING_SUPPORT: {
+        defaultMessage: "Open partner's support site",
+        id: 'TR_EXCHANGE_DETAIL_CONVERTING_SUPPORT',
+    },
     TR_EXCHANGE_RECEIVING_ACCOUNT: {
         defaultMessage: ' Receiving Account',
         id: 'TR_EXCHANGE_RECEIVING_ACCOUNT',

@@ -53,29 +53,29 @@ const PaymentFailed = ({ transactionId, supportUrl, account }: Props) => {
         <Wrapper>
             <Image src={resolveStaticPath('/images/svg/uni-error.svg')} />
             <Title>
-                <Translation id="TR_BUY_DETAIL_ERROR_TITLE" />
+                <Translation id="TR_EXCHANGE_DETAIL_ERROR_TITLE" />
             </Title>
             <Description>
-                <Translation id="TR_BUY_DETAIL_ERROR_TEXT" />
+                <Translation id="TR_EXCHANGE_DETAIL_ERROR_TEXT" />
             </Description>
             {transactionId && <CoinmarketTransactionId transactionId={transactionId} />}
             {supportUrl && (
                 <Link href={supportUrl} target="_blank">
                     <Button variant="tertiary">
-                        <Translation id="TR_BUY_DETAIL_ERROR_SUPPORT" />
+                        <Translation id="TR_EXCHANGE_DETAIL_ERROR_SUPPORT" />
                     </Button>
                 </Link>
             )}
             <Button
                 onClick={() =>
-                    goto('wallet-coinmarket-buy', {
+                    goto('wallet-coinmarket-exchange', {
                         symbol: account.symbol,
                         accountIndex: account.index,
                         accountType: account.accountType,
                     })
                 }
             >
-                <Translation id="TR_BUY_DETAIL_ERROR_BUTTON" />
+                <Translation id="TR_EXCHANGE_DETAIL_ERROR_BUTTON" />
             </Button>
         </Wrapper>
     );

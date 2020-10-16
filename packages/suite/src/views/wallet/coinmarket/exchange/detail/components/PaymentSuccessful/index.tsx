@@ -3,10 +3,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { resolveStaticPath } from '@suite-utils/nextjs';
 import { Button, variables, colors } from '@trezor/components';
-import { CoinmarketTransactionId } from '@wallet-components';
-import { useActions } from '@suite-hooks/useActions';
+import { Translation } from '@suite-components';
+import { useActions } from '@suite-hooks';
 import { Account } from '@wallet-types';
-import { Translation } from '@suite-components/Translation';
 
 const Wrapper = styled.div`
     display: flex;
@@ -29,56 +28,41 @@ const Description = styled.div`
     justify-content: center;
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
-    margin: 17px 0 10px 0;
+    margin: 17px 0 30px 0;
     max-width: 310px;
     text-align: center;
 `;
 
-const Link = styled.a`
-    margin-top: 30px;
-    margin-bottom: 30px;
-`;
-
 interface Props {
-    transactionId?: string;
-    supportUrl?: string;
     account: Account;
 }
 
-const PaymentFailed = ({ transactionId, supportUrl, account }: Props) => {
+const PaymentSuccessful = ({ account }: Props) => {
     const { goto } = useActions({
         goto: routerActions.goto,
     });
     return (
         <Wrapper>
-            <Image src={resolveStaticPath('/images/svg/uni-error.svg')} />
+            <Image src={resolveStaticPath('/images/svg/coinmarket-success.svg')} />
             <Title>
-                <Translation id="TR_BUY_DETAIL_ERROR_TITLE" />
+                <Translation id="TR_EXCHANGE_DETAIL_SUCCESS_TITLE" />
             </Title>
             <Description>
-                <Translation id="TR_BUY_DETAIL_ERROR_TEXT" />
+                <Translation id="TR_EXCHANGE_DETAIL_SUCCESS_TEXT" />
             </Description>
-            {transactionId && <CoinmarketTransactionId transactionId={transactionId} />}
-            {supportUrl && (
-                <Link href={supportUrl} target="_blank">
-                    <Button variant="tertiary">
-                        <Translation id="TR_BUY_DETAIL_ERROR_SUPPORT" />
-                    </Button>
-                </Link>
-            )}
             <Button
                 onClick={() =>
-                    goto('wallet-coinmarket-buy', {
+                    goto('wallet-coinmarket-exchange', {
                         symbol: account.symbol,
                         accountIndex: account.index,
                         accountType: account.accountType,
                     })
                 }
             >
-                <Translation id="TR_BUY_DETAIL_ERROR_BUTTON" />
+                <Translation id="TR_EXCHANGE_DETAIL_SUCCESS_BUTTON" />
             </Button>
         </Wrapper>
     );
 };
 
-export default PaymentFailed;
+export default PaymentSuccessful;

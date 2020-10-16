@@ -45,9 +45,9 @@ export type CoinmarketExchangeActions =
           data: ExchangeTrade;
           account: {
               symbol: Account['symbol'];
+              descriptor: Account['descriptor'];
               accountIndex: Account['index'];
               accountType: Account['accountType'];
-              deviceState: Account['deviceState'];
           };
       };
 

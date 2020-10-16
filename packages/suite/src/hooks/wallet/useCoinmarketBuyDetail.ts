@@ -8,9 +8,7 @@ import invityAPI from '@suite-services/invityAPI';
 
 export const useCoinmarketBuyDetail = (props: Props) => {
     const { selectedAccount, trades, transactionId } = props;
-    const buyTrade: TradeBuy[] = trades.find(
-        trade => trade.tradeType === 'buy' && trade.key === transactionId,
-    );
+    const buyTrade = trades.find(trade => trade.tradeType === 'buy' && trade.key === transactionId);
     const { account } = selectedAccount;
     const invityAPIUrl = useSelector<
         AppState,
@@ -22,7 +20,7 @@ export const useCoinmarketBuyDetail = (props: Props) => {
     const buyInfo = useSelector<AppState, AppState['wallet']['coinmarket']['buy']['buyInfo']>(
         state => state.wallet.coinmarket.buy.buyInfo,
     );
-    const [updatedTrade] = useWatchBuyTrade(account, buyTrade);
+    const updatedTrade = useWatchBuyTrade(account, buyTrade as TradeBuy);
 
     return {
         account,
