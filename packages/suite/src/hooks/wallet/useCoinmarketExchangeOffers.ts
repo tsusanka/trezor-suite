@@ -27,6 +27,7 @@ export const useOffers = (props: Props) => {
 
     const { account } = selectedAccount;
     const [selectedQuote, setSelectedQuote] = useState<ExchangeTrade>();
+    const [receiveAccount, setReceiveAccount] = useState<Account | undefined>();
     const [suiteBuyAccounts, setSuiteBuyAccounts] = useState<ContextValues['suiteBuyAccounts']>();
     const [innerFixedQuotes, setInnerFixedQuotes] = useState<ExchangeTrade[]>(fixedQuotes);
     const [innerFloatQuotes, setInnerFloatQuotes] = useState<ExchangeTrade[]>(floatQuotes);
@@ -122,7 +123,7 @@ export const useOffers = (props: Props) => {
         setSuiteBuyAccounts(undefined);
     }, [accounts, device, exchangeStep, selectedQuote]);
 
-    const doTrade = async (address: string, extraField?: string) => {
+    const confirmTrade = async (address: string, extraField?: string) => {
         const { address: refundAddress } = getUnusedAddressFromAccount(account);
         if (!selectedQuote || !refundAddress) return;
         const response = await invityAPI.doExchangeTrade({
@@ -150,8 +151,21 @@ export const useOffers = (props: Props) => {
         }
     };
 
+    const sendTransaction = async () => {
+        if (selectedQuote) {
+            // TODO - create and sign transaction and send it to the network
+            await saveTrade(selectedQuote, account, new Date().toISOString());
+            goto('wallet-coinmarket-exchange-detail', {
+                symbol: account.symbol,
+                accountIndex: account.index,
+                accountType: account.accountType,
+            });
+        }
+    };
+
     return {
-        doTrade,
+        confirmTrade,
+        sendTransaction,
         selectedQuote,
         suiteBuyAccounts,
         verifyAddress,
@@ -168,6 +182,8 @@ export const useOffers = (props: Props) => {
         selectQuote,
         account,
         REFETCH_INTERVAL,
+        receiveAccount,
+        setReceiveAccount,
     };
 };
 

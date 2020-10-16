@@ -5,14 +5,16 @@ import { formatCryptoAmount } from '@wallet-utils/coinmarket/coinmarketUtils';
 import { colors, variables, CoinLogo } from '@trezor/components';
 import { CoinmarketExchangeProviderInfo, CoinmarketTransactionId } from '@wallet-components';
 import { Account } from '@wallet-types';
-import { Translation } from '@suite-components';
-import { ExchangeInfo } from '@suite/actions/wallet/coinmarketExchangeActions';
+import { AccountLabeling, QuestionTooltip, Translation } from '@suite-components';
+import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
+import invityAPI from '@suite-services/invityAPI';
 
 interface Props {
     selectedQuote: ExchangeTrade;
     transactionId?: string;
     exchangeInfo?: ExchangeInfo;
     account: Account;
+    receiveAccount?: Account;
 }
 
 const Wrapper = styled.div`
@@ -36,6 +38,7 @@ const Info = styled.div`
     flex-direction: column;
     min-width: 350px;
     margin: 0 0 10px 30px;
+    padding-top: 10px;
     min-height: 200px;
     border: 1px solid ${colors.NEUE_STROKE_GREY};
     border-radius: 4px;
@@ -63,7 +66,12 @@ const RightColumn = styled.div`
 
 const Row = styled.div`
     display: flex;
-    margin: 5px 24px;
+    margin: 20px 24px;
+`;
+
+const AdjacentRow = styled.div`
+    display: flex;
+    margin: -15px 24px 10px 24px;
 `;
 
 const Dark = styled.div`
@@ -75,9 +83,36 @@ const Dark = styled.div`
 `;
 
 const RowWithBorder = styled(Row)`
+    border-top: 1px solid ${colors.NEUE_STROKE_GREY};
     border-bottom: 1px solid ${colors.NEUE_STROKE_GREY};
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+`;
+
+const Middle = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+`;
+
+const Amount = styled.span`
+    padding-left: 5px;
+`;
+
+const StyledQuestionTooltip = styled(QuestionTooltip)`
+    padding-left: 3px;
+`;
+
+const InvityCoinLogo = styled.img`
+    height: 16px;
+`;
+
+const AccountType = styled.span`
+    color: ${colors.NEUE_TYPE_LIGHT_GREY};
+    padding-left: 5px;
 `;
 
 const CoinmarketExchangeOfferInfo = ({
@@ -85,6 +120,7 @@ const CoinmarketExchangeOfferInfo = ({
     transactionId,
     exchangeInfo,
     account,
+    receiveAccount,
 }: Props) => {
     const { exchange, receiveStringAmount, receive, sendStringAmount, send } = selectedQuote;
     const provider =
@@ -100,32 +136,64 @@ const CoinmarketExchangeOfferInfo = ({
                     </LeftColumn>
                     <RightColumn>
                         <Dark>
-                            {sendStringAmount} {send}
+                            <CoinLogo symbol={account.symbol} size={16} />
+                            <Amount>
+                                {sendStringAmount} {send}
+                            </Amount>
                         </Dark>
                     </RightColumn>
                 </Row>
-                <Row>
+                <AdjacentRow>
                     <RightColumn>
-                        <CoinLogo symbol={account.symbol} size={16} />
-                        <AccountText>{`Account #${account.index + 1}`}</AccountText>
+                        <AccountLabeling account={account} />
+                        <AccountType>
+                            {account.accountType !== 'normal' ? account.accountType : ''}
+                        </AccountType>
                     </RightColumn>
-                </Row>
-                <RowWithBorder>
+                </AdjacentRow>
+                <Row>
                     <LeftColumn>
                         <Translation id="TR_EXCHANGE_BUY" />
                     </LeftColumn>
                     <RightColumn>
-                        <Dark>{`${formatCryptoAmount(
-                            Number(receiveStringAmount),
-                        )} ${receive}`}</Dark>
+                        <Dark>
+                            <InvityCoinLogo
+                                src={`${invityAPI.server}/images/coins/${receive}.svg`}
+                            />
+                            <Amount>
+                                {`${formatCryptoAmount(Number(receiveStringAmount))} ${receive}`}
+                            </Amount>
+                        </Dark>
                     </RightColumn>
-                </RowWithBorder>
+                </Row>
+                {receiveAccount && (
+                    <AdjacentRow>
+                        <RightColumn>
+                            <AccountText>
+                                <AccountLabeling account={receiveAccount} />
+                                <AccountType>
+                                    {receiveAccount.accountType !== 'normal'
+                                        ? receiveAccount.accountType
+                                        : ''}
+                                </AccountType>
+                            </AccountText>
+                        </RightColumn>
+                    </AdjacentRow>
+                )}
                 <RowWithBorder>
-                    {provider.isFixedRate ? (
-                        <Translation id="TR_EXCHANGE_FIXED" />
-                    ) : (
-                        <Translation id="TR_EXCHANGE_FLOAT" />
-                    )}
+                    <Middle>
+                        {provider.isFixedRate ? (
+                            <>
+                                <Translation id="TR_EXCHANGE_FIXED" />
+                                <StyledQuestionTooltip tooltip="TR_EXCHANGE_FIXED_OFFERS_INFO" />
+                            </>
+                        ) : (
+                            <>
+                                <Translation id="TR_EXCHANGE_FLOAT" />
+                                <StyledQuestionTooltip tooltip="TR_EXCHANGE_FLOAT_OFFERS_INFO" />
+                            </>
+                        )}
+                    </Middle>
                 </RowWithBorder>
                 <Row>
                     <LeftColumn>

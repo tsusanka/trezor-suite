@@ -299,6 +299,18 @@ const definedMessages = defineMessages({
         defaultMessage: 'Confirm & Send',
         id: 'TR_EXCHANGE_CONFIRM_SEND_STEP',
     },
+    TR_EXCHANGE_SEND_FROM: {
+        defaultMessage: 'Send from',
+        id: 'TR_EXCHANGE_SEND_FROM',
+    },
+    TR_EXCHANGE_SEND_TO: {
+        defaultMessage: 'Send to {providerName}’s address',
+        id: 'TR_EXCHANGE_SEND_TO',
+    },
+    TR_EXCHANGE_CONFIRM_ON_TREZOR_SEND: {
+        defaultMessage: 'Confirm on Trezor & Send',
+        id: 'TR_EXCHANGE_CONFIRM_ON_TREZOR_SEND',
+    },
     TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP: {
         id: 'TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP',
         defaultMessage: 'TR_EXCHANGE_RECEIVE_ACCOUNT_QUESTION_TOOLTIP',
@@ -306,6 +318,10 @@ const definedMessages = defineMessages({
     TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT: {
         id: 'TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT',
         defaultMessage: 'Select {symbol} Receiving Account',
+    },
+    TR_EXCHANGE_RECEIVING_ADDRESS_INFO: {
+        defaultMessage: '= you will receive your {symbol} to this address',
+        id: 'TR_EXCHANGE_RECEIVING_ADDRESS_INFO',
     },
     TR_EXCHANGE_RECEIVING_ADDRESS: {
         defaultMessage: 'Receive Address',
