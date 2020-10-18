@@ -39,6 +39,7 @@ const CoinmarketExchange = (props: ComponentProps) => {
     if (selectedAccount.status !== 'loaded') {
         return <WalletLayout title="Coinmarket | exchange" account={selectedAccount} />;
     }
+
     return <CoinmarketExchangeLoaded {...props} selectedAccount={selectedAccount} />;
 };
 

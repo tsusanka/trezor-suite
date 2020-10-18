@@ -124,11 +124,11 @@ const SellCryptoSelect = () => {
                                 onChange(selected);
                                 setAmountLimits(undefined);
                             }}
-                            noTopLabel
                             value={value}
                             isClearable={false}
                             options={buildOptions(account, exchangeCoinInfo, exchangeInfo)}
                             minWidth="70px"
+                            noTopLabel
                             formatOptionLabel={(option: any) => {
                                 return (
                                     <Option>

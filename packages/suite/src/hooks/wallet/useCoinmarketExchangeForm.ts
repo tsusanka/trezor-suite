@@ -3,9 +3,11 @@ import { useForm } from 'react-hook-form';
 import { FeeLevel } from 'trezor-connect';
 import { toFiatCurrency, fromFiatCurrency } from '@wallet-utils/fiatConverterUtils';
 import { getFeeLevels } from '@wallet-utils/sendFormUtils';
+import { PrecomposedLevels, PrecomposedTransaction } from '@wallet-types/sendForm';
 import { useInvityAPI } from '@wallet-hooks/useCoinmarket';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import { useActions } from '@suite-hooks';
+import Bignumber from 'bignumber.js';
 import invityAPI from '@suite-services/invityAPI';
 import * as routerActions from '@suite-actions/routerActions';
 import {
@@ -38,13 +40,20 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const { register, setValue, getValues } = methods;
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
     const [activeMaxLimit, setActiveMaxLimit] = useState<number | undefined>(undefined);
-    const [transactionInfo, setTransactionInfo] = useState<any | undefined>(undefined);
+    const [transactionInfo, setTransactionInfo] = useState<null | PrecomposedTransaction>(null);
     const [selectedFee, selectFee] = useState<FeeLevel['label']>('normal');
-    const { saveQuoteRequest, saveQuotes, saveTrade, composeTransaction } = useActions({
+    const {
+        saveQuoteRequest,
+        saveQuotes,
+        saveTrade,
+        composeTransaction,
+        saveTransactionInfo,
+    } = useActions({
         saveQuoteRequest: coinmarketExchangeActions.saveQuoteRequest,
         saveQuotes: coinmarketExchangeActions.saveQuotes,
         saveTrade: coinmarketExchangeActions.saveTrade,
         composeTransaction: coinmarketExchangeActions.composeTransaction,
+        saveTransactionInfo: coinmarketExchangeActions.saveTransactionInfo,
     });
 
     const { goto } = useActions({ goto: routerActions.goto });
@@ -85,7 +94,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
 
         if (!feeLevel) return null;
 
-        const result = await composeTransaction({
+        const result: PrecomposedLevels | undefined = await composeTransaction({
             account,
             amount: formValues.buyCryptoInput || '0',
             feeInfo,
@@ -101,19 +110,29 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
                     : formValues.buyCryptoSelect.value,
         });
 
-        console.log('result', result);
-
+        if (!result || result[selectedFee].type === 'error') {
+            return;
+        }
+        const transactionInfo = result[selectedFee];
         if (
             data &&
             result &&
-            result.type !== 'error' &&
-            activeMaxLimit &&
-            result[selectedFee].max
+            data.activeMaxLimit &&
+            transactionInfo &&
+            transactionInfo.type !== 'error'
         ) {
-            setValue('buyCryptoInput', result[selectedFee].max / data.activeMaxLimit);
+            const transactionInfo = result[selectedFee];
+            if (transactionInfo && transactionInfo.type !== 'error') {
+                const amountToFill = new Bignumber(transactionInfo.max || '0').dividedBy(
+                    data.activeMaxLimit || '1',
+                );
+                if (amountToFill) {
+                    setValue('buyCryptoInput', amountToFill.toFixed(network.decimals));
+                }
+                setTransactionInfo(transactionInfo);
+                saveTransactionInfo(transactionInfo);
+            }
         }
-
-        // setTransactionInfo(result[selectedFee]);
     };
 
     const updateFiatValue = (amount: string) => {
@@ -148,7 +167,11 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             setValue('buyCryptoInput', cryptoValue, { shouldValidate: true });
         }
     };
-
+    // const formValues = getValues();
+    const token = undefined;
+    // formValues.buyCryptoSelect?.value === 'ETH' || !formValues.buyCryptoSelect.value
+    //     ? undefined
+    //     : formValues.buyCryptoSelect.value;
     const typedRegister = useCallback(<T>(rules?: T) => register(rules), [register]);
     const isLoading = !exchangeInfo?.exchangeList || exchangeInfo?.exchangeList.length === 0;
     const noProviders =
@@ -172,10 +195,12 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         selectedFee,
         updateFiatCurrency,
         selectFee,
+        token,
         updateBuyCryptoValue,
         saveTrade,
         feeInfo,
         compose,
+        setTransactionInfo,
         fiatRates,
         amountLimits,
         setAmountLimits,

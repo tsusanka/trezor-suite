@@ -5,7 +5,7 @@ import { FeeLevel } from 'trezor-connect';
 import { ExchangeTrade, ExchangeTradeQuoteRequest, ExchangeCoinInfo } from 'invity-api';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import { TypedValidationRules } from './form';
-import { FeeInfo } from '@wallet-types/sendForm';
+import { FeeInfo, PrecomposedTransaction } from '@wallet-types/sendForm';
 
 export type Option = { value: string; label: string };
 export type defaultCountryOption = { value: string; label?: string };
@@ -54,7 +54,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     selectedFee: FeeLevel['label'];
     setActiveMaxLimit: (activeMaxLimit: number) => void;
     activeMaxLimit?: number;
-    compose: (data?: ComposeData) => void;
+    compose: (data: ComposeData) => void;
     selectFee: (feeLevel: FeeLevel['label']) => void;
     composeTransaction: () => void;
     updateFiatCurrency: (selectedCurrency: { value: string; label: string }) => void;
@@ -63,6 +63,9 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     saveQuotes: (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTrade[]) => Promise<void>;
     saveTrade: (exchangeTrade: ExchangeTrade, account: Account, date: string) => Promise<void>;
     amountLimits?: AmountLimits;
+    transactionInfo: null | PrecomposedTransaction;
+    setTransactionInfo: (transactionInfo: null | PrecomposedTransaction) => void;
+    token: string | undefined;
     fiatRates?: CoinFiatRates;
     setAmountLimits: (limits?: AmountLimits) => void;
     quotesRequest: AppState['wallet']['coinmarket']['exchange']['quotesRequest'];
@@ -71,7 +74,4 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     noProviders: boolean;
     network: Network;
     feeInfo: FeeInfo;
-    // fiat: AppState['wallet']['fiat'];
-    // localCurrency: { value: string; label: string };
-    // fees: AppState['wallet']['fees'];
 };

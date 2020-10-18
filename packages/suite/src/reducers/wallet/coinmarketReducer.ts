@@ -52,6 +52,7 @@ interface Exchange {
     floatQuotes: ExchangeTrade[];
     transactionId?: string;
     addressVerified?: string;
+    transactionInfo: any;
 }
 
 interface State {
@@ -84,6 +85,7 @@ export const initialState = {
         fixedQuotes: [],
         floatQuotes: [],
         addressVerified: undefined,
+        transactionInfo: null,
     },
     trades: [],
 };
@@ -142,6 +144,9 @@ const coinmarketReducer = (
                 break;
             case COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID:
                 draft.exchange.transactionId = action.transactionId;
+                break;
+            case COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO:
+                draft.exchange.transactionInfo = action.transactionInfo;
                 break;
             case STORAGE.LOADED:
                 return action.payload.wallet.coinmarket;

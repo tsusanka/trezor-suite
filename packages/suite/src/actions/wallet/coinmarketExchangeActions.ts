@@ -14,7 +14,7 @@ import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
 import { Dispatch } from '@suite-types';
 import * as modalActions from '@suite-actions/modalActions';
-import { FeeInfo } from '@wallet-types/sendForm';
+import { FeeInfo, PrecomposedTransaction } from '@wallet-types/sendForm';
 
 export interface ExchangeInfo {
     exchangeList?: ExchangeListResponse;
@@ -49,6 +49,10 @@ export type CoinmarketExchangeActions =
               accountIndex: Account['index'];
               accountType: Account['accountType'];
           };
+      }
+    | {
+          type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO;
+          transactionInfo: PrecomposedTransaction;
       };
 
 export async function loadExchangeInfo(): Promise<[ExchangeInfo, ExchangeCoinInfo[]]> {
@@ -158,6 +162,15 @@ export const saveTransactionId = (transactionId: string) => async (dispatch: Dis
     dispatch({
         type: COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID,
         transactionId,
+    });
+};
+
+export const saveTransactionInfo = (transactionInfo: PrecomposedTransaction) => async (
+    dispatch: Dispatch,
+) => {
+    dispatch({
+        type: COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO,
+        transactionInfo,
     });
 };
 
