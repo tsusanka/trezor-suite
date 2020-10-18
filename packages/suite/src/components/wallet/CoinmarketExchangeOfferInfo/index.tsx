@@ -117,6 +117,11 @@ const AccountType = styled.span`
     padding-left: 5px;
 `;
 
+const TransactionIdWrapper = styled.div`
+    padding-left: 40px;
+    max-width: 350px;
+`;
+
 const CoinmarketExchangeOfferInfo = ({
     selectedQuote,
     transactionId,
@@ -127,6 +132,8 @@ const CoinmarketExchangeOfferInfo = ({
     const { exchange, receiveStringAmount, receive, sendStringAmount, send } = selectedQuote;
     const provider =
         exchangeInfo?.providerInfos && exchange ? exchangeInfo?.providerInfos[exchange] : null;
+
+    console.log('provider', provider);
     if (!provider) return null;
 
     return (
@@ -209,7 +216,11 @@ const CoinmarketExchangeOfferInfo = ({
                     </RightColumn>
                 </Row>
             </Info>
-            {transactionId && <CoinmarketTransactionId transactionId={transactionId} />}
+            {transactionId && (
+                <TransactionIdWrapper>
+                    <CoinmarketTransactionId transactionId={transactionId} />
+                </TransactionIdWrapper>
+            )}
         </Wrapper>
     );
 };

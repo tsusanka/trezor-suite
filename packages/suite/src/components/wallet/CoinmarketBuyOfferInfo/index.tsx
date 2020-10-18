@@ -93,6 +93,11 @@ const RowWithBorder = styled(Row)`
     padding-bottom: 10px;
 `;
 
+const TransactionIdWrapper = styled.div`
+    padding-left: 40px;
+    max-width: 350px;
+`;
+
 const CoinmarketBuyOfferInfo = ({ selectedQuote, transactionId, providers, account }: Props) => {
     const {
         receiveStringAmount,
@@ -147,7 +152,11 @@ const CoinmarketBuyOfferInfo = ({ selectedQuote, transactionId, providers, accou
                     </RightColumn>
                 </Row>
             </Info>
-            {transactionId && <CoinmarketTransactionId transactionId={transactionId} />}
+            {transactionId && (
+                <TransactionIdWrapper>
+                    <CoinmarketTransactionId transactionId={transactionId} />
+                </TransactionIdWrapper>
+            )}
         </Wrapper>
     );
 };

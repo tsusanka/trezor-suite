@@ -52,6 +52,7 @@ const Column = styled.div`
     flex: 1;
     flex-direction: column;
     padding: 17px 24px;
+    overflow: hidden;
 `;
 
 const BuyColumn = styled(Column)`
@@ -76,6 +77,8 @@ const TradeID = styled.span`
     padding-left: 5px;
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const Row = styled.div`

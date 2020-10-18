@@ -54,6 +54,7 @@ const Column = styled.div`
     flex: 1;
     flex-direction: column;
     padding: 17px 24px;
+    overflow: hidden;
 `;
 
 const BuyColumn = styled(Column)`
@@ -78,6 +79,8 @@ const TradeID = styled.span`
     padding-left: 5px;
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const Row = styled.div`
@@ -93,6 +96,7 @@ const SmallRow = styled.div`
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
     font-size: ${variables.FONT_SIZE.TINY};
+    white-space: nowrap;
 `;
 
 const SmallRowStatus = styled(SmallRow)`
@@ -160,7 +164,7 @@ const ExchangeTransaction = ({ trade, providers, account }: Props) => {
             <Column>
                 <Row>
                     <Amount>
-                        {formatCryptoAmount(Number(receiveStringAmount))} {send}
+                        {formatCryptoAmount(Number(sendStringAmount))} {send}
                     </Amount>
                     <Arrow>
                         <Icon color={colors.NEUE_TYPE_LIGHT_GREY} size={13} icon="ARROW_RIGHT" />
