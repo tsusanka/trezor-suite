@@ -56,7 +56,6 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     activeMaxLimit?: number;
     compose: (data: ComposeData) => void;
     selectFee: (feeLevel: FeeLevel['label']) => void;
-    composeTransaction: () => void;
     updateFiatCurrency: (selectedCurrency: { value: string; label: string }) => void;
     updateBuyCryptoValue: (fiatValue: string, decimals: number) => void;
     saveQuoteRequest: (request: ExchangeTradeQuoteRequest) => Promise<void>;
