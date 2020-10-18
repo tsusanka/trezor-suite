@@ -113,18 +113,23 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         if (!result || result[selectedFee].type === 'error') {
             return;
         }
-        const transactionInfo = result[selectedFee];
+
         if (
             data &&
             result &&
             data.activeMaxLimit &&
-            transactionInfo &&
-            transactionInfo.type !== 'error'
+            result[selectedFee] &&
+            result[selectedFee].type !== 'error'
         ) {
             const transactionInfo = result[selectedFee];
-            if (transactionInfo && transactionInfo.type !== 'error') {
-                const amountToFill = new Bignumber(transactionInfo.max || '0').dividedBy(
-                    data.activeMaxLimit || '1',
+            if (
+                transactionInfo &&
+                transactionInfo.type !== 'error' &&
+                transactionInfo.max &&
+                data.activeMaxLimit
+            ) {
+                const amountToFill = new Bignumber(transactionInfo.max).dividedBy(
+                    data.activeMaxLimit,
                 );
                 if (amountToFill) {
                     setValue('buyCryptoInput', amountToFill.toFixed(network.decimals));
