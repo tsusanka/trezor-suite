@@ -65,7 +65,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     network: Network;
     fillValue: (type: ButtonTypes) => void;
     feeInfo: FeeInfo;
-    fiat: AppState['wallet']['fiat'];
-    localCurrency: { value: string; label: string };
-    fees: AppState['wallet']['fees'];
+    // fiat: AppState['wallet']['fiat'];
+    // localCurrency: { value: string; label: string };
+    // fees: AppState['wallet']['fees'];
 };
