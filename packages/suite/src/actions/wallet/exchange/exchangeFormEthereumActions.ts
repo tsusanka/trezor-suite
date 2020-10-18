@@ -1,6 +1,7 @@
 import TrezorConnect, { FeeLevel, TokenInfo } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
 import { toWei } from 'web3-utils';
+import { getExternalComposeOutput } from '@wallet-utils/exchangeFormUtils';
 import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import {
@@ -9,7 +10,6 @@ import {
     calculateEthFee,
     serializeEthereumTx,
     prepareEthereumTransaction,
-    getExternalComposeOutput,
 } from '@wallet-utils/sendFormUtils';
 import { amountToSatoshi, formatAmount } from '@wallet-utils/accountUtils';
 import { ETH_DEFAULT_GAS_LIMIT, ERC20_GAS_LIMIT } from '@wallet-constants/sendForm';
@@ -19,7 +19,6 @@ import {
     PrecomposedTransactionFinal,
     ExternalOutput,
 } from '@wallet-types/sendForm';
-import { FormState } from '@wallet-types/coinmarketExchangeForm';
 import { Dispatch, GetState } from '@suite-types';
 
 const calculate = (
@@ -96,7 +95,8 @@ const calculate = (
 
 export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async () => {
     const { account, network, feeInfo } = composeTransactionData;
-    const composeOutputs = getExternalComposeOutput(composeTransactionData, account, network);
+
+    const composeOutputs = getExternalComposeOutput(composeTransactionData);
     if (!composeOutputs) return; // no valid Output
 
     const { output, tokenInfo, decimals } = composeOutputs;
@@ -201,7 +201,8 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
 };
 
 export const signTransaction = (
-    formValues: FormState,
+    address: string,
+    amount: string,
     transactionInfo: PrecomposedTransactionFinal,
 ) => async (dispatch: Dispatch, getState: GetState) => {
     const { selectedAccount } = getState().wallet;
@@ -238,9 +239,9 @@ export const signTransaction = (
     const transaction = prepareEthereumTransaction({
         token: transactionInfo.token,
         chainId: network.chainId,
-        to: formValues.outputs[0].address,
-        amount: formValues.outputs[0].amount,
-        data: formValues.ethereumDataHex,
+        to: address,
+        amount,
+        // data: formValues.ethereumDataHex,
         gasLimit: transactionInfo.feeLimit || ETH_DEFAULT_GAS_LIMIT,
         gasPrice: transactionInfo.feePerByte,
         nonce,

@@ -12,7 +12,6 @@ import {
     PrecomposedTransactionFinal,
     ExternalOutput,
 } from '@wallet-types/sendForm';
-import { FormState } from '@wallet-types/coinmarketExchangeForm';
 import { Dispatch, GetState } from '@suite-types';
 
 const calculate = (
@@ -132,7 +131,8 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
 };
 
 export const signTransaction = (
-    formValues: FormState,
+    address: string,
+    amount: string,
     transactionInfo: PrecomposedTransactionFinal,
 ) => async (dispatch: Dispatch, getState: GetState) => {
     const { selectedAccount } = getState().wallet;
@@ -148,8 +148,8 @@ export const signTransaction = (
     if (account.networkType !== 'ripple') return;
 
     const payment: RipplePayment = {
-        destination: formValues.outputs[0].address,
-        amount: networkAmountToSatoshi(formValues.outputs[0].amount, account.symbol),
+        destination: address,
+        amount: networkAmountToSatoshi(amount, account.symbol),
     };
 
     // if (formValues.rippleDestinationTag) {

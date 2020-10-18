@@ -51,7 +51,7 @@ const CoinmarketExchangeForm = () => {
                     <Translation id="TR_EXCHANGE_NO_PROVIDERS" />
                 </NoProviders>
             )}
-            {!isLoading && !noProviders && (
+            {!isLoading && (
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Inputs />
                     <FeesWrapper>

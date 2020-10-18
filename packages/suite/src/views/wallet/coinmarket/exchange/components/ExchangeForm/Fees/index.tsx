@@ -114,12 +114,14 @@ const Fees = () => {
         feeInfo,
         selectedFee,
         selectFee,
-        // composeTransaction,
+        setValue,
+        transactionInfo,
+        compose,
+        activeMaxLimit,
     } = useCoinmarketExchangeFormContext();
 
     const selectedFeeLevel = feeInfo.levels.find(level => level.label === selectedFee);
     if (!selectedFeeLevel) return null;
-    const transactionInfo = null;
     const isCustomLevel = selectedFee === 'custom';
 
     return (
@@ -134,14 +136,15 @@ const Fees = () => {
                         options={buildFeeOptions(feeInfo.levels)}
                         onChange={(value: any) => {
                             selectFee(value);
+                            if (value === 'custom') {
+                                setValue('feePerUnit', selectedFeeLevel.feePerUnit);
+                            }
+                            compose({ activeMaxLimit, feeLevelLabel: value });
                         }}
                     />
-
-                    {isCustomLevel && (
-                        <CustomFeeWrapper>
-                            <CustomFee />
-                        </CustomFeeWrapper>
-                    )}
+                    <CustomFeeWrapper>
+                        <CustomFee isVisible={isCustomLevel} />
+                    </CustomFeeWrapper>
                 </Row>
                 <Row>
                     <FeeInfo>

@@ -19,8 +19,6 @@ export interface ComponentProps {
     exchangeCoinInfo: AppState['wallet']['coinmarket']['exchange']['exchangeCoinInfo'];
 }
 
-export type ButtonTypes = 'max' | 'half' | 'quarter';
-
 export interface Props extends ComponentProps {
     selectedAccount: Extract<ComponentProps['selectedAccount'], { status: 'loaded' }>;
 }
@@ -40,6 +38,12 @@ export interface AmountLimits {
     max?: number;
 }
 
+export interface ComposeData {
+    activeMaxLimit?: number;
+    feeLevelLabel?: FeeLevel['label'];
+    feePerUnit?: FeeLevel['feePerUnit'];
+}
+
 export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'register'> & {
     register: (rules?: TypedValidationRules) => (ref: any) => void;
     onSubmit: () => void;
@@ -48,6 +52,9 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     exchangeCoinInfo?: ExchangeCoinInfo[];
     localCurrencyOption: { label: string; value: string };
     selectedFee: FeeLevel['label'];
+    setActiveMaxLimit: (activeMaxLimit: number) => void;
+    activeMaxLimit?: number;
+    compose: (data?: ComposeData) => void;
     selectFee: (feeLevel: FeeLevel['label']) => void;
     composeTransaction: () => void;
     updateFiatCurrency: (selectedCurrency: { value: string; label: string }) => void;
@@ -63,7 +70,6 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     updateFiatValue: (amount: string) => void;
     noProviders: boolean;
     network: Network;
-    fillValue: (type: ButtonTypes) => void;
     feeInfo: FeeInfo;
     // fiat: AppState['wallet']['fiat'];
     // localCurrency: { value: string; label: string };

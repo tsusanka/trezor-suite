@@ -30,6 +30,7 @@ const BuyCryptoInput = () => {
         trigger,
         formState,
         amountLimits,
+        compose,
         updateFiatValue,
         setValue,
     } = useCoinmarketExchangeFormContext();
@@ -46,6 +47,7 @@ const BuyCryptoInput = () => {
             onChange={event => {
                 updateFiatValue(event.target.value);
                 clearErrors(fiatInput);
+                compose();
             }}
             state={errors[buyCryptoInput] ? 'error' : undefined}
             name={buyCryptoInput}

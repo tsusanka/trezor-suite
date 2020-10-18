@@ -3,13 +3,8 @@ import BigNumber from 'bignumber.js';
 import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { formatNetworkAmount } from '@wallet-utils/accountUtils';
-import { getBitcoinComposeOutputs } from '@wallet-utils/sendFormUtils';
-import {
-    ZEC_SIGN_ENHANCEMENT,
-    BTC_RBF_SEQUENCE,
-    BTC_LOCKTIME_SEQUENCE,
-} from '@wallet-constants/sendForm';
-import { FormState } from '@wallet-types/coinmarketExchangeForm';
+import { getBitcoinComposeOutputs } from '@wallet-utils/exchangeFormUtils';
+import { ZEC_SIGN_ENHANCEMENT } from '@wallet-constants/sendForm';
 import {
     PrecomposedLevels,
     PrecomposedTransaction,
@@ -23,7 +18,7 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     const { account, feeInfo } = composeTransactionData;
     if (!account.addresses || !account.utxo) return;
 
-    const composeOutputs = getBitcoinComposeOutputs(composeTransactionData, account.symbol);
+    const composeOutputs = getBitcoinComposeOutputs(composeTransactionData);
     if (composeOutputs.length < 1) return;
 
     const predefinedLevels = feeInfo.levels.filter(l => l.label !== 'custom');
@@ -137,10 +132,10 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     return wrappedResponse;
 };
 
-export const signTransaction = (
-    formValues: FormState,
-    transactionInfo: PrecomposedTransactionFinal,
-) => async (dispatch: Dispatch, getState: GetState) => {
+export const signTransaction = (transactionInfo: PrecomposedTransactionFinal) => async (
+    dispatch: Dispatch,
+    getState: GetState,
+) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
     if (
@@ -163,15 +158,6 @@ export const signTransaction = (
         signEnhancement = ZEC_SIGN_ENHANCEMENT;
     }
 
-    if (formValues.options.includes('bitcoinRBF')) {
-        // RBF is set, add sequence to inputs
-        sequence = BTC_RBF_SEQUENCE;
-    } else if (formValues.bitcoinLockTime) {
-        // locktime is set, add sequence to inputs and add enhancement params
-        sequence = BTC_LOCKTIME_SEQUENCE;
-        signEnhancement.locktime = new BigNumber(formValues.bitcoinLockTime).toNumber();
-    }
-
     // update inputs
     // TODO: 0 amounts should be excluded together with "exclude dustLimit" feature and "utxo picker" feature in composeTransaction (above)
     const inputs = transaction.inputs
@@ -182,7 +168,6 @@ export const signTransaction = (
         .filter(input => input.amount !== '0'); // remove '0' amounts
     inputs.forEach(input => {
         if (!input.amount) delete input.amount; // remove undefined amounts
-        if (!input.sequence) delete input.sequence; // remove undefined sequence
     });
 
     const signPayload = {

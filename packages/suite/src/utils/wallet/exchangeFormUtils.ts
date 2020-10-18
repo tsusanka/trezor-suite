@@ -1,6 +1,7 @@
 import { ExternalOutput } from '@wallet-types/sendForm';
-import { amountToSatoshi } from '@wallet-utils/accountUtils';
+import { amountToSatoshi, networkAmountToSatoshi } from '@wallet-utils/accountUtils';
 import { findToken } from '@wallet-utils/sendFormUtils';
+import { ComposeOutput } from 'trezor-connect';
 import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 
 export const getExternalComposeOutput = ({
@@ -47,4 +48,40 @@ export const getExternalComposeOutput = ({
         tokenInfo,
         decimals,
     };
+};
+
+export const getBitcoinComposeOutputs = ({
+    account,
+    address,
+    amount,
+    isMaxActive,
+}: ComposeTransactionData) => {
+    const result: ComposeOutput[] = [];
+
+    if (isMaxActive) {
+        if (address) {
+            result.push({
+                type: 'send-max',
+                address,
+            });
+        } else {
+            result.push({ type: 'send-max-noaddress' });
+        }
+    } else if (amount) {
+        const formattedAmount = networkAmountToSatoshi(amount, account.symbol);
+        if (address) {
+            result.push({
+                type: 'external',
+                address,
+                amount: formattedAmount,
+            });
+        } else {
+            result.push({
+                type: 'noaddress',
+                amount: formattedAmount,
+            });
+        }
+    }
+
+    return result;
 };

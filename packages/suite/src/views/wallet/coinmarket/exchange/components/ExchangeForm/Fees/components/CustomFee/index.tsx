@@ -8,8 +8,8 @@ import { useCoinmarketExchangeFormContext } from '@wallet-hooks/useCoinmarketExc
 import { getInputState, getFeeUnits } from '@wallet-utils/sendFormUtils';
 import { isDecimalsValid, isInteger } from '@wallet-utils/validation';
 
-const Wrapper = styled.div`
-    display: flex;
+const Wrapper = styled.div<{ isVisible: boolean }>`
+    display: ${props => (props.isVisible ? 'flex' : 'none')};
 `;
 
 const StyledInput = styled(Input)`
@@ -21,13 +21,18 @@ const Units = styled.div`
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
 `;
 
-const CustomFee = () => {
+interface Props {
+    isVisible: boolean;
+}
+
+const CustomFee = ({ isVisible }: Props) => {
     const {
         network,
         feeInfo,
         errors,
         register,
-        composeTransaction,
+        compose,
+        activeMaxLimit,
     } = useCoinmarketExchangeFormContext();
     const { maxFee, minFee } = feeInfo;
     const inputName = 'feePerUnit';
@@ -35,7 +40,7 @@ const CustomFee = () => {
     const feePerUnitError = errors.feePerUnit;
 
     return (
-        <Wrapper>
+        <Wrapper isVisible={isVisible}>
             <StyledInput
                 noTopLabel
                 variant="small"
@@ -44,8 +49,12 @@ const CustomFee = () => {
                 wrapperProps={{ width: '120' }}
                 state={getInputState(feePerUnitError, feePerUnitValue)}
                 innerAddon={<Units>{getFeeUnits(network.networkType)}</Units>}
-                onChange={() => {
-                    composeTransaction();
+                onChange={event => {
+                    compose({
+                        activeMaxLimit,
+                        feeLevelLabel: 'custom',
+                        feePerUnit: event.target.value,
+                    });
                 }}
                 name={inputName}
                 data-test={inputName}
