@@ -1,5 +1,10 @@
 import * as fixtures from '../__fixtures__/exchangeUtils';
-import { getAmountLimits, isQuoteError, splitToFixedFloatQuotes } from '../exchangeUtils';
+import {
+    getAmountLimits,
+    getStatusMessage,
+    isQuoteError,
+    splitToFixedFloatQuotes,
+} from '../exchangeUtils';
 
 const {
     EXCHANGE_INFO,
@@ -164,5 +169,12 @@ describe('coinmarket/exchange utils', () => {
                 { error: 'Cannot trade pair LTC-DATA.', exchange: 'foxexchange' },
             ],
         ]);
+    });
+    it('getStatusMessage', () => {
+        expect(getStatusMessage('CONVERTING')).toBe('TR_EXCHANGE_STATUS_CONVERTING');
+        expect(getStatusMessage('CONFIRMING')).toBe('TR_EXCHANGE_STATUS_CONFIRMING');
+        expect(getStatusMessage('KYC')).toBe('TR_EXCHANGE_STATUS_KYC');
+        expect(getStatusMessage('ERROR')).toBe('TR_EXCHANGE_STATUS_ERROR');
+        expect(getStatusMessage('SUCCESS')).toBe('TR_EXCHANGE_STATUS_SUCCESS');
     });
 });

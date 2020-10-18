@@ -69,7 +69,7 @@ const BuyColumn = styled(Column)`
 `;
 
 const ProviderColumn = styled(Column)`
-    max-width: 220px;
+    max-width: 200px;
 `;
 
 const TradeID = styled.span`
@@ -143,7 +143,7 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
         receiveCurrency,
     } = data;
 
-    const statusMessage = getStatusMessage(status);
+    const statusMessage = getStatusMessage(status || 'SUBMITTED');
 
     const getOffers = async () => {
         setIsGettingOffers(true);
@@ -199,7 +199,7 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
                         hour="2-digit"
                         minute="2-digit"
                     />{' '}
-                    • <StyledStatus status={status} />
+                    • <StyledStatus trade={data} tradeType={updatedTrade.tradeType} />
                 </SmallRowStatus>
                 <SmallRow>
                     <Translation id="TR_BUY_TRANS_ID" />

@@ -90,7 +90,6 @@ describe('coinmarket/buy utils', () => {
         expect(getStatusMessage('BLOCKED')).toBe('TR_BUY_STATUS_ERROR');
         expect(getStatusMessage('ERROR')).toBe('TR_BUY_STATUS_ERROR');
         expect(getStatusMessage('SUCCESS')).toBe('TR_BUY_STATUS_SUCCESS');
-        expect(getStatusMessage(undefined)).toBe('TR_BUY_STATUS_PENDING');
     });
 
     it('getCryptoOptions', () => {

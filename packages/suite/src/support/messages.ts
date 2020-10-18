@@ -287,6 +287,38 @@ const definedMessages = defineMessages({
             'I understand that cryptocurrency transactions are irreversible and I won’t be able to receive a refund for my purchase.',
         id: 'TR_EXCHANGE_TERMS_5',
     },
+    TR_EXCHANGE_STATUS_ERROR: {
+        defaultMessage: 'Error',
+        id: 'TR_EXCHANGE_STATUS_ERROR',
+    },
+    TR_EXCHANGE_STATUS_SUCCESS: {
+        defaultMessage: 'Success',
+        id: 'TR_EXCHANGE_STATUS_SUCCESS',
+    },
+    TR_EXCHANGE_STATUS_KYC: {
+        defaultMessage: 'KYC',
+        id: 'TR_EXCHANGE_STATUS_KYC',
+    },
+    TR_EXCHANGE_STATUS_CONFIRMING: {
+        defaultMessage: 'Waiting for confirmation...',
+        id: 'TR_EXCHANGE_STATUS_CONFIRMING',
+    },
+    TR_EXCHANGE_STATUS_CONVERTING: {
+        defaultMessage: 'Converting...',
+        id: 'TR_EXCHANGE_STATUS_CONVERTING',
+    },
+    TR_EXCHANGE_TRANS_ID: {
+        defaultMessage: 'trans. id:',
+        id: 'TR_EXCHANGE_TRANS_ID',
+    },
+    TR_EXCHANGE_AGAIN: {
+        defaultMessage: 'Exchange again',
+        id: 'TR_EXCHANGE_AGAIN',
+    },
+    TR_EXCHANGE_VIEW_DETAILS: {
+        defaultMessage: 'View details',
+        id: 'TR_EXCHANGE_VIEW_DETAILS',
+    },
     TR_EXCHANGE_DETAIL_SUCCESS_TITLE: {
         defaultMessage: 'Trade success',
         id: 'TR_EXCHANGE_DETAIL_SUCCESS_TITLE',
@@ -316,7 +348,7 @@ const definedMessages = defineMessages({
         id: 'TR_EXCHANGE_DETAIL_ERROR_BUTTON',
     },
     TR_EXCHANGE_DETAIL_KYC_TITLE: {
-        defaultMessage: 'KYC problem',
+        defaultMessage: 'KYC request',
         id: 'TR_EXCHANGE_DETAIL_KYC_TITLE',
     },
     TR_EXCHANGE_DETAIL_KYC_TEXT: {

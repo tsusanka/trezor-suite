@@ -1,6 +1,6 @@
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import { AmountLimits } from '@wallet-types/coinmarketExchangeForm';
-import { ExchangeTrade } from 'invity-api';
+import { ExchangeTrade, ExchangeTradeStatus } from 'invity-api';
 import { symbolToInvityApiSymbol } from './coinmarketUtils';
 import { Account } from '@wallet-types';
 
@@ -108,4 +108,19 @@ export const getSellCryptoOptions = (account: Account, exchangeInfo?: ExchangeIn
     }
 
     return options;
+};
+
+export const getStatusMessage = (status: ExchangeTradeStatus) => {
+    switch (status) {
+        case 'ERROR':
+            return 'TR_EXCHANGE_STATUS_ERROR';
+        case 'SUCCESS':
+            return 'TR_EXCHANGE_STATUS_SUCCESS';
+        case 'KYC':
+            return 'TR_EXCHANGE_STATUS_KYC';
+        case 'CONVERTING':
+            return 'TR_EXCHANGE_STATUS_CONVERTING';
+        default:
+            return 'TR_EXCHANGE_STATUS_CONFIRMING';
+    }
 };

@@ -98,6 +98,7 @@ const AccountTransactions = () => {
                             if (trade.tradeType === 'exchange') {
                                 return (
                                     <ExchangeTransaction
+                                        account={account}
                                         key={`${trade.tradeType}-${trade.key}`}
                                         trade={trade}
                                         providers={exchangeProviders}
