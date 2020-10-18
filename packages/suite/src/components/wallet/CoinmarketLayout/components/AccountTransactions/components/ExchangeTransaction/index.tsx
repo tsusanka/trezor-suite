@@ -119,15 +119,13 @@ const ExchangeTransaction = ({ trade, providers, account }: Props) => {
         saveQuoteRequest: coinmarketExchangeActions.saveQuoteRequest,
     });
     const [isGettingOffers, setIsGettingOffers] = useState(false);
-    const updatedTrade = useWatchExchangeTrade(account, trade);
+    useWatchExchangeTrade(account, trade);
     const exchangeInfo = useSelector<
         AppState,
         AppState['wallet']['coinmarket']['exchange']['exchangeInfo']
     >(state => state.wallet.coinmarket.exchange.exchangeInfo);
 
-    if (!updatedTrade) return null;
-
-    const { date, data } = updatedTrade;
+    const { date, data } = trade;
     const { status, send, sendStringAmount, receive, receiveStringAmount, exchange } = data;
 
     const statusMessage = getStatusMessage(status || 'CONFIRMING');
@@ -183,7 +181,7 @@ const ExchangeTransaction = ({ trade, providers, account }: Props) => {
                         hour="2-digit"
                         minute="2-digit"
                     />{' '}
-                    • <StyledStatus trade={data} tradeType={updatedTrade.tradeType} />
+                    • <StyledStatus trade={data} tradeType={trade.tradeType} />
                 </SmallRowStatus>
                 <SmallRow>
                     <Translation id="TR_EXCHANGE_TRANS_ID" />

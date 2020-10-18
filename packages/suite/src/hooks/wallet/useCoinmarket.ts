@@ -79,7 +79,6 @@ const shouldRefreshBuyTrade = (trade?: TradeBuy) => {
 
 export const useWatchBuyTrade = (account: Account, trade: TradeBuy) => {
     const REFRESH_SECONDS = 30;
-    const [updatedTrade, setUpdatedTrade] = useState<TradeBuy | undefined>(trade);
     const { saveTrade } = useActions({ saveTrade: coinmarketBuyActions.saveTrade });
     const [refreshCount, setRefreshCount] = useState(0);
     const invokeRefresh = () => {
@@ -106,25 +105,11 @@ export const useWatchBuyTrade = (account: Account, trade: TradeBuy) => {
                         error: response.error,
                     };
                     saveTrade(tradeData, account, newDate);
-                    setUpdatedTrade({
-                        tradeType: 'buy',
-                        key: trade.data.paymentId,
-                        date: newDate,
-                        data: tradeData,
-                        account: {
-                            descriptor: account.descriptor,
-                            symbol: account.symbol,
-                            accountType: account.accountType,
-                            accountIndex: account.index,
-                        },
-                    });
                 }
             });
             resetRefresh();
         }
     }, [account, cancelRefresh, refreshCount, resetRefresh, saveTrade, trade]);
-
-    return updatedTrade;
 };
 
 export const ExchangeTradeFinalStatuses: ExchangeTradeStatus[] = ['SUCCESS', 'ERROR', 'KYC'];
@@ -135,7 +120,6 @@ const shouldRefreshExchangeTrade = (trade?: TradeExchange) => {
 
 export const useWatchExchangeTrade = (account: Account, trade: TradeExchange) => {
     const REFRESH_SECONDS = 30;
-    const [updatedTrade, setUpdatedTrade] = useState<TradeExchange | undefined>(trade);
     const { saveTrade } = useActions({ saveTrade: coinmarketExchangeActions.saveTrade });
     const [refreshCount, setRefreshCount] = useState(0);
     const invokeRefresh = () => {
@@ -162,23 +146,9 @@ export const useWatchExchangeTrade = (account: Account, trade: TradeExchange) =>
                         error: response.error,
                     };
                     saveTrade(tradeData, account, newDate);
-                    setUpdatedTrade({
-                        tradeType: 'exchange',
-                        key: trade.data.orderId,
-                        date: newDate,
-                        data: tradeData,
-                        account: {
-                            descriptor: account.descriptor,
-                            symbol: account.symbol,
-                            accountType: account.accountType,
-                            accountIndex: account.index,
-                        },
-                    });
                 }
             });
             resetRefresh();
         }
     }, [account, cancelRefresh, refreshCount, resetRefresh, saveTrade, trade]);
-
-    return updatedTrade;
 };

@@ -145,6 +145,15 @@ const coinmarketReducer = (
                 break;
             case STORAGE.LOADED:
                 return action.payload.wallet.coinmarket;
+            case COINMARKET_EXCHANGE.SAVE_TRADE:
+            case COINMARKET_BUY.SAVE_TRADE:
+                if (action.key) {
+                    const trades = state.trades.filter(t => t.key !== action.key);
+                    const { type, ...trade } = action;
+                    trades.push(trade);
+                    draft.trades = trades;
+                }
+                break;
             // no default
         }
     });

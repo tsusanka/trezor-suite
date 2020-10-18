@@ -1,4 +1,4 @@
-import reducer, { initialState } from '@wallet-reducers/coinmarketReducer';
+import reducer, { initialState, TradeBuy, TradeExchange } from '@wallet-reducers/coinmarketReducer';
 import { STORAGE } from '@suite-actions/constants';
 import { COINMARKET_BUY, COINMARKET_EXCHANGE } from '@wallet-actions/constants';
 import {
@@ -137,6 +137,14 @@ describe('settings reducer', () => {
         ).toEqual({ ...initialState, buy: { ...initialState.buy, addressVerified: '1abcdef' } });
     });
 
+    it('COINMARKET_BUY.DISPOSE', () => {
+        expect(
+            reducer({ ...initialState, buy: { ...initialState.buy, addressVerified: '1abcdef' } }, {
+                type: COINMARKET_BUY.DISPOSE,
+            } as any),
+        ).toEqual(initialState);
+    });
+
     it('COINMARKET_BUY.SAVE_CACHED_ACCOUNT_INFO', () => {
         const cachedAccountInfo = {
             symbol: 'btc',
@@ -205,6 +213,85 @@ describe('settings reducer', () => {
         ).toEqual({
             ...initialState,
             exchange: { ...initialState.exchange, addressVerified: '2efghi' },
+        });
+    });
+
+    it('SAVE_TRADE', () => {
+        const tradeBuy: TradeBuy = {
+            date: 'ddd',
+            key: 'buy-key',
+            tradeType: 'buy',
+            data: {
+                fiatStringAmount: '47.12',
+                fiatCurrency: 'EUR',
+                receiveCurrency: 'BTC',
+                receiveStringAmount: '0.004705020432603938',
+                rate: 10014.834297738,
+                quoteId: 'd369ba9e-7370-4a6e-87dc-aefd3851c735',
+                exchange: 'mercuryo',
+                minFiat: 20.03,
+                maxFiat: 2000.05,
+                minCrypto: 0.002,
+                maxCrypto: 0.19952,
+                paymentMethod: 'creditCard',
+            },
+            account: {
+                symbol: 'btc',
+                descriptor: 'asdfasdfasdfasdfas',
+                accountIndex: 0,
+                accountType: 'normal',
+            },
+        };
+        const tradeExchange: TradeExchange = {
+            date: 'ddd',
+            key: 'exchange-key',
+            tradeType: 'exchange',
+            data: {
+                sendStringAmount: '47.12',
+                send: 'LTC',
+                receive: 'BTC',
+                receiveStringAmount: '0.004705020432603938',
+                orderId: 'd369ba9e-7370-4a6e-87dc-aefd3851c735',
+                exchange: 'changelly',
+                status: 'CONFIRMING',
+            },
+            account: {
+                symbol: 'btc',
+                descriptor: 'asdfasdfasdfasdfas',
+                accountIndex: 0,
+                accountType: 'normal',
+            },
+        };
+
+        const updatedTradeExchange = {
+            ...tradeExchange,
+            data: { ...tradeExchange.data, statutus: 'CONVERTING' },
+        };
+
+        expect(
+            reducer(undefined, {
+                type: COINMARKET_BUY.SAVE_TRADE,
+                ...tradeBuy,
+            } as any),
+        ).toEqual({
+            ...initialState,
+            trades: [tradeBuy],
+        });
+
+        expect(
+            reducer(
+                {
+                    ...initialState,
+                    trades: [tradeExchange, tradeBuy],
+                },
+                {
+                    type: COINMARKET_EXCHANGE.SAVE_TRADE,
+                    ...updatedTradeExchange,
+                } as any,
+            ),
+        ).toEqual({
+            ...initialState,
+            trades: [tradeBuy, updatedTradeExchange],
         });
     });
 });

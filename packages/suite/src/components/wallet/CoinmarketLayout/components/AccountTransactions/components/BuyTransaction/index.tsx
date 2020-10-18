@@ -132,10 +132,9 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
     });
     const country = useSelector(state => state.wallet.coinmarket.buy.buyInfo?.buyInfo?.country);
     const [isGettingOffers, setIsGettingOffers] = useState(false);
-    const updatedTrade = useWatchBuyTrade(account, trade);
-    if (!updatedTrade) return null;
+    useWatchBuyTrade(account, trade);
 
-    const { date, data } = updatedTrade;
+    const { date, data } = trade;
     const {
         fiatStringAmount,
         fiatCurrency,
@@ -202,7 +201,7 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
                         hour="2-digit"
                         minute="2-digit"
                     />{' '}
-                    • <StyledStatus trade={data} tradeType={updatedTrade.tradeType} />
+                    • <StyledStatus trade={data} tradeType={trade.tradeType} />
                 </SmallRowStatus>
                 <SmallRow>
                     <Translation id="TR_BUY_TRANS_ID" />
