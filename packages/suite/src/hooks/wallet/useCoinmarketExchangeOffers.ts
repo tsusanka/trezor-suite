@@ -35,10 +35,16 @@ export const useOffers = (props: Props) => {
     const [lastFetchDate, setLastFetchDate] = useState(new Date());
     const { goto } = useActions({ goto: routerActions.goto });
     const { verifyAddress } = useActions({ verifyAddress: coinmarketCommonActions.verifyAddress });
-    const { saveTrade, openCoinmarketExchangeConfirmModal, addNotification } = useActions({
+    const {
+        saveTrade,
+        openCoinmarketExchangeConfirmModal,
+        saveTransactionId,
+        addNotification,
+    } = useActions({
         saveTrade: coinmarketExchangeActions.saveTrade,
         openCoinmarketExchangeConfirmModal:
             coinmarketExchangeActions.openCoinmarketExchangeConfirmModal,
+        saveTransactionId: coinmarketExchangeActions.saveTransactionId,
         addNotification: notificationActions.addToast,
     });
 
@@ -152,9 +158,10 @@ export const useOffers = (props: Props) => {
     };
 
     const sendTransaction = async () => {
-        if (selectedQuote) {
+        if (selectedQuote && selectedQuote.orderId) {
             // TODO - create and sign transaction and send it to the network
             await saveTrade(selectedQuote, account, new Date().toISOString());
+            await saveTransactionId(selectedQuote.orderId);
             goto('wallet-coinmarket-exchange-detail', {
                 symbol: account.symbol,
                 accountIndex: account.index,

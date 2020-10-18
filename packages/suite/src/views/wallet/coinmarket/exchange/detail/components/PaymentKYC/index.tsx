@@ -36,8 +36,8 @@ const Description = styled.div`
 `;
 
 const Link = styled.a`
-    margin-top: 30px;
-    margin-bottom: 30px;
+    margin-top: 5px;
+    margin-bottom: 20px;
 `;
 
 interface Props {

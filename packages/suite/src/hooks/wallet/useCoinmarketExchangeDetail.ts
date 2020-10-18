@@ -23,11 +23,11 @@ export const useCoinmarketExchangeDetail = (props: Props) => {
         AppState,
         AppState['wallet']['coinmarket']['exchange']['exchangeInfo']
     >(state => state.wallet.coinmarket.exchange.exchangeInfo);
-    const updatedTrade = useWatchExchangeTrade(account, exchangeTrade as TradeExchange);
+    useWatchExchangeTrade(account, exchangeTrade as TradeExchange);
 
     return {
         account,
-        trade: updatedTrade,
+        trade: exchangeTrade,
         transactionId,
         exchangeInfo,
     };

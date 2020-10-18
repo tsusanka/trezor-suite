@@ -20,11 +20,11 @@ export const useCoinmarketBuyDetail = (props: Props) => {
     const buyInfo = useSelector<AppState, AppState['wallet']['coinmarket']['buy']['buyInfo']>(
         state => state.wallet.coinmarket.buy.buyInfo,
     );
-    const updatedTrade = useWatchBuyTrade(account, buyTrade as TradeBuy);
+    useWatchBuyTrade(account, buyTrade as TradeBuy);
 
     return {
         account,
-        trade: updatedTrade,
+        trade: buyTrade,
         transactionId,
         buyInfo,
     };

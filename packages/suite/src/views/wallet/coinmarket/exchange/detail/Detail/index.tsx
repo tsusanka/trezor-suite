@@ -87,6 +87,7 @@ const CoinmarketDetail = () => {
                     </StyledCard>
                     <CoinmarketExchangeOfferInfo
                         account={account}
+                        exchangeInfo={exchangeInfo}
                         selectedQuote={trade.data}
                         transactionId={trade.key}
                     />

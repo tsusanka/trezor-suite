@@ -54,6 +54,7 @@ const Column = styled.div`
     flex: 1;
     flex-direction: column;
     padding: 17px 24px;
+    overflow: hidden;
 `;
 
 const BuyColumn = styled(Column)`
@@ -78,6 +79,8 @@ const TradeID = styled.span`
     padding-left: 5px;
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const Row = styled.div`
@@ -93,6 +96,7 @@ const SmallRow = styled.div`
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.MEDIUM};
     font-size: ${variables.FONT_SIZE.TINY};
+    white-space: nowrap;
 `;
 
 const SmallRowStatus = styled(SmallRow)`
@@ -115,15 +119,13 @@ const ExchangeTransaction = ({ trade, providers, account }: Props) => {
         saveQuoteRequest: coinmarketExchangeActions.saveQuoteRequest,
     });
     const [isGettingOffers, setIsGettingOffers] = useState(false);
-    const updatedTrade = useWatchExchangeTrade(account, trade);
+    useWatchExchangeTrade(account, trade);
     const exchangeInfo = useSelector<
         AppState,
         AppState['wallet']['coinmarket']['exchange']['exchangeInfo']
     >(state => state.wallet.coinmarket.exchange.exchangeInfo);
 
-    if (!updatedTrade) return null;
-
-    const { date, data } = updatedTrade;
+    const { date, data } = trade;
     const { status, send, sendStringAmount, receive, receiveStringAmount, exchange } = data;
 
     const statusMessage = getStatusMessage(status || 'CONFIRMING');
@@ -160,7 +162,7 @@ const ExchangeTransaction = ({ trade, providers, account }: Props) => {
             <Column>
                 <Row>
                     <Amount>
-                        {formatCryptoAmount(Number(receiveStringAmount))} {send}
+                        {formatCryptoAmount(Number(sendStringAmount))} {send}
                     </Amount>
                     <Arrow>
                         <Icon color={colors.NEUE_TYPE_LIGHT_GREY} size={13} icon="ARROW_RIGHT" />
@@ -179,7 +181,7 @@ const ExchangeTransaction = ({ trade, providers, account }: Props) => {
                         hour="2-digit"
                         minute="2-digit"
                     />{' '}
-                    • <StyledStatus trade={data} tradeType={updatedTrade.tradeType} />
+                    • <StyledStatus trade={data} tradeType={trade.tradeType} />
                 </SmallRowStatus>
                 <SmallRow>
                     <Translation id="TR_EXCHANGE_TRANS_ID" />

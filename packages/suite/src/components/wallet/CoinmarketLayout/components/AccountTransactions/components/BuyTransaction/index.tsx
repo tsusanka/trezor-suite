@@ -52,6 +52,7 @@ const Column = styled.div`
     flex: 1;
     flex-direction: column;
     padding: 17px 24px;
+    overflow: hidden;
 `;
 
 const BuyColumn = styled(Column)`
@@ -76,6 +77,8 @@ const TradeID = styled.span`
     padding-left: 5px;
     color: ${colors.NEUE_TYPE_LIGHT_GREY};
     font-weight: ${variables.FONT_WEIGHT.DEMI_BOLD};
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const Row = styled.div`
@@ -129,10 +132,9 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
     });
     const country = useSelector(state => state.wallet.coinmarket.buy.buyInfo?.buyInfo?.country);
     const [isGettingOffers, setIsGettingOffers] = useState(false);
-    const updatedTrade = useWatchBuyTrade(account, trade);
-    if (!updatedTrade) return null;
+    useWatchBuyTrade(account, trade);
 
-    const { date, data } = updatedTrade;
+    const { date, data } = trade;
     const {
         fiatStringAmount,
         fiatCurrency,
@@ -199,7 +201,7 @@ const BuyTransaction = ({ trade, providers, account }: Props) => {
                         hour="2-digit"
                         minute="2-digit"
                     />{' '}
-                    • <StyledStatus trade={data} tradeType={updatedTrade.tradeType} />
+                    • <StyledStatus trade={data} tradeType={trade.tradeType} />
                 </SmallRowStatus>
                 <SmallRow>
                     <Translation id="TR_BUY_TRANS_ID" />
