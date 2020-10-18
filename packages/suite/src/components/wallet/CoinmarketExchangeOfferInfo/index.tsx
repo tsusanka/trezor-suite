@@ -133,7 +133,6 @@ const CoinmarketExchangeOfferInfo = ({
     const provider =
         exchangeInfo?.providerInfos && exchange ? exchangeInfo?.providerInfos[exchange] : null;
 
-    console.log('provider', provider);
     if (!provider) return null;
 
     return (
