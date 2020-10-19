@@ -132,15 +132,16 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     return wrappedResponse;
 };
 
-export const signTransaction = (transactionInfo: PrecomposedTransactionFinal) => async (
-    dispatch: Dispatch,
-    getState: GetState,
-) => {
+export const signTransaction = (
+    transactionInfo: PrecomposedTransactionFinal,
+    address: string,
+) => async (dispatch: Dispatch, getState: GetState) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
     if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return;
 
     // transactionInfo needs some additional changes:
+    transactionInfo.transaction.outputs[0].address = address;
     const { account } = selectedAccount;
     const { transaction } = transactionInfo;
 

@@ -231,7 +231,12 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
     const { account, transactionInfo } = signTransactionData;
     if (!transactionInfo) return;
     if (account.networkType === 'bitcoin') {
-        return dispatch(exchangeFormBitcoinActions.signTransaction(transactionInfo));
+        return dispatch(
+            exchangeFormBitcoinActions.signTransaction(
+                transactionInfo,
+                signTransactionData.address,
+            ),
+        );
     }
     if (account.networkType === 'ethereum') {
         return dispatch(exchangeFormEthereumActions.signTransaction(signTransactionData));
