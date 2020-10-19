@@ -5,6 +5,7 @@ import { ExchangeTrade } from 'invity-api';
 import * as coinmarketCommonActions from '@wallet-actions/coinmarketCommonActions';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import * as routerActions from '@suite-actions/routerActions';
+import { Account } from '@wallet-types';
 import { Props, ContextValues, ExchangeStep } from '@wallet-types/coinmarketExchangeOffers';
 import { useSelector } from 'react-redux';
 import { AppState } from '@suite/types/suite';

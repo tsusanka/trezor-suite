@@ -27,7 +27,7 @@ export const useCoinmarketExchangeDetail = (props: Props) => {
 
     return {
         account,
-        trade: exchangeTrade,
+        trade: exchangeTrade as TradeExchange | undefined,
         transactionId,
         exchangeInfo,
     };
