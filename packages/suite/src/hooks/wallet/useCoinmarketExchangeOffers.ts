@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import invityAPI from '@suite-services/invityAPI';
 import { useActions } from '@suite-hooks';
-import { ExchangeTrade } from 'invity-api';
+import { ExchangeCoinInfo, ExchangeTrade } from 'invity-api';
 import * as coinmarketCommonActions from '@wallet-actions/coinmarketCommonActions';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import * as routerActions from '@suite-actions/routerActions';
@@ -13,6 +13,21 @@ import * as notificationActions from '@suite-actions/notificationActions';
 import { splitToFixedFloatQuotes } from '@wallet-utils/coinmarket/exchangeUtils';
 import networks from '@wallet-config/networks';
 import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
+
+const getReceiveAccountSymbol = (
+    symbol?: string,
+    exchangeCoinInfo?: ExchangeCoinInfo[],
+): string | undefined => {
+    if (symbol) {
+        // check if the symbol is ETH token, in that case use ETH network as receiving account
+        const coinInfo = exchangeCoinInfo?.find(ci => ci.ticker === symbol);
+        if (coinInfo?.token === 'ETH') {
+            return 'eth';
+        }
+        return symbol.toLowerCase();
+    }
+    return symbol;
+};
 
 export const useOffers = (props: Props) => {
     const REFETCH_INTERVAL = 30000;
@@ -68,6 +83,11 @@ export const useOffers = (props: Props) => {
         AppState['wallet']['coinmarket']['exchange']['transactionInfo']
     >(state => state.wallet.coinmarket.exchange.transactionInfo);
 
+    const exchangeCoinInfo = useSelector<
+        AppState,
+        AppState['wallet']['coinmarket']['exchange']['exchangeCoinInfo']
+    >(state => state.wallet.coinmarket.exchange.exchangeCoinInfo);
+
     useEffect(() => {
         if (!quotesRequest) {
             goto('wallet-coinmarket-exchange', {
@@ -109,23 +129,24 @@ export const useOffers = (props: Props) => {
         }
     };
 
+    const receiveSymbol = getReceiveAccountSymbol(selectedQuote?.receive, exchangeCoinInfo);
+
     useEffect(() => {
         if (selectedQuote && exchangeStep === 'RECEIVING_ADDRESS') {
-            const buySymbol = selectedQuote.receive?.toLowerCase();
             const unavailableCapabilities =
                 device?.features && device?.unavailableCapabilities
                     ? device.unavailableCapabilities
                     : {};
             // is the symbol supported by the suite and the device natively
             const buyNetworks = networks.filter(
-                n => n.symbol === buySymbol && !unavailableCapabilities[n.symbol],
+                n => n.symbol === receiveSymbol && !unavailableCapabilities[n.symbol],
             );
             if (buyNetworks.length > 0) {
                 // are there some accounts with the symbol
                 setSuiteBuyAccounts(
                     accounts.filter(
                         a =>
-                            a.symbol === buySymbol &&
+                            a.symbol === receiveSymbol &&
                             (!a.empty ||
                                 a.visible ||
                                 (a.accountType === 'normal' && a.index === 0)),
@@ -135,7 +156,7 @@ export const useOffers = (props: Props) => {
             }
         }
         setSuiteBuyAccounts(undefined);
-    }, [accounts, device, exchangeStep, selectedQuote]);
+    }, [accounts, device, exchangeStep, receiveSymbol, selectedQuote]);
 
     const confirmTrade = async (address: string, extraField?: string) => {
         const { address: refundAddress } = getUnusedAddressFromAccount(account);
@@ -213,6 +234,7 @@ export const useOffers = (props: Props) => {
         selectQuote,
         account,
         REFETCH_INTERVAL,
+        receiveSymbol,
         receiveAccount,
         setReceiveAccount,
     };
