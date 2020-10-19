@@ -1,5 +1,10 @@
 import { Account, Network } from '@wallet-types';
-import { FeeLevel } from 'trezor-connect';
+import { formatNetworkAmount, formatAmount } from '@wallet-utils/accountUtils';
+import TrezorConnect, { FeeLevel } from 'trezor-connect';
+import BigNumber from 'bignumber.js';
+import { GetState, Dispatch } from '@suite-types';
+import * as accountActions from '@wallet-actions/accountActions';
+import * as notificationActions from '@suite-actions/notificationActions';
 import * as exchangeFormBitcoinActions from './exchange/exchangeFormBitcoinActions';
 import * as exchangeFormEthereumActions from './exchange/exchangeFormEthereumActions';
 import * as exchangeFormRippleActions from './exchange/exchangeFormRippleActions';
@@ -12,7 +17,6 @@ import {
 } from 'invity-api';
 import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
-import { Dispatch } from '@suite-types';
 import * as modalActions from '@suite-actions/modalActions';
 import {
     FeeInfo,
@@ -32,6 +36,13 @@ export type CoinmarketExchangeActions =
     | {
           type: typeof COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO;
           exchangeCoinInfo: ExchangeCoinInfo[];
+      }
+    | {
+          type: typeof COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION;
+          payload?: {
+              tx: string;
+              coin: Account['symbol'];
+          };
       }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST; request: ExchangeTradeQuoteRequest }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID; transactionId: string }
@@ -225,23 +236,118 @@ export interface SignTransactionData {
     transactionInfo: PrecomposedTransactionFinal | null;
 }
 
+// this could be called at any time during signTransaction or pushTransaction process (from ReviewTransaction modal)
+export const cancelSignTx = () => (dispatch: Dispatch, getState: GetState) => {
+    const { signedTx } = getState().wallet.coinmarket.exchange;
+    dispatch({ type: COINMARKET_EXCHANGE.REQUEST_SIGN_TRANSACTION });
+    dispatch({ type: COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION });
+    // if transaction is not signed yet interrupt signing in TrezorConnect
+    if (!signedTx) {
+        TrezorConnect.cancel('tx-cancelled');
+        return;
+    }
+    // otherwise just close modal
+    dispatch(modalActions.onCancel());
+};
+
+const pushTransaction = () => async (dispatch: Dispatch, getState: GetState) => {
+    const { signedTx, transactionInfo } = getState().wallet.coinmarket.exchange;
+    const { account } = getState().wallet.selectedAccount;
+    const { device } = getState().suite;
+    if (!signedTx || !transactionInfo || !account) return false;
+
+    const sentTx = await TrezorConnect.pushTransaction(signedTx);
+    // const sentTx = { success: true, payload: { txid: 'ABC ' } };
+    // close modal regardless result
+    dispatch(cancelSignTx());
+
+    const { token } = transactionInfo;
+    const spentWithoutFee = !token
+        ? new BigNumber(transactionInfo.totalSpent).minus(transactionInfo.fee).toString()
+        : '0';
+    // get total amount without fee OR token amount
+    const formattedAmount = token
+        ? `${formatAmount(
+              transactionInfo.totalSpent,
+              token.decimals,
+          )} ${token.symbol!.toUpperCase()}`
+        : formatNetworkAmount(spentWithoutFee, account.symbol, true);
+
+    if (sentTx.success) {
+        dispatch(
+            notificationActions.addToast({
+                type: 'tx-sent',
+                formattedAmount,
+                device,
+                descriptor: account.descriptor,
+                symbol: account.symbol,
+                txid: sentTx.payload.txid,
+            }),
+        );
+
+        dispatch(accountActions.fetchAndUpdateAccount(account));
+    } else {
+        dispatch(
+            notificationActions.addToast({ type: 'sign-tx-error', error: sentTx.payload.error }),
+        );
+    }
+
+    return sentTx.success;
+};
+
 export const signTransaction = (signTransactionData: SignTransactionData) => async (
     dispatch: Dispatch,
 ) => {
     const { account, transactionInfo } = signTransactionData;
-    if (!transactionInfo) return;
-    if (account.networkType === 'bitcoin') {
-        return dispatch(
+    if (!account) return;
+
+    // store formValues and transactionInfo in send reducer to be used by ReviewTransaction modal
+    dispatch({
+        type: COINMARKET_EXCHANGE.REQUEST_SIGN_TRANSACTION,
+        payload: {
+            signTransactionData,
+        },
+    });
+
+    // signTransaction by Trezor
+    let serializedTx: string | undefined;
+
+    if (account.networkType === 'bitcoin' && transactionInfo) {
+        serializedTx = await dispatch(
             exchangeFormBitcoinActions.signTransaction(
                 transactionInfo,
                 signTransactionData.address,
             ),
         );
     }
+
     if (account.networkType === 'ethereum') {
-        return dispatch(exchangeFormEthereumActions.signTransaction(signTransactionData));
+        serializedTx = await dispatch(
+            exchangeFormEthereumActions.signTransaction(signTransactionData),
+        );
     }
+
     if (account.networkType === 'ripple') {
-        return dispatch(exchangeFormRippleActions.signTransaction(signTransactionData));
+        serializedTx = await dispatch(
+            exchangeFormRippleActions.signTransaction(signTransactionData),
+        );
+    }
+
+    if (!serializedTx) return;
+
+    // store serializedTx in reducer (TrezorConnect.pushTransaction params) to be used in ReviewTransaction modal and pushTransaction method
+    dispatch({
+        type: COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION,
+        payload: {
+            tx: serializedTx,
+            coin: account.symbol,
+        },
+    });
+
+    // Open a deferred modal and get the decision
+    const decision = await dispatch(modalActions.openDeferredModal({ type: 'review-transaction' }));
+    if (decision && transactionInfo) {
+        // push tx to the network
+        return dispatch(pushTransaction());
     }
 };

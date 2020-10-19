@@ -54,6 +54,7 @@ interface Exchange {
     transactionId?: string;
     addressVerified?: string;
     transactionInfo: PrecomposedTransactionFinal | null;
+    signedTx?: { tx: string; coin: string };
 }
 
 interface State {
@@ -87,6 +88,7 @@ export const initialState = {
         floatQuotes: [],
         addressVerified: undefined,
         transactionInfo: null,
+        signedTx: undefined,
     },
     trades: [],
 };
@@ -148,6 +150,13 @@ const coinmarketReducer = (
                 break;
             case COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO:
                 draft.exchange.transactionInfo = action.transactionInfo;
+                break;
+            case COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION:
+                if (action.payload) {
+                    draft.exchange.signedTx = action.payload;
+                } else {
+                    delete draft.exchange.signedTx;
+                }
                 break;
             case STORAGE.LOADED:
                 return action.payload.wallet.coinmarket;

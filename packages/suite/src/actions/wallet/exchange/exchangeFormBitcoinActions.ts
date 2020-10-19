@@ -141,11 +141,9 @@ export const signTransaction = (
     if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return;
 
     // transactionInfo needs some additional changes:
-    transactionInfo.transaction.outputs[0].address = address;
     const { account } = selectedAccount;
     const { transaction } = transactionInfo;
 
-    let sequence: number;
     let signEnhancement: Partial<SignTransaction> = {};
 
     // enhance signTransaction params for zcash (version_group_id etc.)
@@ -158,7 +156,6 @@ export const signTransaction = (
     const inputs = transaction.inputs
         .map(input => ({
             ...input,
-            sequence,
         }))
         .filter(input => input.amount !== '0'); // remove '0' amounts
     inputs.forEach(input => {
