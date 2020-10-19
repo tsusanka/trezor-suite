@@ -2,7 +2,10 @@ import TrezorConnect, { FeeLevel, TokenInfo } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
 import { toWei } from 'web3-utils';
 import { getExternalComposeOutput } from '@wallet-utils/exchangeFormUtils';
-import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
+import {
+    ComposeTransactionData,
+    SignTransactionData,
+} from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import {
     calculateTotal,
@@ -13,12 +16,7 @@ import {
 } from '@wallet-utils/sendFormUtils';
 import { amountToSatoshi, formatAmount } from '@wallet-utils/accountUtils';
 import { ETH_DEFAULT_GAS_LIMIT, ERC20_GAS_LIMIT } from '@wallet-constants/sendForm';
-import {
-    PrecomposedLevels,
-    PrecomposedTransaction,
-    PrecomposedTransactionFinal,
-    ExternalOutput,
-} from '@wallet-types/sendForm';
+import { PrecomposedLevels, PrecomposedTransaction, ExternalOutput } from '@wallet-types/sendForm';
 import { Dispatch, GetState } from '@suite-types';
 
 const calculate = (
@@ -199,21 +197,13 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
 
     return wrappedResponse;
 };
-
-export const signTransaction = (
-    address: string,
-    amount: string,
-    transactionInfo: PrecomposedTransactionFinal,
-) => async (dispatch: Dispatch, getState: GetState) => {
+export const signTransaction = (data: SignTransactionData) => async (
+    dispatch: Dispatch,
+    getState: GetState,
+) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
-    if (
-        selectedAccount.status !== 'loaded' ||
-        !device ||
-        !transactionInfo ||
-        transactionInfo.type !== 'final'
-    )
-        return;
+    if (selectedAccount.status !== 'loaded' || !device || !data.transactionInfo) return;
 
     const { account, network } = selectedAccount;
     if (account.networkType !== 'ethereum' || !network.chainId) return;
@@ -237,13 +227,13 @@ export const signTransaction = (
 
     // transform to TrezorConnect.ethereumSignTransaction params
     const transaction = prepareEthereumTransaction({
-        token: transactionInfo.token,
-        chainId: network.chainId,
-        to: address,
-        amount,
+        token: data.transactionInfo.token,
+        chainId: data.network.chainId,
+        to: data.address,
+        amount: data.amount,
         // data: formValues.ethereumDataHex,
-        gasLimit: transactionInfo.feeLimit || ETH_DEFAULT_GAS_LIMIT,
-        gasPrice: transactionInfo.feePerByte,
+        gasLimit: data.transactionInfo.feeLimit || ETH_DEFAULT_GAS_LIMIT,
+        gasPrice: data.transactionInfo.feePerByte,
         nonce,
     });
 

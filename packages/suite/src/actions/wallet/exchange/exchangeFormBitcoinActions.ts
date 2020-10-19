@@ -138,13 +138,7 @@ export const signTransaction = (transactionInfo: PrecomposedTransactionFinal) =>
 ) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
-    if (
-        selectedAccount.status !== 'loaded' ||
-        !device ||
-        !transactionInfo ||
-        transactionInfo.type !== 'final'
-    )
-        return;
+    if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return;
 
     // transactionInfo needs some additional changes:
     const { account } = selectedAccount;

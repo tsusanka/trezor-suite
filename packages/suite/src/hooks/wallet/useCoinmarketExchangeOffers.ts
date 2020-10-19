@@ -12,6 +12,7 @@ import * as notificationActions from '@suite-actions/notificationActions';
 import { splitToFixedFloatQuotes } from '@wallet-utils/coinmarket/exchangeUtils';
 import networks from '@wallet-config/networks';
 import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { signTransaction } from '@suite/actions/wallet/exchange/exchangeFormBitcoinActions';
 
 export const useOffers = (props: Props) => {
     const REFETCH_INTERVAL = 30000;
@@ -59,6 +60,11 @@ export const useOffers = (props: Props) => {
     const accounts = useSelector<AppState, AppState['wallet']['accounts']>(
         state => state.wallet.accounts,
     );
+
+    const transactionInfo = useSelector<
+        AppState,
+        AppState['wallet']['coinmarket']['exchange']['transactionInfo']
+    >(state => state.wallet.coinmarket.exchange.transactionInfo);
 
     useEffect(() => {
         if (!quotesRequest) {

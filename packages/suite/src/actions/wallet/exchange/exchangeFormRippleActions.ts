@@ -1,17 +1,15 @@
 import TrezorConnect, { FeeLevel, RipplePayment } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
-import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
+import {
+    ComposeTransactionData,
+    SignTransactionData,
+} from '@wallet-actions/coinmarketExchangeActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { calculateTotal, calculateMax } from '@wallet-utils/sendFormUtils';
 import { getExternalComposeOutput } from '@wallet-utils/exchangeFormUtils';
 import { networkAmountToSatoshi, formatNetworkAmount } from '@wallet-utils/accountUtils';
 import { XRP_FLAG } from '@wallet-constants/sendForm';
-import {
-    PrecomposedLevels,
-    PrecomposedTransaction,
-    PrecomposedTransactionFinal,
-    ExternalOutput,
-} from '@wallet-types/sendForm';
+import { PrecomposedLevels, PrecomposedTransaction, ExternalOutput } from '@wallet-types/sendForm';
 import { Dispatch, GetState } from '@suite-types';
 
 const calculate = (
@@ -130,31 +128,24 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     return wrappedResponse;
 };
 
-export const signTransaction = (
-    address: string,
-    amount: string,
-    transactionInfo: PrecomposedTransactionFinal,
-) => async (dispatch: Dispatch, getState: GetState) => {
+export const signTransaction = (data: SignTransactionData) => async (
+    dispatch: Dispatch,
+    getState: GetState,
+) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
-    if (
-        selectedAccount.status !== 'loaded' ||
-        !device ||
-        !transactionInfo ||
-        transactionInfo.type !== 'final'
-    )
-        return;
+    if (selectedAccount.status !== 'loaded' || !device || !data.transactionInfo) return;
     const { account } = selectedAccount;
     if (account.networkType !== 'ripple') return;
 
     const payment: RipplePayment = {
-        destination: address,
-        amount: networkAmountToSatoshi(amount, account.symbol),
+        destination: data.address,
+        amount: networkAmountToSatoshi(data.amount, account.symbol),
     };
 
-    // if (formValues.rippleDestinationTag) {
-    //     payment.destinationTag = parseInt(formValues.rippleDestinationTag, 10);
-    // }
+    if (data.destinationTag) {
+        payment.destinationTag = parseInt(data.destinationTag, 10);
+    }
 
     const signedTx = await TrezorConnect.rippleSignTransaction({
         device: {
@@ -165,7 +156,7 @@ export const signTransaction = (
         useEmptyPassphrase: device.useEmptyPassphrase,
         path: account.path,
         transaction: {
-            fee: transactionInfo.feePerByte,
+            fee: data.transactionInfo.feePerByte,
             flags: XRP_FLAG,
             sequence: account.misc.sequence,
             payment,

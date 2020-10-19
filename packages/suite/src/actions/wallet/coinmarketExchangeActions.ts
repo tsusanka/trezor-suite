@@ -14,7 +14,11 @@ import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
 import { Dispatch } from '@suite-types';
 import * as modalActions from '@suite-actions/modalActions';
-import { FeeInfo, PrecomposedTransaction } from '@wallet-types/sendForm';
+import {
+    FeeInfo,
+    PrecomposedTransactionNonFinal,
+    PrecomposedTransactionFinal,
+} from '@wallet-types/sendForm';
 
 export interface ExchangeInfo {
     exchangeList?: ExchangeListResponse;
@@ -52,7 +56,7 @@ export type CoinmarketExchangeActions =
       }
     | {
           type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO;
-          transactionInfo: PrecomposedTransaction;
+          transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal;
       };
 
 export async function loadExchangeInfo(): Promise<[ExchangeInfo, ExchangeCoinInfo[]]> {
@@ -165,9 +169,9 @@ export const saveTransactionId = (transactionId: string) => async (dispatch: Dis
     });
 };
 
-export const saveTransactionInfo = (transactionInfo: PrecomposedTransaction) => async (
-    dispatch: Dispatch,
-) => {
+export const saveTransactionInfo = (
+    transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal,
+) => async (dispatch: Dispatch) => {
     dispatch({
         type: COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO,
         transactionInfo,
@@ -209,5 +213,29 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     }
     if (account.networkType === 'ripple') {
         return dispatch(exchangeFormRippleActions.composeTransaction(composeTransactionData));
+    }
+};
+
+export interface SignTransactionData {
+    account: Account;
+    address: string;
+    amount: string;
+    network: Network;
+    destinationTag?: string;
+    transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal;
+}
+
+export const signTransaction = (signTransactionData: SignTransactionData) => async (
+    dispatch: Dispatch,
+) => {
+    const { account } = signTransactionData;
+    if (account.networkType === 'bitcoin') {
+        return dispatch(exchangeFormBitcoinActions.signTransaction(signTransactionData));
+    }
+    if (account.networkType === 'ethereum') {
+        return dispatch(exchangeFormEthereumActions.signTransaction(signTransactionData));
+    }
+    if (account.networkType === 'ripple') {
+        return dispatch(exchangeFormRippleActions.signTransaction(signTransactionData));
     }
 };
