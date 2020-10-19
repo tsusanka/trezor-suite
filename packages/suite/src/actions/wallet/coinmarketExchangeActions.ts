@@ -345,7 +345,9 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
     });
 
     // Open a deferred modal and get the decision
-    const decision = await dispatch(modalActions.openDeferredModal({ type: 'review-transaction' }));
+    const decision = await dispatch(
+        modalActions.openDeferredModal({ type: 'review-transaction-exchange' }),
+    );
     if (decision && transactionInfo) {
         // push tx to the network
         return dispatch(pushTransaction());
