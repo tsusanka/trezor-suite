@@ -13,7 +13,7 @@ import * as notificationActions from '@suite-actions/notificationActions';
 import { splitToFixedFloatQuotes } from '@wallet-utils/coinmarket/exchangeUtils';
 import networks from '@wallet-config/networks';
 import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
-import { signTransaction } from '@suite/actions/wallet/exchange/exchangeFormBitcoinActions';
+import { signTransaction } from '@wallet-actions/coinmarketExchangeActions';
 
 export const useOffers = (props: Props) => {
     const REFETCH_INTERVAL = 30000;
@@ -27,7 +27,7 @@ export const useOffers = (props: Props) => {
         addressVerified,
     } = props;
 
-    const { account } = selectedAccount;
+    const { account, network } = selectedAccount;
     const [selectedQuote, setSelectedQuote] = useState<ExchangeTrade>();
     const [receiveAccount, setReceiveAccount] = useState<Account | undefined>();
     const [suiteBuyAccounts, setSuiteBuyAccounts] = useState<ContextValues['suiteBuyAccounts']>();
@@ -165,7 +165,13 @@ export const useOffers = (props: Props) => {
 
     const sendTransaction = async () => {
         if (selectedQuote && selectedQuote.orderId) {
-            // TODO - create and sign transaction and send it to the network
+            signTransaction({
+                account,
+                address: addressVerified || '',
+                transactionInfo,
+                network,
+                amount: transactionInfo?.totalSpent || '0',
+            });
             await saveTrade(selectedQuote, account, new Date().toISOString());
             await saveTransactionId(selectedQuote.orderId);
             goto('wallet-coinmarket-exchange-detail', {

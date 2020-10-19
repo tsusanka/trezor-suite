@@ -222,7 +222,7 @@ export interface SignTransactionData {
     amount: string;
     network: Network;
     destinationTag?: string;
-    transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal;
+    transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal | null;
 }
 
 export const signTransaction = (signTransactionData: SignTransactionData) => async (
