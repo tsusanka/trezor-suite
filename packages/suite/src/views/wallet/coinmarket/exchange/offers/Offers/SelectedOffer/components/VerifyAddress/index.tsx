@@ -151,6 +151,7 @@ const VerifyAddressComponent = () => {
         selectedQuote,
         addressVerified,
         suiteBuyAccounts,
+        receiveSymbol,
         setReceiveAccount,
     } = useCoinmarketExchangeOffersContext();
     const [selectedAccountOption, setSelectedAccountOption] = useState<AccountSelectOption>();
@@ -192,7 +193,7 @@ const VerifyAddressComponent = () => {
                     modalActions.openModal({
                         type: 'add-account',
                         device: device!,
-                        symbol: selectedQuote?.receive?.toLowerCase() as Account['symbol'],
+                        symbol: receiveSymbol as Account['symbol'],
                         noRedirect: true,
                     }),
                 );
@@ -293,7 +294,9 @@ const VerifyAddressComponent = () => {
                                             <AccountWrapper>
                                                 <Translation
                                                     id="TR_EXCHANGE_CREATE_SUITE_ACCOUNT"
-                                                    values={{ symbol: selectedQuote?.receive }}
+                                                    values={{
+                                                        symbol: receiveSymbol?.toUpperCase(),
+                                                    }}
                                                 />
                                             </AccountWrapper>
                                         </Option>
@@ -311,7 +314,9 @@ const VerifyAddressComponent = () => {
                                             <AccountWrapper>
                                                 <Translation
                                                     id="TR_EXCHANGE_USE_NON_SUITE_ACCOUNT"
-                                                    values={{ symbol: selectedQuote?.receive }}
+                                                    values={{
+                                                        symbol: receiveSymbol?.toUpperCase(),
+                                                    }}
                                                 />
                                             </AccountWrapper>
                                         </Option>
@@ -325,7 +330,7 @@ const VerifyAddressComponent = () => {
                         placeholder={
                             <Translation
                                 id="TR_EXCHANGE_SELECT_RECEIVE_ACCOUNT"
-                                values={{ symbol: selectedQuote?.receive }}
+                                values={{ symbol: receiveSymbol?.toUpperCase() }}
                             />
                         }
                         menuIsOpen={menuIsOpen}
@@ -343,11 +348,8 @@ const VerifyAddressComponent = () => {
                         innerRef={typedRegister({
                             required: 'TR_EXCHANGE_RECEIVING_ADDRESS_REQUIRED',
                             validate: value => {
-                                if (
-                                    selectedAccountOption?.type === 'NON_SUITE' &&
-                                    selectedQuote?.receive
-                                ) {
-                                    if (!addressValidator.validate(value, selectedQuote?.receive)) {
+                                if (selectedAccountOption?.type === 'NON_SUITE' && receiveSymbol) {
+                                    if (!addressValidator.validate(value, receiveSymbol)) {
                                         return 'TR_EXCHANGE_RECEIVING_ADDRESS_INVALID';
                                     }
                                 }
