@@ -58,7 +58,6 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     });
 
     const { goto } = useActions({ goto: routerActions.goto });
-    console.log('formState', formState.errors);
 
     const onSubmit = async () => {
         const formValues = methods.getValues();
