@@ -96,6 +96,18 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         }
     };
 
+    const getComposeAddressPlaceholder = () => {
+        const { networkType } = account;
+        switch (networkType) {
+            case 'bitcoin':
+                return account.addresses?.change[0].address;
+            case 'ethereum':
+            case 'ripple':
+                return account.descriptor;
+            // no default
+        }
+    };
+
     const compose = async (data: ComposeData) => {
         const formValues = getValues();
         const feeLevel = feeInfo.levels.find(
@@ -113,7 +125,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             network,
             selectedFee,
             isMaxActive: data ? typeof data.activeMaxLimit === 'number' : false,
-            address: '',
+            address: getComposeAddressPlaceholder(),
             token,
         });
 
@@ -140,7 +152,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
                 );
                 if (amountToFill) {
                     const fixedAmount = amountToFill.toFixed(network.decimals);
-                    setValue('buyCryptoInput', fixedAmount);
+                    setValue('buyCryptoInput', fixedAmount, { shouldValidate: true });
                     updateFiatValue(fixedAmount);
                 }
                 setTransactionInfo(transactionInfo);

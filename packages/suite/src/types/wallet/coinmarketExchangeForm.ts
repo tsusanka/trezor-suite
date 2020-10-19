@@ -40,6 +40,7 @@ export interface AmountLimits {
 
 export interface ComposeData {
     activeMaxLimit?: number;
+    address?: string;
     feeLevelLabel?: FeeLevel['label'];
     feePerUnit?: FeeLevel['feePerUnit'];
     feeLimit?: FeeLevel['feeLimit'];
