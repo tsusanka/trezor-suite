@@ -115,6 +115,7 @@ const Fees = () => {
         selectedFee,
         selectFee,
         setValue,
+        clearErrors,
         transactionInfo,
         compose,
         activeMaxLimit,
@@ -138,6 +139,8 @@ const Fees = () => {
                             selectFee(value);
                             if (value === 'custom') {
                                 setValue('feePerUnit', selectedFeeLevel.feePerUnit);
+                            } else {
+                                clearErrors('feePerUnit');
                             }
                             compose({
                                 activeMaxLimit,

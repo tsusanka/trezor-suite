@@ -33,6 +33,7 @@ const CustomFee = ({ isVisible }: Props) => {
         register,
         compose,
         activeMaxLimit,
+        selectedFee,
     } = useCoinmarketExchangeFormContext();
     const { maxFee, minFee } = feeInfo;
     const inputName = 'feePerUnit';
@@ -59,35 +60,37 @@ const CustomFee = ({ isVisible }: Props) => {
                 name={inputName}
                 data-test={inputName}
                 innerRef={register({
-                    required: 'CUSTOM_FEE_IS_NOT_SET',
+                    required: selectedFee === 'custom' ? 'CUSTOM_FEE_IS_NOT_SET' : undefined,
                     validate: (value: string) => {
-                        const feeBig = new BigNumber(value);
-                        if (feeBig.isNaN()) {
-                            return 'CUSTOM_FEE_IS_NOT_NUMBER';
-                        }
-                        // allow decimals in ETH since GWEI is not a satoshi
-                        if (network.networkType !== 'ethereum' && !isInteger(value)) {
-                            return 'CUSTOM_FEE_IS_NOT_INTEGER';
-                        }
-                        // GWEI: 9 decimal places
-                        if (network.networkType === 'ethereum' && !isDecimalsValid(value, 9)) {
-                            return (
-                                <Translation
-                                    key="AMOUNT_IS_NOT_IN_RANGE_DECIMALS"
-                                    id="AMOUNT_IS_NOT_IN_RANGE_DECIMALS"
-                                    values={{ decimals: 9 }}
-                                />
-                            );
-                        }
+                        if (selectedFee === 'custom') {
+                            const feeBig = new BigNumber(value);
+                            if (feeBig.isNaN()) {
+                                return 'CUSTOM_FEE_IS_NOT_NUMBER';
+                            }
+                            // allow decimals in ETH since GWEI is not a satoshi
+                            if (network.networkType !== 'ethereum' && !isInteger(value)) {
+                                return 'CUSTOM_FEE_IS_NOT_INTEGER';
+                            }
+                            // GWEI: 9 decimal places
+                            if (network.networkType === 'ethereum' && !isDecimalsValid(value, 9)) {
+                                return (
+                                    <Translation
+                                        key="AMOUNT_IS_NOT_IN_RANGE_DECIMALS"
+                                        id="AMOUNT_IS_NOT_IN_RANGE_DECIMALS"
+                                        values={{ decimals: 9 }}
+                                    />
+                                );
+                            }
 
-                        if (feeBig.isGreaterThan(maxFee) || feeBig.isLessThan(minFee)) {
-                            return (
-                                <Translation
-                                    key="CUSTOM_FEE_NOT_IN_RANGE"
-                                    id="CUSTOM_FEE_NOT_IN_RANGE"
-                                    values={{ minFee, maxFee }}
-                                />
-                            );
+                            if (feeBig.isGreaterThan(maxFee) || feeBig.isLessThan(minFee)) {
+                                return (
+                                    <Translation
+                                        key="CUSTOM_FEE_NOT_IN_RANGE"
+                                        id="CUSTOM_FEE_NOT_IN_RANGE"
+                                        values={{ minFee, maxFee }}
+                                    />
+                                );
+                            }
                         }
                     },
                 })}
