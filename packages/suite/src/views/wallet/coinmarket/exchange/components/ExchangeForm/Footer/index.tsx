@@ -30,7 +30,7 @@ const Footer = () => {
         <Wrapper>
             <Center>
                 <StyledButton
-                    isDisabled={!(formIsValid && hasValues)}
+                    isDisabled={!(formIsValid && hasValues) || formState.isSubmitting}
                     isLoading={formState.isSubmitting}
                     type="submit"
                 >

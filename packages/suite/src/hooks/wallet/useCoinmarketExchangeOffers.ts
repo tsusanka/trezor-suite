@@ -13,7 +13,6 @@ import * as notificationActions from '@suite-actions/notificationActions';
 import { splitToFixedFloatQuotes } from '@wallet-utils/coinmarket/exchangeUtils';
 import networks from '@wallet-config/networks';
 import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
-import { signTransaction } from '@wallet-actions/coinmarketExchangeActions';
 
 export const useOffers = (props: Props) => {
     const REFETCH_INTERVAL = 30000;
@@ -41,12 +40,14 @@ export const useOffers = (props: Props) => {
         saveTrade,
         openCoinmarketExchangeConfirmModal,
         saveTransactionId,
+        signTransaction,
         addNotification,
     } = useActions({
         saveTrade: coinmarketExchangeActions.saveTrade,
         openCoinmarketExchangeConfirmModal:
             coinmarketExchangeActions.openCoinmarketExchangeConfirmModal,
         saveTransactionId: coinmarketExchangeActions.saveTransactionId,
+        signTransaction: coinmarketExchangeActions.signTransaction,
         addNotification: notificationActions.addToast,
     });
 
@@ -164,14 +165,19 @@ export const useOffers = (props: Props) => {
     };
 
     const sendTransaction = async () => {
-        if (selectedQuote && selectedQuote.orderId) {
-            if (!transactionInfo) return null;
-            signTransaction({
+        if (
+            selectedQuote &&
+            selectedQuote.orderId &&
+            selectedQuote.sendAddress &&
+            transactionInfo &&
+            transactionInfo?.totalSpent
+        ) {
+            await signTransaction({
                 account,
-                address: addressVerified || '',
+                address: selectedQuote.sendAddress,
                 transactionInfo,
                 network,
-                amount: transactionInfo?.totalSpent || '0',
+                amount: transactionInfo.totalSpent,
             });
             await saveTrade(selectedQuote, account, new Date().toISOString());
             await saveTransactionId(selectedQuote.orderId);
@@ -179,6 +185,11 @@ export const useOffers = (props: Props) => {
                 symbol: account.symbol,
                 accountIndex: account.index,
                 accountType: account.accountType,
+            });
+        } else {
+            addNotification({
+                type: 'error',
+                error: 'Cannot send transaction, missing data',
             });
         }
     };
