@@ -38,6 +38,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const localCurrencyOption = { value: localCurrency, label: localCurrency.toUpperCase() };
     const methods = useForm<FormState>({ mode: 'onChange' });
     const { register, setValue, getValues } = methods;
+    const [token, setToken] = useState<string | undefined>(getValues('buyCryptoSelect')?.value);
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
     const [activeMaxLimit, setActiveMaxLimit] = useState<number | undefined>(undefined);
     const [transactionInfo, setTransactionInfo] = useState<null | PrecomposedTransaction>(null);
@@ -104,10 +105,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             selectedFee,
             isMaxActive: data ? typeof data.activeMaxLimit === 'number' : false,
             address: '',
-            token:
-                formValues.buyCryptoSelect.value === 'ETH'
-                    ? undefined
-                    : formValues.buyCryptoSelect.value,
+            token,
         });
 
         if (!result || result[selectedFee].type === 'error') {
@@ -172,11 +170,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             setValue('buyCryptoInput', cryptoValue, { shouldValidate: true });
         }
     };
-    // const formValues = getValues();
-    const token = undefined;
-    // formValues.buyCryptoSelect?.value === 'ETH' || !formValues.buyCryptoSelect.value
-    //     ? undefined
-    //     : formValues.buyCryptoSelect.value;
+
     const typedRegister = useCallback(<T>(rules?: T) => register(rules), [register]);
     const isLoading = !exchangeInfo?.exchangeList || exchangeInfo?.exchangeList.length === 0;
     const noProviders =
@@ -189,6 +183,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         updateFiatValue,
         register: typedRegister,
         exchangeInfo,
+        setToken,
         saveQuoteRequest,
         activeMaxLimit,
         setActiveMaxLimit,

@@ -15,7 +15,13 @@ const Label = styled.div`
 `;
 
 const BuyCryptoSelect = () => {
-    const { control, setAmountLimits, account, exchangeInfo } = useCoinmarketExchangeFormContext();
+    const {
+        control,
+        setAmountLimits,
+        account,
+        exchangeInfo,
+        setToken,
+    } = useCoinmarketExchangeFormContext();
     const buyCryptoSelect = 'buyCryptoSelect';
     const uppercaseSymbol = account.symbol.toUpperCase();
 
@@ -33,6 +39,12 @@ const BuyCryptoSelect = () => {
                         onChange={(selected: any) => {
                             onChange(selected);
                             setAmountLimits(undefined);
+                            const lowerCaseToken = selected.value.toLowerCase();
+                            if (lowerCaseToken === 'eth' || lowerCaseToken === 'trop') {
+                                setToken(undefined);
+                            } else {
+                                setToken(lowerCaseToken);
+                            }
                         }}
                         formatOptionLabel={(option: any) => {
                             return (

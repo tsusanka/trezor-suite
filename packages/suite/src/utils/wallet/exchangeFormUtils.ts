@@ -1,6 +1,5 @@
 import { ExternalOutput } from '@wallet-types/sendForm';
 import { amountToSatoshi, networkAmountToSatoshi } from '@wallet-utils/accountUtils';
-import { findToken } from '@wallet-utils/sendFormUtils';
 import { ComposeOutput } from 'trezor-connect';
 import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
 
@@ -14,7 +13,7 @@ export const getExternalComposeOutput = ({
 }: ComposeTransactionData) => {
     if (!isMaxActive && !amount) return; // incomplete Output
 
-    const tokenInfo = findToken(account.tokens, token);
+    const tokenInfo = account.tokens?.find(t => t.symbol === token);
     const decimals = tokenInfo ? tokenInfo.decimals : network.decimals;
     const amountInSatoshi = amountToSatoshi(amount, decimals);
 

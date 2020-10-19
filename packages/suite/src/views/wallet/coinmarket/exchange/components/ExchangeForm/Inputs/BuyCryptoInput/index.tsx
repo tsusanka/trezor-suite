@@ -1,6 +1,5 @@
 import { Input } from '@trezor/components';
 import React from 'react';
-import { findToken } from '@wallet-utils/sendFormUtils';
 import { formatNetworkAmount } from '@wallet-utils/accountUtils';
 import { FIAT } from '@suite-config';
 import styled from 'styled-components';
@@ -42,7 +41,7 @@ const BuyCryptoInput = () => {
     const buyCryptoInput = 'buyCryptoInput';
     const fiatInput = 'fiatInput';
     const { symbol, tokens } = account;
-    const tokenData = findToken(tokens, token);
+    const tokenData = tokens?.find(t => t.symbol === token);
     const formattedAvailableBalance = tokenData
         ? tokenData.balance || '0'
         : formatNetworkAmount(account.availableBalance, account.symbol);

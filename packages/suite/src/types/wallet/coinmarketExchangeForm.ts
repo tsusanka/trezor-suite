@@ -42,6 +42,7 @@ export interface ComposeData {
     activeMaxLimit?: number;
     feeLevelLabel?: FeeLevel['label'];
     feePerUnit?: FeeLevel['feePerUnit'];
+    token?: string;
 }
 
 export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'register'> & {
@@ -65,6 +66,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     transactionInfo: null | PrecomposedTransaction;
     setTransactionInfo: (transactionInfo: null | PrecomposedTransaction) => void;
     token: string | undefined;
+    setToken: (token: string | undefined) => void;
     fiatRates?: CoinFiatRates;
     setAmountLimits: (limits?: AmountLimits) => void;
     quotesRequest: AppState['wallet']['coinmarket']['exchange']['quotesRequest'];

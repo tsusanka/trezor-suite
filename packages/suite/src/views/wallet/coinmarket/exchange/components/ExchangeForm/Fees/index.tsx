@@ -139,7 +139,11 @@ const Fees = () => {
                             if (value === 'custom') {
                                 setValue('feePerUnit', selectedFeeLevel.feePerUnit);
                             }
-                            compose({ activeMaxLimit, feeLevelLabel: value });
+                            compose({
+                                activeMaxLimit,
+                                feeLevelLabel: value,
+                                feePerUnit: selectedFeeLevel.feePerUnit,
+                            });
                         }}
                     />
                     <CustomFeeWrapper>

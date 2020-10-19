@@ -230,6 +230,7 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
 ) => {
     const { account } = signTransactionData;
     if (account.networkType === 'bitcoin') {
+        // @ts-ignore
         return dispatch(exchangeFormBitcoinActions.signTransaction(signTransactionData));
     }
     if (account.networkType === 'ethereum') {

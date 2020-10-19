@@ -1,7 +1,6 @@
 import { colors, variables } from '@trezor/components';
 import React from 'react';
 import styled from 'styled-components';
-import { findToken } from '@wallet-utils/sendFormUtils';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 
 const Wrapper = styled.div`
@@ -40,8 +39,7 @@ const Button = styled.div`
 
 const Bottom = () => {
     const { compose, setActiveMaxLimit, token, account } = useCoinmarketExchangeFormContext();
-    const tokenData = findToken(account.tokens, token);
-
+    const tokenData = account.tokens?.find(t => t.symbol === token);
     return (
         <Wrapper>
             <Left>
