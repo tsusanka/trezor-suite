@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { FeeLevel } from 'trezor-connect';
 import { toFiatCurrency, fromFiatCurrency } from '@wallet-utils/fiatConverterUtils';
 import { getFeeLevels } from '@wallet-utils/sendFormUtils';
-import { PrecomposedLevels, PrecomposedTransaction } from '@wallet-types/sendForm';
+import { PrecomposedLevels, PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 import { useInvityAPI } from '@wallet-hooks/useCoinmarket';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import { useActions } from '@suite-hooks';
@@ -41,7 +41,9 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const [token, setToken] = useState<string | undefined>(getValues('buyCryptoSelect')?.value);
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
     const [activeMaxLimit, setActiveMaxLimit] = useState<number | undefined>(undefined);
-    const [transactionInfo, setTransactionInfo] = useState<null | PrecomposedTransaction>(null);
+    const [transactionInfo, setTransactionInfo] = useState<null | PrecomposedTransactionFinal>(
+        null,
+    );
     const [selectedFee, selectFee] = useState<FeeLevel['label']>('normal');
     const {
         saveQuoteRequest,
@@ -138,12 +140,12 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             result &&
             data.activeMaxLimit &&
             result[selectedFee] &&
-            result[selectedFee].type !== 'error'
+            result[selectedFee].type === 'final'
         ) {
             const transactionInfo = result[selectedFee];
             if (
                 transactionInfo &&
-                transactionInfo.type !== 'error' &&
+                transactionInfo.type === 'final' &&
                 transactionInfo.max &&
                 data.activeMaxLimit
             ) {

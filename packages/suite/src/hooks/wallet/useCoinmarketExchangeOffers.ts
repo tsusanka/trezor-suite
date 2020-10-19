@@ -165,6 +165,7 @@ export const useOffers = (props: Props) => {
 
     const sendTransaction = async () => {
         if (selectedQuote && selectedQuote.orderId) {
+            if (!transactionInfo) return null;
             signTransaction({
                 account,
                 address: addressVerified || '',

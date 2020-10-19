@@ -5,7 +5,7 @@ import { FeeLevel } from 'trezor-connect';
 import { ExchangeTrade, ExchangeTradeQuoteRequest, ExchangeCoinInfo } from 'invity-api';
 import { ExchangeInfo } from '@wallet-actions/coinmarketExchangeActions';
 import { TypedValidationRules } from './form';
-import { FeeInfo, PrecomposedTransaction } from '@wallet-types/sendForm';
+import { FeeInfo, PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 
 export type Option = { value: string; label: string };
 export type defaultCountryOption = { value: string; label?: string };
@@ -65,8 +65,8 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     saveQuotes: (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTrade[]) => Promise<void>;
     saveTrade: (exchangeTrade: ExchangeTrade, account: Account, date: string) => Promise<void>;
     amountLimits?: AmountLimits;
-    transactionInfo: null | PrecomposedTransaction;
-    setTransactionInfo: (transactionInfo: null | PrecomposedTransaction) => void;
+    transactionInfo: PrecomposedTransactionFinal | null;
+    setTransactionInfo: (transactionInfo: PrecomposedTransactionFinal) => void;
     token: string | undefined;
     setToken: (token: string | undefined) => void;
     fiatRates?: CoinFiatRates;

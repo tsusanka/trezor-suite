@@ -56,7 +56,7 @@ export type CoinmarketExchangeActions =
       }
     | {
           type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO;
-          transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal;
+          transactionInfo: PrecomposedTransactionFinal;
       };
 
 export async function loadExchangeInfo(): Promise<[ExchangeInfo, ExchangeCoinInfo[]]> {
@@ -222,16 +222,16 @@ export interface SignTransactionData {
     amount: string;
     network: Network;
     destinationTag?: string;
-    transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal | null;
+    transactionInfo: PrecomposedTransactionFinal | null;
 }
 
 export const signTransaction = (signTransactionData: SignTransactionData) => async (
     dispatch: Dispatch,
 ) => {
-    const { account } = signTransactionData;
+    const { account, transactionInfo } = signTransactionData;
+    if (!transactionInfo) return;
     if (account.networkType === 'bitcoin') {
-        // @ts-ignore
-        return dispatch(exchangeFormBitcoinActions.signTransaction(signTransactionData));
+        return dispatch(exchangeFormBitcoinActions.signTransaction(transactionInfo));
     }
     if (account.networkType === 'ethereum') {
         return dispatch(exchangeFormEthereumActions.signTransaction(signTransactionData));

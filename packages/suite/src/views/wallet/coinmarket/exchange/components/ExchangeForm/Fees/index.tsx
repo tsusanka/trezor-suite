@@ -168,11 +168,11 @@ const Fees = () => {
                         {networkType === 'bitcoin' &&
                             !isCustomLevel &&
                             transactionInfo &&
-                            transactionInfo.type !== 'error' && (
+                            transactionInfo.type === 'final' && (
                                 <TxSize>({transactionInfo.bytes} B)</TxSize>
                             )}
                     </FeeInfo>
-                    {transactionInfo && transactionInfo.type !== 'error' && (
+                    {transactionInfo && transactionInfo.type === 'final' && (
                         <FeeAmount>
                             <CoinAmount>
                                 <FormattedCryptoAmount

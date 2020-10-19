@@ -1,9 +1,6 @@
 import produce from 'immer';
 import { WalletAction, Account } from '@wallet-types';
-import {
-    PrecomposedTransactionFinal,
-    PrecomposedTransactionNonFinal,
-} from '@wallet-types/sendForm';
+import { PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 import {
     BuyTrade,
     BuyTradeQuoteRequest,
@@ -56,7 +53,7 @@ interface Exchange {
     floatQuotes: ExchangeTrade[];
     transactionId?: string;
     addressVerified?: string;
-    transactionInfo: PrecomposedTransactionNonFinal | PrecomposedTransactionFinal | null;
+    transactionInfo: PrecomposedTransactionFinal | null;
 }
 
 interface State {
