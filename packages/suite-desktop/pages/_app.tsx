@@ -16,6 +16,7 @@ import DesktopUpdater from '@desktop/support/DesktopUpdater';
 import { SENTRY_CONFIG } from '@suite-config';
 import Resize from '@suite-support/Resize/Container';
 import { isDev } from '@suite-utils/build';
+import DesktopTitlebarWrapper from '@desktop/support/DesktopTitlebar';
 
 interface Props {
     store: Store;
@@ -29,13 +30,14 @@ class TrezorSuiteApp extends App<Props> {
                 scope.setTag('version', process.env.VERSION || 'undefined');
             });
         }
+        window.desktopApi!.clientReady();
     }
 
     render() {
         const { Component, pageProps, store } = this.props;
 
         return (
-            <>
+            <DesktopTitlebarWrapper>
                 <ReduxProvider store={store}>
                     <ErrorBoundary>
                         <Resize />
@@ -51,7 +53,7 @@ class TrezorSuiteApp extends App<Props> {
                         </IntlProvider>
                     </ErrorBoundary>
                 </ReduxProvider>
-            </>
+            </DesktopTitlebarWrapper>
         );
     }
 }

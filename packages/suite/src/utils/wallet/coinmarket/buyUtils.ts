@@ -3,6 +3,7 @@ import { Account } from '@wallet-types';
 import { AmountLimits } from '@wallet-types/coinmarketBuyForm';
 import { BuyTrade, BuyTradeQuoteRequest, BuyTradeFormResponse, BuyTradeStatus } from 'invity-api';
 import { symbolToInvityApiSymbol } from '@wallet-utils/coinmarket/coinmarketUtils';
+import { isDesktop } from '@suite-utils/env';
 
 // loop through quotes and if all quotes are either with error below minimum or over maximum, return the limits
 export function getAmountLimits(
@@ -75,7 +76,7 @@ export function createQuoteLink(request: BuyTradeQuoteRequest, account: Account)
 
     const params = `offers/${account.symbol}/${account.accountType}/${account.index}/${hash}`;
 
-    if (process.env.SUITE_TYPE === 'desktop') {
+    if (isDesktop()) {
         // TEMP: for desktop. but this solution is temporary, local http server will be used later to accept callback
         return `https://wallet.trezor.io/buy_receiver.html#/coinmarket-redirect/${params}`;
     }
@@ -86,7 +87,7 @@ export function createQuoteLink(request: BuyTradeQuoteRequest, account: Account)
 export function createTxLink(trade: BuyTrade, account: Account): string {
     const assetPrefix = process.env.assetPrefix || '';
     const params = `detail/${account.symbol}/${account.accountType}/${account.index}/${trade.paymentId}`;
-    if (process.env.SUITE_TYPE === 'desktop') {
+    if (isDesktop()) {
         // TEMP: for desktop. but this solution is temporary, local http server will be used later to accept callback
         return `https://wallet.trezor.io/buy_receiver.html#/coinmarket-redirect/${params}`;
     }
@@ -107,7 +108,7 @@ export function submitRequestForm(tradeForm: BuyTradeFormResponse): void {
     if (!tradeForm || !tradeForm.form) return;
     // for IFRAME there is nothing to submit
     if (tradeForm.form.formMethod === 'IFRAME') return;
-    const windowType = process.env.SUITE_TYPE === 'desktop' ? invityWindowName : '_self';
+    const windowType = isDesktop() ? invityWindowName : '_self';
     const form = document.createElement('form');
     if (tradeForm.form.formMethod === 'GET' && tradeForm.form.formAction) {
         window.open(tradeForm.form.formAction, windowType);
@@ -121,7 +122,7 @@ export function submitRequestForm(tradeForm: BuyTradeFormResponse): void {
         addHiddenFieldToForm(form, k, fields[k]);
     });
 
-    if (process.env.SUITE_TYPE === 'desktop') {
+    if (isDesktop()) {
         const formWindow = window.open('', invityWindowName);
         if (formWindow) {
             formWindow.document.body.appendChild(form);
