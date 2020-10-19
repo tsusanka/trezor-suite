@@ -143,6 +143,7 @@ const Fees = () => {
                                 activeMaxLimit,
                                 feeLevelLabel: value,
                                 feePerUnit: selectedFeeLevel.feePerUnit,
+                                feeLimit: selectedFeeLevel.feeLimit,
                             });
                         }}
                     />

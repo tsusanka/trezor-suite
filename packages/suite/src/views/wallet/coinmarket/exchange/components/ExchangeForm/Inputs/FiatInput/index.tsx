@@ -20,7 +20,6 @@ const FiatInput = () => {
         errors,
         trigger,
         formState,
-        amountLimits,
         updateBuyCryptoValue,
     } = useCoinmarketExchangeFormContext();
     const fiatInput = 'fiatInput';
@@ -48,32 +47,6 @@ const FiatInput = () => {
 
                     if (!isDecimalsValid(value, 18)) {
                         return <Translation id="TR_EXCHANGE_VALIDATION_ERROR_NOT_NUMBER" />;
-                    }
-
-                    if (amountLimits) {
-                        const amount = Number(value);
-                        if (amountLimits.min && amount < amountLimits.min) {
-                            return (
-                                <Translation
-                                    id="TR_EXCHANGE_VALIDATION_ERROR_MINIMUM_CRYPTO"
-                                    values={{
-                                        minimum: amountLimits.min,
-                                        currency: amountLimits.currency,
-                                    }}
-                                />
-                            );
-                        }
-                        if (amountLimits.max && amount > amountLimits.max) {
-                            return (
-                                <Translation
-                                    id="TR_EXCHANGE_VALIDATION_ERROR_MAXIMUM_CRYPTO"
-                                    values={{
-                                        maximum: amountLimits.max,
-                                        currency: amountLimits.currency,
-                                    }}
-                                />
-                            );
-                        }
                     }
                 },
             })}

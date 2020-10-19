@@ -157,7 +157,6 @@ export const useOffers = (props: Props) => {
                 error: response.error || 'Invalid response from the server',
             });
         } else {
-            // await saveTrade(response, account, new Date().toISOString());
             setExchangeStep('SEND_TRANSACTION');
             setSelectedQuote(response);
         }

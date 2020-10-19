@@ -42,6 +42,7 @@ export interface ComposeData {
     activeMaxLimit?: number;
     feeLevelLabel?: FeeLevel['label'];
     feePerUnit?: FeeLevel['feePerUnit'];
+    feeLimit?: FeeLevel['feeLimit'];
     token?: string;
 }
 

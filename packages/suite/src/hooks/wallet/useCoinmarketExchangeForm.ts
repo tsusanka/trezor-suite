@@ -58,6 +58,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     });
 
     const { goto } = useActions({ goto: routerActions.goto });
+    console.log('formState', formState.errors);
 
     const onSubmit = async () => {
         const formValues = methods.getValues();
@@ -87,6 +88,15 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         }
     };
 
+    const updateFiatValue = (amount: string) => {
+        const currency: { value: string; label: string } = getValues('fiatSelect');
+        if (!fiatRates || !fiatRates.current || !currency) return;
+        const fiatValue = toFiatCurrency(amount, currency.value, fiatRates.current.rates);
+        if (fiatValue) {
+            setValue('fiatInput', fiatValue, { shouldValidate: true });
+        }
+    };
+
     const compose = async (data: ComposeData) => {
         const formValues = getValues();
         const feeLevel = feeInfo.levels.find(
@@ -100,7 +110,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             amount: formValues.buyCryptoInput || '0',
             feeInfo,
             feePerUnit: data ? data.feePerUnit || '0' : feeLevel.feePerUnit,
-            feeLimit: feeLevel.feeLimit || '0',
+            feeLimit: data ? data.feeLimit || '0' : feeLevel.feeLimit || '0',
             network,
             selectedFee,
             isMaxActive: data ? typeof data.activeMaxLimit === 'number' : false,
@@ -130,20 +140,13 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
                     data.activeMaxLimit,
                 );
                 if (amountToFill) {
-                    setValue('buyCryptoInput', amountToFill.toFixed(network.decimals));
+                    const fixedAmount = amountToFill.toFixed(network.decimals);
+                    setValue('buyCryptoInput', fixedAmount);
+                    updateFiatValue(fixedAmount);
                 }
                 setTransactionInfo(transactionInfo);
                 saveTransactionInfo(transactionInfo);
             }
-        }
-    };
-
-    const updateFiatValue = (amount: string) => {
-        const currency: { value: string; label: string } = getValues('fiatSelect');
-        if (!fiatRates || !fiatRates.current || !currency) return;
-        const fiatValue = toFiatCurrency(amount, currency.value, fiatRates.current.rates);
-        if (fiatValue) {
-            setValue('fiatInput', fiatValue, { shouldValidate: true });
         }
     };
 
