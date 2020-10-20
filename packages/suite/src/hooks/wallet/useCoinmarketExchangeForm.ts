@@ -1,6 +1,6 @@
 import { createContext, useContext, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FeeLevel } from 'trezor-connect';
+import TrezorConnect, { FeeLevel } from 'trezor-connect';
 import { toFiatCurrency, fromFiatCurrency } from '@wallet-utils/fiatConverterUtils';
 import { getFeeLevels } from '@wallet-utils/sendFormUtils';
 import { PrecomposedLevels, PrecomposedTransactionFinal } from '@wallet-types/sendForm';
@@ -8,6 +8,7 @@ import { useInvityAPI } from '@wallet-hooks/useCoinmarket';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import { useActions } from '@suite-hooks';
 import Bignumber from 'bignumber.js';
+import { NETWORKS } from '@wallet-config';
 import invityAPI from '@suite-services/invityAPI';
 import * as routerActions from '@suite-actions/routerActions';
 import {
@@ -28,7 +29,15 @@ ExchangeFormContext.displayName = 'CoinmarketExchangeContext';
 
 export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValues => {
     const { exchangeInfo } = useInvityAPI();
-    const { selectedAccount, quotesRequest, fees, fiat, localCurrency, exchangeCoinInfo } = props;
+    const {
+        selectedAccount,
+        quotesRequest,
+        fees,
+        fiat,
+        localCurrency,
+        exchangeCoinInfo,
+        device,
+    } = props;
     const { account, network } = selectedAccount;
     const { symbol, networkType } = account;
     const coinFees = fees[symbol];
@@ -98,11 +107,23 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         }
     };
 
-    const getComposeAddressPlaceholder = () => {
+    const getComposeAddressPlaceholder = async () => {
         const { networkType } = account;
         switch (networkType) {
-            case 'bitcoin':
-                return account.addresses?.change[0].address;
+            case 'bitcoin': {
+                const network = NETWORKS.find(network => network.name === 'Bitcoin');
+                if (network && device) {
+                    const result = await TrezorConnect.getAddress({
+                        device,
+                        coin: network.symbol,
+                        path: network.bip44,
+                        useEmptyPassphrase: device.useEmptyPassphrase,
+                        showOnTrezor: false,
+                    });
+                    console.log('result', result);
+                }
+                break;
+            }
             case 'ethereum':
             case 'ripple':
                 return account.descriptor;
@@ -117,6 +138,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         );
 
         if (!feeLevel) return null;
+        const placeholderAddress = await getComposeAddressPlaceholder();
 
         const result: PrecomposedLevels | undefined = await composeTransaction({
             account,
@@ -127,7 +149,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             network,
             selectedFee,
             isMaxActive: data ? typeof data.activeMaxLimit === 'number' : false,
-            address: getComposeAddressPlaceholder(),
+            address: placeholderAddress,
             token,
         });
 

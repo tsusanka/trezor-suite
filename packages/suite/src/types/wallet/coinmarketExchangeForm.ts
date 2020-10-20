@@ -13,6 +13,7 @@ export type defaultCountryOption = { value: string; label?: string };
 export interface ComponentProps {
     selectedAccount: AppState['wallet']['selectedAccount'];
     fiat: AppState['wallet']['fiat'];
+    device: AppState['suite']['device'];
     localCurrency: AppState['wallet']['settings']['localCurrency'];
     fees: AppState['wallet']['fees'];
     quotesRequest: AppState['wallet']['coinmarket']['exchange']['quotesRequest'];

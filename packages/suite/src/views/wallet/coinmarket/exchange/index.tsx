@@ -14,6 +14,7 @@ const mapStateToProps = (state: AppState): ComponentProps => ({
     quotesRequest: state.wallet.coinmarket.exchange.quotesRequest,
     exchangeCoinInfo: state.wallet.coinmarket.exchange.exchangeCoinInfo,
     fiat: state.wallet.fiat,
+    device: state.suite.device,
     localCurrency: state.wallet.settings.localCurrency,
     fees: state.wallet.fees,
 });
