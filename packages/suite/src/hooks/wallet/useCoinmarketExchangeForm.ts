@@ -108,21 +108,37 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     };
 
     const getComposeAddressPlaceholder = async () => {
+        // the address is later replaced by the address of the exchange
+        // as a precaution, use user's own address as a placeholder
         const { networkType } = account;
         switch (networkType) {
             case 'bitcoin': {
-                const network = NETWORKS.find(network => network.name === 'Bitcoin');
-                if (network && device) {
+                // use legacy (the most expensive) address for fee calculation
+                // as we do not know what address type the exchange will use
+                const legacy =
+                    NETWORKS.find(
+                        network =>
+                            network.symbol === account.symbol && network.accountType === 'legacy',
+                    ) ||
+                    NETWORKS.find(
+                        network =>
+                            network.symbol === account.symbol && network.accountType === 'segwit',
+                    ) ||
+                    network;
+                if (legacy && device) {
                     const result = await TrezorConnect.getAddress({
                         device,
-                        coin: network.symbol,
-                        path: network.bip44,
+                        coin: legacy.symbol,
+                        path: `${legacy.bip44.replace('i', '0')}/0/0`,
                         useEmptyPassphrase: device.useEmptyPassphrase,
                         showOnTrezor: false,
                     });
-                    console.log('result', result);
+                    if (result.success) {
+                        return result.payload.address;
+                    }
                 }
-                break;
+                // as a fallback, use the change address of current account
+                return account.addresses?.change[0].address;
             }
             case 'ethereum':
             case 'ripple':

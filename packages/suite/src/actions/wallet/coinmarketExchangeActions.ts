@@ -358,19 +358,12 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
         },
     });
 
-    console.log('wtf');
-    console.log('transactionInfo', transactionInfo);
-
     // Open a deferred modal and get the decision
     const decision = await dispatch(
         modalActions.openDeferredModal({ type: 'review-transaction-exchange' }),
     );
-    console.log('decision', decision);
-    console.log('transactionInfo', transactionInfo);
     if (decision && transactionInfo) {
-        console.log('decision', decision);
-        console.log('transactionInfo', transactionInfo);
         // push tx to the network
-        await dispatch(pushTransaction());
+        return dispatch(pushTransaction());
     }
 };
