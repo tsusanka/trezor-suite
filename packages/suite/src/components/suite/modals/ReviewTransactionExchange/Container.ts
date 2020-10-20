@@ -13,7 +13,7 @@ const mapStateToProps = (state: AppState) => ({
 // Since this modal is opened either in Device or User context
 // those contexts needs to be distinguished by `type` prop
 type DeferredProps =
-    | Extract<UserContextPayload, { type: 'review-transaction' }>
+    | Extract<UserContextPayload, { type: 'review-transaction-exchange' }>
     | { type: 'sign-transaction'; decision?: undefined };
 export type Props = ReturnType<typeof mapStateToProps> & DeferredProps;
 
