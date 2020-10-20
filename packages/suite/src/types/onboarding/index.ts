@@ -1,6 +1,6 @@
-import { OnboardingActionTypes } from '@onboarding-actions/onboardingActions';
+import { OnboardingAction } from '@onboarding-actions/onboardingActions';
 
-export type OnboardingActions = OnboardingActionTypes;
+export type OnboardingActions = OnboardingAction;
 
 export interface Checkbox {
     value: boolean;

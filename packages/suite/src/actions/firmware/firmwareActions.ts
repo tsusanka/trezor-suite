@@ -1,6 +1,6 @@
 import TrezorConnect from 'trezor-connect';
 import { FIRMWARE } from '@firmware-actions/constants';
-import { Dispatch, GetState, AppState, Action, AcquiredDevice } from '@suite-types';
+import { Dispatch, GetState, AppState, AcquiredDevice } from '@suite-types';
 import * as analyticsActions from '@suite-actions/analyticsActions';
 import { isBitcoinOnly } from '@suite-utils/device';
 
@@ -15,25 +15,19 @@ export type FirmwareActions =
     | { type: typeof FIRMWARE.SET_ERROR; payload?: string }
     | { type: typeof FIRMWARE.TOGGLE_HAS_SEED };
 
-export const resetReducer = () => (dispatch: Dispatch) => {
-    dispatch({
-        type: FIRMWARE.RESET_REDUCER,
-    });
-};
+export const resetReducer = (): FirmwareActions => ({
+    type: FIRMWARE.RESET_REDUCER,
+});
 
-export const setStatus = (payload: AppState['firmware']['status']): Action => ({
+export const setStatus = (payload: AppState['firmware']['status']): FirmwareActions => ({
     type: FIRMWARE.SET_UPDATE_STATUS,
     payload,
 });
 
-export const setTargetRelease = (payload: AcquiredDevice['firmwareRelease']) => (
-    dispatch: Dispatch,
-) => {
-    dispatch({
-        type: FIRMWARE.SET_TARGET_RELEASE,
-        payload,
-    });
-};
+export const setTargetRelease = (payload: AcquiredDevice['firmwareRelease']): FirmwareActions => ({
+    type: FIRMWARE.SET_TARGET_RELEASE,
+    payload,
+});
 
 export const firmwareUpdate = () => async (dispatch: Dispatch, getState: GetState) => {
     const { device } = getState().suite;
@@ -124,6 +118,6 @@ export const firmwareUpdate = () => async (dispatch: Dispatch, getState: GetStat
     dispatch(setStatus(model === 1 ? 'unplug' : 'wait-for-reboot'));
 };
 
-export const toggleHasSeed = (): Action => ({
+export const toggleHasSeed = (): FirmwareActions => ({
     type: FIRMWARE.TOGGLE_HAS_SEED,
 });
