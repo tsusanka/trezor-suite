@@ -51,11 +51,13 @@ const CustomFee = ({ isVisible }: Props) => {
                 state={getInputState(feePerUnitError, feePerUnitValue)}
                 innerAddon={<Units>{getFeeUnits(network.networkType)}</Units>}
                 onChange={event => {
-                    compose({
-                        activeMaxLimit,
-                        feeLevelLabel: 'custom',
-                        feePerUnit: event.target.value,
-                    });
+                    if (!feePerUnitError) {
+                        compose({
+                            activeMaxLimit,
+                            feeLevelLabel: 'custom',
+                            feePerUnit: event.target.value,
+                        });
+                    }
                 }}
                 name={inputName}
                 data-test={inputName}
