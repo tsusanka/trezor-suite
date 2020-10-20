@@ -163,6 +163,7 @@ export const signTransaction = (
         .filter(input => input.amount !== '0'); // remove '0' amounts
     inputs.forEach(input => {
         if (!input.amount) delete input.amount; // remove undefined amounts
+        if (!input.sequence) delete input.sequence;
     });
 
     const signPayload = {

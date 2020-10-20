@@ -267,6 +267,7 @@ const pushTransaction = () => async (dispatch: Dispatch, getState: GetState) => 
     const { signedTx, transactionInfo } = getState().wallet.coinmarket.exchange;
     const { account } = getState().wallet.selectedAccount;
     const { device } = getState().suite;
+
     if (!signedTx || !transactionInfo || !account) return false;
 
     const sentTx = await TrezorConnect.pushTransaction(signedTx);
@@ -357,12 +358,19 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
         },
     });
 
+    console.log('wtf');
+    console.log('transactionInfo', transactionInfo);
+
     // Open a deferred modal and get the decision
     const decision = await dispatch(
         modalActions.openDeferredModal({ type: 'review-transaction-exchange' }),
     );
+    console.log('decision', decision);
+    console.log('transactionInfo', transactionInfo);
     if (decision && transactionInfo) {
+        console.log('decision', decision);
+        console.log('transactionInfo', transactionInfo);
         // push tx to the network
-        return dispatch(pushTransaction());
+        await dispatch(pushTransaction());
     }
 };

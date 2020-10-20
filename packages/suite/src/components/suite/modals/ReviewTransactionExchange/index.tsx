@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { colors, Modal, ConfirmOnDevice, variables } from '@trezor/components';
+import { colors, Modal, ConfirmOnDevice, variables, Button } from '@trezor/components';
 import { FiatValue, Translation } from '@suite-components';
 import { useDevice, useActions } from '@suite-hooks';
 import { formatNetworkAmount } from '@wallet-utils/accountUtils';
@@ -31,6 +31,12 @@ const Total = styled(Left)`
     color: ${colors.NEUE_TYPE_DARK_GREY};
 `;
 
+const StyledButton = styled(Button)`
+    display: flex;
+    align-self: center;
+    width: 240px;
+`;
+
 const Content = styled.div`
     padding: 20px 20px 0 20px;
 `;
@@ -51,7 +57,7 @@ const getState = (index: number, buttonRequests: number) => {
     return undefined;
 };
 
-const ReviewTransaction = ({ selectedAccount, exchange }: Props) => {
+const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
     const { device } = useDevice();
     const { cancelSignTx } = useActions({
         cancelSignTx: sendFormActions.cancelSignTx,
@@ -152,6 +158,14 @@ const ReviewTransaction = ({ selectedAccount, exchange }: Props) => {
                             </Right>
                         </BottomContent>
                     )}
+                    <StyledButton
+                        isDisabled={!signedTx}
+                        onClick={() => {
+                            if (decision) decision.resolve(true);
+                        }}
+                    >
+                        <Translation id="SEND_TRANSACTION" />
+                    </StyledButton>
                 </Bottom>
             }
         >
