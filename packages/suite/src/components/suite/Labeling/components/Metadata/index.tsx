@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Button, colors } from '@trezor/components';
@@ -40,9 +40,9 @@ const LabelButton = styled(Button)`
     text-align: left;
 `;
 
-const ActionButton = styled(Button)`
+const ActionButton = styled(Button)<{ isVisible?: boolean }>`
     transition: visibility 0.3s;
-    visibility: hidden;
+    visibility: ${props => (props.isVisible ? 'visible' : 'hidden')};
     width: auto;
     margin-left: 14px;
 `;
@@ -99,8 +99,7 @@ export interface ExtendedProps extends Props {
 }
 
 const ButtonLikeLabel = (props: ExtendedProps) => {
-    const divRef = useRef<HTMLDivElement>(null);
-    const EditableButton = withEditable(Button);
+    const EditableButton = useMemo(() => withEditable(Button), []);
 
     if (props.editActive) {
         return (
@@ -109,7 +108,6 @@ const ButtonLikeLabel = (props: ExtendedProps) => {
                 variant="tertiary"
                 icon="TAG"
                 data-test={props['data-test']}
-                divRef={divRef}
                 originalValue={props.payload.value}
                 onSubmit={props.onSubmit}
                 onBlur={props.onBlur}
@@ -134,14 +132,12 @@ const ButtonLikeLabel = (props: ExtendedProps) => {
 };
 
 const TextLikeLabel = (props: ExtendedProps) => {
-    const divRef = useRef<HTMLDivElement>(null);
     const EditableLabel = withEditable(Label);
 
     if (props.editActive) {
         return (
             <EditableLabel
                 data-test={props['data-test']}
-                divRef={divRef}
                 originalValue={props.payload.value}
                 onSubmit={props.onSubmit}
                 onBlur={props.onBlur}
@@ -210,6 +206,7 @@ const MetadataLabeling = (props: Props) => {
     const metadata = useSelector(state => state.metadata);
     const { isDiscoveryRunning, device } = useDiscovery();
     const [showSuccess, setShowSuccess] = useState(false);
+    const [pending, setPending] = useState(false);
     const { addMetadata, init, setEditing } = useActions({
         addMetadata: metadataActions.addMetadata,
         init: metadataActions.init,
@@ -217,11 +214,18 @@ const MetadataLabeling = (props: Props) => {
     });
     const l10nLabelling = getLocalizedActions(props.payload.type);
     const dataTestBase = `@metadata/${props.payload.type}/${props.payload.defaultValue}`;
+    const actionButtonsDisabled = isDiscoveryRunning || pending;
+    const isSubscribedToSubmitResult = useRef(props.payload.defaultValue);
     let timeout: number | undefined;
 
     useEffect(() => {
-        return () => clearTimeout(timeout);
-    }, [timeout]);
+        setPending(false);
+        setShowSuccess(false);
+        return () => {
+            isSubscribedToSubmitResult.current = '';
+            clearTimeout(timeout);
+        };
+    }, [props.payload.defaultValue, timeout]);
 
     // is everything ready (more or less) to add label?
     const labelingAvailable = !!(
@@ -265,17 +269,24 @@ const MetadataLabeling = (props: Props) => {
     }
 
     const onSubmit = async (value: string | undefined | null) => {
+        isSubscribedToSubmitResult.current = props.payload.defaultValue;
+        setPending(true);
         const result = await addMetadata({
             ...props.payload,
             value: value || undefined,
         });
-        // todo: maybe some pending status?
-        if (result) {
-            setShowSuccess(true);
+        // props.payload.defaultValue might change during next render, this comparison
+        // ensures that success state does not appear if it is no longer relevant
+        if (isSubscribedToSubmitResult.current === props.payload.defaultValue) {
+            setPending(false);
+
+            if (result) {
+                setShowSuccess(true);
+            }
+            timeout = setTimeout(() => {
+                setShowSuccess(false);
+            }, 2000);
         }
-        timeout = setTimeout(() => {
-            setShowSuccess(false);
-        }, 2000);
     };
 
     const ButtonLikeLabelWithDropdown = useMemo(() => {
@@ -296,6 +307,16 @@ const MetadataLabeling = (props: Props) => {
             </LabelContainer>
         );
 
+    // should "add label"/"edit label" button be visible
+    const showActionButton = labelingPossible && !showSuccess && !editActive;
+
+    // should "add label"/"edit label" button for output label be visible
+    // special case here. It should not be visible if metadata label already exists (props.payload.value) because
+    // this type of labels has dropdown menu instead of "add/edit label button".
+    // but we still want to show pending and success status after editing the label.
+    const showOutputLabelActionButton =
+        showActionButton && (!props.payload.value || (props.payload.value && pending));
+
     return (
         <LabelContainer>
             {props.payload.type === 'outputLabel' ? (
@@ -309,13 +330,14 @@ const MetadataLabeling = (props: Props) => {
                         dropdownOptions={dropdownItems}
                     />
 
-                    {labelingPossible && !showSuccess && !editActive && !props.payload.value && (
+                    {showOutputLabelActionButton && (
                         <ActionButton
                             data-test={`${dataTestBase}/add-label-button`}
                             variant="tertiary"
-                            icon={!isDiscoveryRunning ? 'TAG' : undefined}
-                            isLoading={isDiscoveryRunning}
-                            isDisabled={isDiscoveryRunning}
+                            icon={!actionButtonsDisabled ? 'TAG' : undefined}
+                            isLoading={actionButtonsDisabled}
+                            isDisabled={actionButtonsDisabled}
+                            isVisible={pending}
                             onClick={e => {
                                 e.stopPropagation();
                                 // by clicking on add label button, metadata.editing field is set
@@ -337,7 +359,7 @@ const MetadataLabeling = (props: Props) => {
                         data-test={dataTestBase}
                         {...props}
                     />
-                    {labelingPossible && !showSuccess && !editActive && (
+                    {showActionButton && (
                         <ActionButton
                             data-test={
                                 props.payload.value
@@ -345,9 +367,10 @@ const MetadataLabeling = (props: Props) => {
                                     : `${dataTestBase}/add-label-button`
                             }
                             variant="tertiary"
-                            icon={!isDiscoveryRunning ? 'TAG' : undefined}
-                            isLoading={isDiscoveryRunning}
-                            isDisabled={isDiscoveryRunning}
+                            icon={!actionButtonsDisabled ? 'TAG' : undefined}
+                            isLoading={actionButtonsDisabled}
+                            isDisabled={actionButtonsDisabled}
+                            isVisible={pending}
                             onClick={e => {
                                 e.stopPropagation();
                                 activateEdit();
@@ -363,7 +386,7 @@ const MetadataLabeling = (props: Props) => {
                 <SuccessButton
                     variant="tertiary"
                     icon="CHECK"
-                    data-test={`${dataTestBase}/renamed-label-button`}
+                    data-test={`${dataTestBase}/success`}
                 >
                     {l10nLabelling.edited}
                 </SuccessButton>
