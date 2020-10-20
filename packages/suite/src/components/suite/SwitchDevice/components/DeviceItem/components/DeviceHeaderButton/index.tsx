@@ -35,7 +35,7 @@ const DeviceHeaderButton = (props: Props) => {
                         'data-test': `@switch-device/${device.path}/solve-issue-button`,
                     }}
                 >
-                    {deviceStatusMessage && <Translation {...deviceStatusMessage} />}
+                    {deviceStatusMessage && <Translation id={deviceStatusMessage} />}
                 </GrayNotificationCard>
             )}
             {!props.needsAttention && !isUnknown && (
