@@ -242,7 +242,7 @@ export const signTransaction = (data: SignTransactionData) => async (
         token: data.transactionInfo.token,
         chainId: data.network.chainId,
         to: data.address,
-        amount: data.amount,
+        amount: data.transactionInfo.max || '0',
         // data: formValues.ethereumDataHex,
         gasLimit: data.transactionInfo.feeLimit || ETH_DEFAULT_GAS_LIMIT,
         gasPrice: data.transactionInfo.feePerByte,
