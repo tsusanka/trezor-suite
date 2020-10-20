@@ -1,10 +1,12 @@
 import React, { useEffect, useContext } from 'react';
 import styled from 'styled-components';
-import { LayoutContext, Translation } from '@suite-components';
+import { LayoutContext } from '@suite-components';
 import { Card, variables } from '@trezor/components';
 import { CoinmarketExchangeOfferInfo, CoinmarketTopPanel } from '@wallet-components';
 import { useCoinmarketExchangeDetailContext } from '@wallet-hooks/useCoinmarketExchangeDetail';
 import { ExchangeTradeFinalStatuses } from '@wallet-hooks/useCoinmarket';
+import * as routerActions from '@suite-actions/routerActions';
+import { useActions } from '@suite-hooks';
 
 import PaymentFailed from '../components/PaymentFailed';
 import PaymentSuccessful from '../components/PaymentSuccessful';
@@ -26,13 +28,6 @@ const StyledCard = styled(Card)`
     padding: 0;
 `;
 
-const NoTradeError = styled.div`
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-`;
-
 const CoinmarketDetail = () => {
     const { setLayout } = useContext(LayoutContext);
 
@@ -41,8 +36,20 @@ const CoinmarketDetail = () => {
     }, [setLayout]);
 
     const { account, trade, exchangeInfo } = useCoinmarketExchangeDetailContext();
-    const tradeStatus = trade?.data?.status;
-    if (!tradeStatus) return null;
+    const { goto } = useActions({ goto: routerActions.goto });
+
+    // if trade not found, it is because user refreshed the page and stored transactionId got removed
+    // go to the default coinmarket page, the trade is shown there in the previous trades
+    if (!trade) {
+        goto('wallet-coinmarket-exchange', {
+            symbol: account.symbol,
+            accountIndex: account.index,
+            accountType: account.accountType,
+        });
+        return null;
+    }
+
+    const tradeStatus = trade?.data?.status || 'CONFIRMING';
 
     const showSending =
         !ExchangeTradeFinalStatuses.includes(tradeStatus) && tradeStatus !== 'CONVERTING';
@@ -57,42 +64,27 @@ const CoinmarketDetail = () => {
 
     return (
         <Wrapper>
-            {!trade && (
-                <NoTradeError>
-                    <Translation id="TR_COINMARKET_TRADE_NOT_FOUND" />
-                </NoTradeError>
-            )}
-            {trade && (
-                <>
-                    <StyledCard>
-                        {tradeStatus === 'SUCCESS' && <PaymentSuccessful account={account} />}
-                        {tradeStatus === 'KYC' && (
-                            <PaymentKYC
-                                account={account}
-                                provider={provider}
-                                supportUrl={supportUrl}
-                            />
-                        )}
-                        {tradeStatus === 'ERROR' && (
-                            <PaymentFailed
-                                account={account}
-                                transactionId={trade.key}
-                                supportUrl={supportUrl}
-                            />
-                        )}
-                        {tradeStatus === 'CONVERTING' && (
-                            <PaymentConverting supportUrl={supportUrl} />
-                        )}
-                        {showSending && <PaymentSending supportUrl={supportUrl} />}
-                    </StyledCard>
-                    <CoinmarketExchangeOfferInfo
+            <StyledCard>
+                {tradeStatus === 'SUCCESS' && <PaymentSuccessful account={account} />}
+                {tradeStatus === 'KYC' && (
+                    <PaymentKYC account={account} provider={provider} supportUrl={supportUrl} />
+                )}
+                {tradeStatus === 'ERROR' && (
+                    <PaymentFailed
                         account={account}
-                        exchangeInfo={exchangeInfo}
-                        selectedQuote={trade.data}
                         transactionId={trade.key}
+                        supportUrl={supportUrl}
                     />
-                </>
-            )}
+                )}
+                {tradeStatus === 'CONVERTING' && <PaymentConverting supportUrl={supportUrl} />}
+                {showSending && <PaymentSending supportUrl={supportUrl} />}
+            </StyledCard>
+            <CoinmarketExchangeOfferInfo
+                account={account}
+                exchangeInfo={exchangeInfo}
+                selectedQuote={trade.data}
+                transactionId={trade.key}
+            />
         </Wrapper>
     );
 };
