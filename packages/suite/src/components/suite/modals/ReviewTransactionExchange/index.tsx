@@ -67,7 +67,6 @@ const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
     if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return null;
 
     const { symbol, networkType } = selectedAccount.account;
-    // const broadcastEnabled = precomposedForm.options.includes('broadcast');
     const outputs: OutputProps[] = [];
     transactionInfo.transaction.outputs.forEach(o => {
         if (typeof exchangeAddress === 'string') {

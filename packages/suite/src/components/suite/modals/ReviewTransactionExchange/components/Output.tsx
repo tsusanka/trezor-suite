@@ -175,7 +175,7 @@ export type Props = OutputProps & {
 
 export { Left, Right, Coin, Symbol, Fiat, Amounts };
 
-const Output = ({ type, state, label, value, symbol, token, address }: Props) => {
+const Output = ({ type, state, label, value, symbol, token }: Props) => {
     const [isExpanded, setExpanded] = useState(false);
     let outputLabel: React.ReactNode = label;
 
