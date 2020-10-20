@@ -1,12 +1,10 @@
-import React, { createRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { colors, Modal, ConfirmOnDevice, Button, variables } from '@trezor/components';
+import { colors, Modal, ConfirmOnDevice, variables } from '@trezor/components';
 import { FiatValue, Translation } from '@suite-components';
 import { useDevice, useActions } from '@suite-hooks';
 import { formatNetworkAmount } from '@wallet-utils/accountUtils';
-import { copyToClipboard, download } from '@suite-utils/dom';
 import * as sendFormActions from '@wallet-actions/sendFormActions';
-import * as notificationActions from '@suite-actions/notificationActions';
 
 import { Props } from './Container';
 import Output, { OutputProps, Left, Right, Coin, Fiat, Symbol, Amounts } from './components/Output';
@@ -37,18 +35,6 @@ const Content = styled.div`
     padding: 20px 20px 0 20px;
 `;
 
-const Buttons = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-`;
-
-const StyledButton = styled(Button)`
-    display: flex;
-    align-self: center;
-    width: 240px;
-`;
-
 const TotalFiat = styled(Fiat)`
     font-size: ${variables.FONT_SIZE.NORMAL};
 `;
@@ -66,11 +52,9 @@ const getState = (index: number, buttonRequests: number) => {
 };
 
 const ReviewTransaction = ({ selectedAccount, exchange }: Props) => {
-    const htmlElement = createRef<HTMLDivElement>();
     const { device } = useDevice();
-    const { cancelSignTx, addNotification } = useActions({
+    const { cancelSignTx } = useActions({
         cancelSignTx: sendFormActions.cancelSignTx,
-        addNotification: notificationActions.addToast,
     });
 
     const { transactionInfo, signedTx } = exchange;
@@ -169,26 +153,6 @@ const ReviewTransaction = ({ selectedAccount, exchange }: Props) => {
                             </Right>
                         </BottomContent>
                     )}
-                    <Buttons ref={htmlElement}>
-                        <StyledButton
-                            isDisabled={!signedTx}
-                            onClick={async () => {
-                                const result = copyToClipboard(signedTx!.tx, htmlElement.current);
-                                if (typeof result !== 'string') {
-                                    addNotification({ type: 'copy-to-clipboard' });
-                                }
-                            }}
-                        >
-                            <Translation id="COPY_TRANSACTION_TO_CLIPBOARD" />
-                        </StyledButton>
-                        <StyledButton
-                            variant="secondary"
-                            isDisabled={!signedTx}
-                            onClick={() => download(signedTx!.tx, 'signed-transaction.txt')}
-                        >
-                            <Translation id="DOWNLOAD_TRANSACTION" />
-                        </StyledButton>
-                    </Buttons>
                 </Bottom>
             }
         >
