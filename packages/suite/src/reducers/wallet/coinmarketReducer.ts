@@ -55,6 +55,7 @@ interface Exchange {
     addressVerified?: string;
     transactionInfo: PrecomposedTransactionFinal | null;
     signedTx?: { tx: string; coin: string };
+    exchangeAddress: string | undefined;
 }
 
 interface State {
@@ -89,6 +90,7 @@ export const initialState = {
         addressVerified: undefined,
         transactionInfo: null,
         signedTx: undefined,
+        exchangeAddress: undefined,
     },
     trades: [],
 };
@@ -150,6 +152,9 @@ const coinmarketReducer = (
                 break;
             case COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO:
                 draft.exchange.transactionInfo = action.transactionInfo;
+                break;
+            case COINMARKET_EXCHANGE.SAVE_EXCHANGE_ADDRESS:
+                draft.exchange.exchangeAddress = action.exchangeAddress;
                 break;
             case COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION:
                 if (action.payload) {

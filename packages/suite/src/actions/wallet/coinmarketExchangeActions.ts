@@ -45,6 +45,10 @@ export type CoinmarketExchangeActions =
           };
       }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST; request: ExchangeTradeQuoteRequest }
+    | {
+          type: typeof COINMARKET_EXCHANGE.SAVE_EXCHANGE_ADDRESS;
+          exchangeAddress: string | undefined;
+      }
     | { type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID; transactionId: string }
     | { type: typeof COINMARKET_EXCHANGE.VERIFY_ADDRESS; addressVerified: string }
     | {
@@ -186,6 +190,15 @@ export const saveTransactionInfo = (
     dispatch({
         type: COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO,
         transactionInfo,
+    });
+};
+
+export const saveExchangeAddress = (exchangeAddress: string | undefined) => async (
+    dispatch: Dispatch,
+) => {
+    dispatch({
+        type: COINMARKET_EXCHANGE.SAVE_EXCHANGE_ADDRESS,
+        exchangeAddress,
     });
 };
 

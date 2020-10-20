@@ -57,8 +57,10 @@ export const useOffers = (props: Props) => {
         saveTransactionId,
         signTransaction,
         addNotification,
+        saveExchangeAddress,
     } = useActions({
         saveTrade: coinmarketExchangeActions.saveTrade,
+        saveExchangeAddress: coinmarketExchangeActions.saveExchangeAddress,
         openCoinmarketExchangeConfirmModal:
             coinmarketExchangeActions.openCoinmarketExchangeConfirmModal,
         saveTransactionId: coinmarketExchangeActions.saveTransactionId,
@@ -193,6 +195,7 @@ export const useOffers = (props: Props) => {
             transactionInfo &&
             transactionInfo?.totalSpent
         ) {
+            saveExchangeAddress(selectedQuote.sendAddress);
             const result = await signTransaction({
                 account,
                 address: selectedQuote.sendAddress,

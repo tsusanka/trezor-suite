@@ -169,12 +169,13 @@ export type OutputProps =
 
 export type Props = OutputProps & {
     state: any;
+    address: string | undefined;
     symbol: Network['symbol'];
 };
 
 export { Left, Right, Coin, Symbol, Fiat, Amounts };
 
-const Output = ({ type, state, label, value, symbol, token }: Props) => {
+const Output = ({ type, state, label, value, symbol, token, address }: Props) => {
     const [isExpanded, setExpanded] = useState(false);
     let outputLabel: React.ReactNode = label;
 

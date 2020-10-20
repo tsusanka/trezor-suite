@@ -57,18 +57,17 @@ const ReviewTransaction = ({ selectedAccount, exchange }: Props) => {
         cancelSignTx: sendFormActions.cancelSignTx,
     });
 
-    const { transactionInfo, signedTx } = exchange;
+    const { transactionInfo, signedTx, exchangeAddress } = exchange;
     if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return null;
 
     const { symbol, networkType } = selectedAccount.account;
     // const broadcastEnabled = precomposedForm.options.includes('broadcast');
-
     const outputs: OutputProps[] = [];
     transactionInfo.transaction.outputs.forEach(o => {
-        if (typeof o.address === 'string') {
+        if (typeof exchangeAddress === 'string') {
             outputs.push({
                 type: 'regular',
-                label: o.address,
+                label: exchangeAddress,
                 value: o.amount,
                 token: transactionInfo.token,
             });
@@ -159,9 +158,18 @@ const ReviewTransaction = ({ selectedAccount, exchange }: Props) => {
             <Content>
                 {outputs.map((output, index) => {
                     const state = signedTx ? 'success' : getState(index, buttonRequests.length);
-                    // it's safe to use array index since outputs do not change
-                    // eslint-disable-next-line react/no-array-index-key
-                    return <Output key={index} {...output} state={state} symbol={symbol} />;
+
+                    return (
+                        <Output
+                            address={exchangeAddress}
+                            // it's safe to use array index since outputs do not change
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={index}
+                            {...output}
+                            state={state}
+                            symbol={symbol}
+                        />
+                    );
                 })}
                 <Detail tx={transactionInfo} txHash={signedTx ? signedTx.tx : undefined} />
             </Content>
