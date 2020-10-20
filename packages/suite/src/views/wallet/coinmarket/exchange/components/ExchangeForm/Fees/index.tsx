@@ -137,7 +137,7 @@ const Fees = () => {
                         options={buildFeeOptions(feeInfo.levels)}
                         onChange={(value: any) => {
                             selectFee(value);
-                            if (value === 'custom') {
+                            if (value === 'custom' && selectedFeeLevel.label !== 'custom') {
                                 setValue('feePerUnit', selectedFeeLevel.feePerUnit);
                             } else {
                                 clearErrors('feePerUnit');
@@ -145,8 +145,6 @@ const Fees = () => {
                             compose({
                                 activeMaxLimit,
                                 feeLevelLabel: value,
-                                feePerUnit: selectedFeeLevel.feePerUnit,
-                                feeLimit: selectedFeeLevel.feeLimit,
                             });
                         }}
                     />

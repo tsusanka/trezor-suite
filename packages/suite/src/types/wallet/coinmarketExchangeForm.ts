@@ -28,7 +28,7 @@ export type FormState = {
     buyCryptoInput?: string;
     buyCryptoSelect: Option;
     fiatInput?: string;
-    fiatSelectL?: Option;
+    fiatSelect?: Option;
     sellCryptoSelect: Option;
     feePerUnit?: string;
 };

@@ -39,6 +39,7 @@ const CustomFee = ({ isVisible }: Props) => {
     const inputName = 'feePerUnit';
     const feePerUnitValue = '';
     const feePerUnitError = errors.feePerUnit;
+    const selectedFeeLevel = feeInfo.levels.find(level => level.label === selectedFee);
 
     return (
         <Wrapper isVisible={isVisible}>
@@ -47,6 +48,7 @@ const CustomFee = ({ isVisible }: Props) => {
                 variant="small"
                 monospace
                 width={120}
+                defaultValue={selectedFeeLevel.feePerUnit}
                 wrapperProps={{ width: '120' }}
                 state={getInputState(feePerUnitError, feePerUnitValue)}
                 innerAddon={<Units>{getFeeUnits(network.networkType)}</Units>}
@@ -54,7 +56,6 @@ const CustomFee = ({ isVisible }: Props) => {
                     if (!feePerUnitError) {
                         compose({
                             activeMaxLimit,
-                            feeLevelLabel: 'custom',
                             feePerUnit: event.target.value,
                         });
                     }
@@ -98,7 +99,6 @@ const CustomFee = ({ isVisible }: Props) => {
                 })}
                 bottomText={<InputError error={feePerUnitError} />}
             />
-            <input type="hidden" name="feeLimit" ref={register()} />
         </Wrapper>
     );
 };
