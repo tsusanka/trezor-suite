@@ -193,20 +193,22 @@ export const useOffers = (props: Props) => {
             transactionInfo &&
             transactionInfo?.totalSpent
         ) {
-            await signTransaction({
+            const result = await signTransaction({
                 account,
                 address: selectedQuote.sendAddress,
                 transactionInfo,
                 network,
                 amount: transactionInfo.totalSpent,
             });
-            await saveTrade(selectedQuote, account, new Date().toISOString());
-            await saveTransactionId(selectedQuote.orderId);
-            goto('wallet-coinmarket-exchange-detail', {
-                symbol: account.symbol,
-                accountIndex: account.index,
-                accountType: account.accountType,
-            });
+            if (result) {
+                await saveTrade(selectedQuote, account, new Date().toISOString());
+                await saveTransactionId(selectedQuote.orderId);
+                goto('wallet-coinmarket-exchange-detail', {
+                    symbol: account.symbol,
+                    accountIndex: account.index,
+                    accountType: account.accountType,
+                });
+            }
         } else {
             addNotification({
                 type: 'error',

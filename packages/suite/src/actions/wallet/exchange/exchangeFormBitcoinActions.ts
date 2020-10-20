@@ -134,7 +134,7 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
 
 export const signTransaction = (
     transactionInfo: PrecomposedTransactionFinal,
-    address: string | undefined,
+    address: string,
 ) => async (dispatch: Dispatch, getState: GetState) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
@@ -151,7 +151,8 @@ export const signTransaction = (
         signEnhancement = ZEC_SIGN_ENHANCEMENT;
     }
 
-    const updatedOutputs = [{ ...transaction.outputs[0], address }];
+    const updatedOutput = { ...transaction.outputs[0] };
+    updatedOutput.address = address;
 
     // update inputs
     // TODO: 0 amounts should be excluded together with "exclude dustLimit" feature and "utxo picker" feature in composeTransaction (above)
@@ -171,7 +172,7 @@ export const signTransaction = (
             state: device.state,
         },
         useEmptyPassphrase: device.useEmptyPassphrase,
-        outputs: updatedOutputs,
+        outputs: [updatedOutput],
         inputs,
         coin: account.symbol,
         ...signEnhancement,

@@ -302,7 +302,7 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
     if (!account) return;
 
     // store formValues and transactionInfo in send reducer to be used by ReviewTransaction modal
-    dispatch({
+    await dispatch({
         type: COINMARKET_EXCHANGE.REQUEST_SIGN_TRANSACTION,
         payload: {
             signTransactionData,
@@ -336,7 +336,7 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
     if (!serializedTx) return;
 
     // store serializedTx in reducer (TrezorConnect.pushTransaction params) to be used in ReviewTransaction modal and pushTransaction method
-    dispatch({
+    await dispatch({
         type: COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION,
         payload: {
             tx: serializedTx,
