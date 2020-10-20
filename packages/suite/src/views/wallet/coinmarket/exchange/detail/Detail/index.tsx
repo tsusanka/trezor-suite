@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { LayoutContext } from '@suite-components';
 import { Card, variables } from '@trezor/components';
-import { CoinmarketExchangeOfferInfo, CoinmarketTopPanel } from '@wallet-components';
+import { CoinmarketExchangeOfferInfo, CoinmarketExchangeTopPanel } from '@wallet-components';
 import { useCoinmarketExchangeDetailContext } from '@wallet-hooks/useCoinmarketExchangeDetail';
 import { ExchangeTradeFinalStatuses } from '@wallet-hooks/useCoinmarket';
 import * as routerActions from '@suite-actions/routerActions';
@@ -32,7 +32,8 @@ const CoinmarketDetail = () => {
     const { setLayout } = useContext(LayoutContext);
 
     useEffect(() => {
-        if (setLayout) setLayout('Trezor Suite | Coinmarket', undefined, <CoinmarketTopPanel />);
+        if (setLayout)
+            setLayout('Trezor Suite | Coinmarket', undefined, <CoinmarketExchangeTopPanel />);
     }, [setLayout]);
 
     const { account, trade, exchangeInfo } = useCoinmarketExchangeDetailContext();

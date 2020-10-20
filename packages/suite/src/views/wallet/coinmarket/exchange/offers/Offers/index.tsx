@@ -2,7 +2,7 @@ import React, { useMemo, useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import invityAPI from '@suite-services/invityAPI';
 import { LayoutContext, Translation } from '@suite-components';
-import { CoinmarketTopPanel, CoinmarketFooter } from '@wallet-components';
+import { CoinmarketExchangeTopPanel, CoinmarketFooter } from '@wallet-components';
 import { variables, Icon, colors, CoinLogo } from '@trezor/components';
 import { useCoinmarketExchangeOffersContext } from '@wallet-hooks/useCoinmarketExchangeOffers';
 
@@ -102,7 +102,8 @@ const Offers = () => {
     });
 
     useMemo(() => {
-        if (setLayout) setLayout('Trezor Suite | Coinmarket', undefined, <CoinmarketTopPanel />);
+        if (setLayout)
+            setLayout('Trezor Suite | Coinmarket', undefined, <CoinmarketExchangeTopPanel />);
     }, [setLayout]);
 
     if (!quotesRequest) return null;
