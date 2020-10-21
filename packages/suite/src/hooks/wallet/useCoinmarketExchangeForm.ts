@@ -173,7 +173,6 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         });
 
         const transactionInfo = result ? result[selectedFeeLevel.label] : null;
-
         if (transactionInfo?.type === 'final') {
             setTransactionInfo(transactionInfo);
             const amountToFill = new Bignumber(transactionInfo.max || '0').dividedBy(

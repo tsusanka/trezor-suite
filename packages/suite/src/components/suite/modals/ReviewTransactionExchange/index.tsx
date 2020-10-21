@@ -69,10 +69,10 @@ const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
     const { symbol, networkType } = selectedAccount.account;
     const outputs: OutputProps[] = [];
     transactionInfo.transaction.outputs.forEach(o => {
-        if (typeof exchangeAddress === 'string') {
+        if (typeof o.address === 'string') {
             outputs.push({
                 type: 'regular',
-                label: exchangeAddress,
+                label: exchangeAddress || '',
                 value: o.amount,
                 token: transactionInfo.token,
             });
