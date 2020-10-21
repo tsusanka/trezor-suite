@@ -149,19 +149,20 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
 
     const compose = async (data: ComposeData) => {
         const formValues = getValues();
-        const feeLevel = feeInfo.levels.find(
-            level => (level.label === data && data.feeLevelLabel) || selectedFee,
-        );
+        const feeLevel = feeInfo.levels.find(level => level.label === data.feeLevelLabel);
+        const selectedFeeLevel =
+            feeLevel || feeInfo.levels.find(level => level.label === selectedFee);
 
-        if (!feeLevel) return null;
+        if (!selectedFeeLevel) return null;
         const placeholderAddress = await getComposeAddressPlaceholder();
-
         const result: PrecomposedLevels | undefined = await composeTransaction({
             account,
             amount: formValues.buyCryptoInput || '0',
             feeInfo,
-            feePerUnit: data && data.feePerUnit ? data.feePerUnit || '0' : feeLevel.feePerUnit,
-            feeLimit: data && data.feeLimit ? data.feeLimit || '0' : feeLevel.feeLimit || '0',
+            feePerUnit:
+                data && data.feePerUnit ? data.feePerUnit || '0' : selectedFeeLevel.feePerUnit,
+            feeLimit:
+                data && data.feeLimit ? data.feeLimit || '0' : selectedFeeLevel.feeLimit || '0',
             network,
             selectedFee,
             isMaxActive: data ? typeof data.activeMaxLimit === 'number' : false,
@@ -169,21 +170,29 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             token,
         });
 
-        if (!result || result[selectedFee].type === 'error') {
+        if (
+            !result ||
+            (result[selectedFeeLevel.label] && result[selectedFeeLevel.label].type === 'error')
+        ) {
             return;
+        }
+
+        const transactionInfo = result[selectedFeeLevel.label];
+        if (transactionInfo && transactionInfo.type === 'final') {
+            saveTransactionInfo(transactionInfo);
         }
 
         if (
             data &&
             result &&
-            data.activeMaxLimit &&
-            result[selectedFee] &&
-            result[selectedFee].type === 'final'
+            result[selectedFeeLevel.label] &&
+            result[selectedFeeLevel.label].type === 'final'
         ) {
-            const transactionInfo = result[selectedFee];
+            const transactionInfo = result[selectedFeeLevel.label];
+
             if (
                 transactionInfo &&
-                transactionInfo.type === 'final' &&
+                transactionInfo.type !== 'error' &&
                 transactionInfo.max &&
                 data.activeMaxLimit
             ) {
@@ -195,8 +204,6 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
                     setValue('buyCryptoInput', fixedAmount, { shouldValidate: true });
                     updateFiatValue(fixedAmount);
                 }
-                setTransactionInfo(transactionInfo);
-                saveTransactionInfo(transactionInfo);
             }
         }
     };

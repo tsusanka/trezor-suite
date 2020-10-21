@@ -56,7 +56,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     exchangeCoinInfo?: ExchangeCoinInfo[];
     localCurrencyOption: { label: string; value: string };
     selectedFee: FeeLevel['label'];
-    setActiveMaxLimit: (activeMaxLimit: number) => void;
+    setActiveMaxLimit: (activeMaxLimit: number | undefined) => void;
     activeMaxLimit?: number;
     compose: (data: ComposeData) => void;
     selectFee: (feeLevel: FeeLevel['label']) => void;
