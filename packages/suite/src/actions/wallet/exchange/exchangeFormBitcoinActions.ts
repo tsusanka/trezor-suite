@@ -151,8 +151,26 @@ export const signTransaction = (
         signEnhancement = ZEC_SIGN_ENHANCEMENT;
     }
 
-    const updatedOutput = { ...transaction.outputs[0] };
-    updatedOutput.address = address;
+    let updatedOutputsCount = 0;
+    const updatedOutputs = transaction.outputs.map(o => {
+        const updated = { ...o };
+        // find the output which has address, other outputs are change outputs, specified by address_n
+        if (o.address) {
+            updatedOutputsCount++;
+            updated.address = address;
+        }
+        return updated;
+    });
+    // sanity check
+    if (updatedOutputsCount !== 1) {
+        dispatch(
+            notificationActions.addToast({
+                type: 'sign-tx-error',
+                error: 'Invalid transaction outputs',
+            }),
+        );
+        return;
+    }
 
     // update inputs
     // TODO: 0 amounts should be excluded together with "exclude dustLimit" feature and "utxo picker" feature in composeTransaction (above)
@@ -173,11 +191,13 @@ export const signTransaction = (
             state: device.state,
         },
         useEmptyPassphrase: device.useEmptyPassphrase,
-        outputs: [updatedOutput],
+        outputs: updatedOutputs,
         inputs,
         coin: account.symbol,
         ...signEnhancement,
     };
+
+    console.log('signPayload', signPayload);
 
     const signedTx = await TrezorConnect.signTransaction(signPayload);
 

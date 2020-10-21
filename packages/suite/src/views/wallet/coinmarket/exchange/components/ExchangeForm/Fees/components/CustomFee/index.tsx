@@ -48,7 +48,7 @@ const CustomFee = ({ isVisible }: Props) => {
                 variant="small"
                 monospace
                 width={120}
-                defaultValue={selectedFeeLevel.feePerUnit}
+                defaultValue={selectedFeeLevel?.feePerUnit}
                 wrapperProps={{ width: '120' }}
                 state={getInputState(feePerUnitError, feePerUnitValue)}
                 innerAddon={<Units>{getFeeUnits(network.networkType)}</Units>}
