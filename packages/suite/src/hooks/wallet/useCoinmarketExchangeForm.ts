@@ -46,7 +46,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const fiatRates = fiat.coins.find(item => item.symbol === symbol);
     const localCurrencyOption = { value: localCurrency, label: localCurrency.toUpperCase() };
     const methods = useForm<FormState>({ mode: 'onChange' });
-    const { register, setValue, getValues } = methods;
+    const { register, setValue, getValues, setError } = methods;
     const [token, setToken] = useState<string | undefined>(getValues('buyCryptoSelect')?.value);
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
     const [activeMaxLimit, setActiveMaxLimit] = useState<number | undefined>(undefined);
@@ -172,16 +172,17 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
             token,
         });
 
-        if (
-            !result ||
-            (result[selectedFeeLevel.label] && result[selectedFeeLevel.label].type === 'error')
-        ) {
-            return;
-        }
+        const transactionInfo = result ? result[selectedFeeLevel.label] : null;
 
-        const transactionInfo = result[selectedFeeLevel.label];
         if (transactionInfo && transactionInfo.type === 'final') {
             saveTransactionInfo(transactionInfo);
+        }
+
+        if (transactionInfo && transactionInfo.type === 'error') {
+            setError('buyCryptoInput', {
+                type: 'compose',
+                message: transactionInfo.error,
+            });
         }
 
         if (
