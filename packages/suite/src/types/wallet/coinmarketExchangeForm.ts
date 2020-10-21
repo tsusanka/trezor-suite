@@ -52,6 +52,7 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     register: (rules?: TypedValidationRules) => (ref: any) => void;
     onSubmit: () => void;
     account: Account;
+    isComposing: boolean;
     exchangeInfo?: ExchangeInfo;
     exchangeCoinInfo?: ExchangeCoinInfo[];
     localCurrencyOption: { label: string; value: string };

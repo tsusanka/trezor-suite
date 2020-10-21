@@ -22,7 +22,7 @@ const StyledButton = styled(Button)`
 `;
 
 const Footer = () => {
-    const { formState, watch, errors } = useCoinmarketExchangeFormContext();
+    const { formState, watch, errors, isComposing } = useCoinmarketExchangeFormContext();
     const hasValues = !!watch('buyCryptoInput') && !!watch('sellCryptoSelect')?.value;
     const formIsValid = Object.keys(errors).length === 0;
 
@@ -31,7 +31,7 @@ const Footer = () => {
             <Center>
                 <StyledButton
                     isDisabled={!(formIsValid && hasValues) || formState.isSubmitting}
-                    isLoading={formState.isSubmitting}
+                    isLoading={formState.isSubmitting || isComposing}
                     type="submit"
                 >
                     <Translation id="TR_EXCHANGE_SHOW_OFFERS" />

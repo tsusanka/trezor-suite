@@ -50,6 +50,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const [token, setToken] = useState<string | undefined>(getValues('buyCryptoSelect')?.value);
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
     const [activeMaxLimit, setActiveMaxLimit] = useState<number | undefined>(undefined);
+    const [isComposing, setIsComposing] = useState<boolean>(false);
     const [transactionInfo, setTransactionInfo] = useState<null | PrecomposedTransactionFinal>(
         null,
     );
@@ -148,6 +149,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     };
 
     const compose = async (data: ComposeData) => {
+        setIsComposing(true);
         const formValues = getValues();
         const feeLevel = feeInfo.levels.find(level => level.label === data.feeLevelLabel);
         const selectedFeeLevel =
@@ -206,6 +208,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
                 }
             }
         }
+        setIsComposing(false);
     };
 
     const updateFiatCurrency = (currency: { label: string; value: string }) => {
@@ -263,6 +266,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         compose,
         setTransactionInfo,
         fiatRates,
+        isComposing,
         amountLimits,
         setAmountLimits,
         isLoading,

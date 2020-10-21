@@ -117,6 +117,7 @@ const Fees = () => {
         setValue,
         clearErrors,
         transactionInfo,
+        isComposing,
         compose,
         activeMaxLimit,
     } = useCoinmarketExchangeFormContext();
