@@ -174,41 +174,27 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
 
         const transactionInfo = result ? result[selectedFeeLevel.label] : null;
 
-        if (transactionInfo && transactionInfo.type === 'final') {
+        if (transactionInfo?.type === 'final') {
+            const amountToFill = new Bignumber(transactionInfo.max || '0').dividedBy(
+                data.activeMaxLimit || '1',
+            );
+
+            if (amountToFill) {
+                const fixedAmount = amountToFill.toFixed(network.decimals);
+                setValue('buyCryptoInput', fixedAmount, { shouldValidate: true });
+                updateFiatValue(fixedAmount);
+            }
+
             saveTransactionInfo(transactionInfo);
         }
 
-        if (transactionInfo && transactionInfo.type === 'error') {
+        if (transactionInfo?.type === 'error') {
             setError('buyCryptoInput', {
                 type: 'compose',
                 message: transactionInfo.error,
             });
         }
 
-        if (
-            data &&
-            result &&
-            result[selectedFeeLevel.label] &&
-            result[selectedFeeLevel.label].type === 'final'
-        ) {
-            const transactionInfo = result[selectedFeeLevel.label];
-
-            if (
-                transactionInfo &&
-                transactionInfo.type !== 'error' &&
-                transactionInfo.max &&
-                data.activeMaxLimit
-            ) {
-                const amountToFill = new Bignumber(transactionInfo.max).dividedBy(
-                    data.activeMaxLimit,
-                );
-                if (amountToFill) {
-                    const fixedAmount = amountToFill.toFixed(network.decimals);
-                    setValue('buyCryptoInput', fixedAmount, { shouldValidate: true });
-                    updateFiatValue(fixedAmount);
-                }
-            }
-        }
         setIsComposing(false);
     };
 
