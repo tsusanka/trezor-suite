@@ -100,7 +100,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     };
 
     const updateFiatValue = (amount: string) => {
-        const currency: { value: string; label: string } = getValues('fiatSelect');
+        const currency: { value: string; label: string } | undefined = getValues('fiatSelect');
         if (!fiatRates || !fiatRates.current || !currency) return;
         const fiatValue = toFiatCurrency(amount, currency.value, fiatRates.current.rates);
         if (fiatValue) {
@@ -192,7 +192,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         if (transactionInfo?.type === 'error') {
             setError('buyCryptoInput', {
                 type: 'compose',
-                message: transactionInfo.error,
+                message: transactionInfo.error.toLowerCase(),
             });
         }
 
@@ -209,7 +209,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     };
 
     const updateBuyCryptoValue = (amount: string, decimals: number) => {
-        const currency: { value: string; label: string } = getValues('fiatSelect');
+        const currency: { value: string; label: string } | undefined = getValues('fiatSelect');
         if (!fiatRates || !fiatRates.current || !currency) return;
         const cryptoValue = fromFiatCurrency(
             amount,
