@@ -117,7 +117,6 @@ const Fees = () => {
         setValue,
         clearErrors,
         transactionInfo,
-        isComposing,
         compose,
         activeMaxLimit,
     } = useCoinmarketExchangeFormContext();
@@ -174,7 +173,7 @@ const Fees = () => {
                                 <TxSize>({transactionInfo.bytes} B)</TxSize>
                             )}
                     </FeeInfo>
-                    {transactionInfo && transactionInfo.type === 'final' && (
+                    {transactionInfo?.type === 'final' && (
                         <FeeAmount>
                             <CoinAmount>
                                 <FormattedCryptoAmount

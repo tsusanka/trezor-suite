@@ -175,11 +175,12 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         const transactionInfo = result ? result[selectedFeeLevel.label] : null;
 
         if (transactionInfo?.type === 'final') {
+            setTransactionInfo(transactionInfo);
             const amountToFill = new Bignumber(transactionInfo.max || '0').dividedBy(
                 data.activeMaxLimit || '1',
             );
 
-            if (amountToFill) {
+            if (amountToFill && data.activeMaxLimit) {
                 const fixedAmount = amountToFill.toFixed(network.decimals);
                 setValue('buyCryptoInput', fixedAmount, { shouldValidate: true });
                 updateFiatValue(fixedAmount);
