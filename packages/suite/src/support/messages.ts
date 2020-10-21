@@ -511,6 +511,14 @@ const definedMessages = defineMessages({
         id: 'TR_XPUB_MODAL_TITLE_METADATA',
         description: 'accountLabel is user defined name of account, might be pretty much anything.',
     },
+    TR_DROPZONE: {
+        defaultMessage: 'Drag and drop file here or click to select',
+        id: 'TR_DROPZONE',
+    },
+    TR_DROPZONE_ERROR: {
+        defaultMessage: 'Import failed {error}',
+        id: 'TR_DROPZONE_ERROR',
+    },
     TR_ADVANCED_RECOVERY: {
         defaultMessage: 'advanced recovery',
         description: 'Enter words via obfuscated pin matrix, recovery takes about 5 minutes.',
