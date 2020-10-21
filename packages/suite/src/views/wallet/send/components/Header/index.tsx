@@ -56,7 +56,6 @@ const Header = () => {
                 return true;
             },
             label: 'Import',
-            isDisabled: true,
         },
         {
             key: 'raw',

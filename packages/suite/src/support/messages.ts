@@ -511,6 +511,22 @@ const definedMessages = defineMessages({
         id: 'TR_XPUB_MODAL_TITLE_METADATA',
         description: 'accountLabel is user defined name of account, might be pretty much anything.',
     },
+    TR_IMPORT_CSV_MODAL_TITLE: {
+        defaultMessage: 'Import addresses from CSV',
+        id: 'TR_IMPORT_CSV_MODAL_TITLE',
+    },
+    TR_IMPORT_CSV_MODAL_EXAMPLE: {
+        defaultMessage: 'CSV file example:',
+        id: 'TR_IMPORT_CSV_MODAL_EXAMPLE',
+    },
+    TR_IMPORT_CSV_MODAL_DELIMITER_DEFAULT: {
+        defaultMessage: 'Auto detect delimiter',
+        id: 'TR_IMPORT_CSV_MODAL_DELIMITER_DEFAULT',
+    },
+    TR_IMPORT_CSV_MODAL_DELIMITER_CUSTOM: {
+        defaultMessage: 'Custom delimiter',
+        id: 'TR_IMPORT_CSV_MODAL_DELIMITER_CUSTOM',
+    },
     TR_DROPZONE: {
         defaultMessage: 'Drag and drop file here or click to select',
         id: 'TR_DROPZONE',
