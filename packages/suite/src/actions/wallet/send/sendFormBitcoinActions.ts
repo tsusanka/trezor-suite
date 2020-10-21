@@ -182,6 +182,7 @@ export const signTransaction = (
         .filter(input => input.amount !== '0'); // remove '0' amounts
     inputs.forEach(input => {
         if (!input.amount) delete input.amount; // remove undefined amounts
+        // @ts-ignore The operand of a 'delete' operator must be optional. 
         if (!input.sequence) delete input.sequence; // remove undefined sequence
     });
 

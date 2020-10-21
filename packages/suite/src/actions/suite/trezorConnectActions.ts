@@ -14,24 +14,28 @@ export const init = () => async (dispatch: Dispatch, getState: GetState) => {
     // set event listeners
     TrezorConnect.on(DEVICE_EVENT, event => {
         // dispatch event as action
+        // @ts-ignore The operand of a 'delete' operator must be optional.
         delete event.event;
         dispatch(event);
     });
 
     TrezorConnect.on(UI_EVENT, event => {
         // dispatch event as action
+        // @ts-ignore The operand of a 'delete' operator must be optional.
         delete event.event;
         dispatch(event);
     });
 
     TrezorConnect.on(TRANSPORT_EVENT, event => {
         // dispatch event as action
+        // @ts-ignore The operand of a 'delete' operator must be optional.
         delete event.event;
         dispatch(event);
     });
 
     TrezorConnect.on(BLOCKCHAIN_EVENT, event => {
         // dispatch event as action
+        // @ts-ignore The operand of a 'delete' operator must be optional.
         delete event.event;
         dispatch(event);
     });

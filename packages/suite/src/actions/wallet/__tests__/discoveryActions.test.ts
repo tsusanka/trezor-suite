@@ -59,6 +59,7 @@ jest.mock('trezor-connect', () => {
             // error code is used in case where one of requested coins is not supported
             const { code, error } = connect.error;
             if (code) {
+                // @ts-ignore The operand of a 'delete' operator must be optional. 
                 delete connect.error; // reset this value, it shouldn't be used in next iteration
                 return scopedParamsError(error, code);
             }

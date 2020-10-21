@@ -38,6 +38,7 @@ const initWorker = async (settings: BlockchainSettings): Promise<Worker> => {
     worker.onmessage = (message: any) => {
         if (message.data.type !== MESSAGES.HANDSHAKE) return;
         clearTimeout(timeout);
+        // @ts-ignore The operand of a 'delete' operator must be optional. 
         delete settings.worker;
         worker.postMessage({
             type: MESSAGES.HANDSHAKE,
@@ -55,6 +56,7 @@ const initWorker = async (settings: BlockchainSettings): Promise<Worker> => {
         } catch (error) {
             // empty
         }
+        // @ts-ignore The operand of a 'delete' operator must be optional. 
         delete settings.worker;
 
         const message = error.message
