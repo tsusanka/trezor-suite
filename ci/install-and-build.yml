@@ -24,5 +24,5 @@ install and build:
             - packages/translations-manager/lib
     stage: setup environment
     script:
-        - export ELECTRON_SKIP_BINARY_DOWNLOAD=1
+        - export ELECTRON_MIRROR="https://cdn.npm.taobao.org/dist/electron/"
         - yarn install --pure-lockfile --cache-folder .yarn
