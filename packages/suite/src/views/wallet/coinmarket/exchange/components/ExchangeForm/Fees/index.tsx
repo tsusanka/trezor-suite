@@ -115,10 +115,10 @@ const Fees = () => {
         selectedFee,
         selectFee,
         setValue,
+        isMax,
         clearErrors,
         transactionInfo,
         compose,
-        activeMaxLimit,
     } = useCoinmarketExchangeFormContext();
 
     const selectedFeeLevel = feeInfo.levels.find(level => level.label === selectedFee);
@@ -143,7 +143,8 @@ const Fees = () => {
                                 clearErrors('feePerUnit');
                             }
                             compose({
-                                activeMaxLimit,
+                                fillValue: isMax,
+                                setMax: isMax,
                                 feeLevelLabel: value,
                             });
                         }}

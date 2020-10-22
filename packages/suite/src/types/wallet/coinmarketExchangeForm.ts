@@ -40,8 +40,10 @@ export interface AmountLimits {
 }
 
 export interface ComposeData {
-    activeMaxLimit?: number;
+    setMax?: boolean;
     address?: string;
+    fillValue?: boolean;
+    amount?: string;
     feeLevelLabel?: FeeLevel['label'];
     feePerUnit?: FeeLevel['feePerUnit'];
     feeLimit?: FeeLevel['feeLimit'];
@@ -53,12 +55,12 @@ export type ExchangeFormContextValues = Omit<UseFormMethods<FormState>, 'registe
     onSubmit: () => void;
     account: Account;
     isComposing: boolean;
+    isMax: boolean;
     exchangeInfo?: ExchangeInfo;
     exchangeCoinInfo?: ExchangeCoinInfo[];
     localCurrencyOption: { label: string; value: string };
     selectedFee: FeeLevel['label'];
-    setActiveMaxLimit: (activeMaxLimit: number | undefined) => void;
-    activeMaxLimit?: number;
+    setMax: (isMax: boolean) => void;
     compose: (data: ComposeData) => void;
     selectFee: (feeLevel: FeeLevel['label']) => void;
     updateFiatCurrency: (selectedCurrency: { value: string; label: string }) => void;

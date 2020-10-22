@@ -82,5 +82,7 @@ export const getBitcoinComposeOutputs = ({
         }
     }
 
+    console.log('result', result);
+
     return result;
 };

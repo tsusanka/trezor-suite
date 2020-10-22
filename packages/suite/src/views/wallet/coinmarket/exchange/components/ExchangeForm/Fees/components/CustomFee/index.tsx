@@ -32,8 +32,7 @@ const CustomFee = ({ isVisible }: Props) => {
         errors,
         register,
         compose,
-        setActiveMaxLimit,
-        activeMaxLimit,
+        isMax,
         selectedFee,
     } = useCoinmarketExchangeFormContext();
     const { maxFee, minFee } = feeInfo;
@@ -54,10 +53,10 @@ const CustomFee = ({ isVisible }: Props) => {
                 state={getInputState(feePerUnitError, feePerUnitValue)}
                 innerAddon={<Units>{getFeeUnits(network.networkType)}</Units>}
                 onChange={event => {
-                    setActiveMaxLimit(undefined);
                     if (!feePerUnitError) {
                         compose({
-                            activeMaxLimit,
+                            fillValue: isMax,
+                            setMax: isMax,
                             feePerUnit: event.target.value,
                         });
                     }

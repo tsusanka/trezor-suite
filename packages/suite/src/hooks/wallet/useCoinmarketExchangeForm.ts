@@ -7,7 +7,7 @@ import { PrecomposedLevels, PrecomposedTransactionFinal } from '@wallet-types/se
 import { useInvityAPI } from '@wallet-hooks/useCoinmarket';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
 import { useActions } from '@suite-hooks';
-import Bignumber from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import { NETWORKS } from '@wallet-config';
 import invityAPI from '@suite-services/invityAPI';
 import * as routerActions from '@suite-actions/routerActions';
@@ -49,7 +49,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
     const { register, setValue, getValues, setError } = methods;
     const [token, setToken] = useState<string | undefined>(getValues('buyCryptoSelect')?.value);
     const [amountLimits, setAmountLimits] = useState<AmountLimits | undefined>(undefined);
-    const [activeMaxLimit, setActiveMaxLimit] = useState<number | undefined>(undefined);
+    const [setMax, setSetMax] = useState<boolean | undefined>(undefined);
     const [isComposing, setIsComposing] = useState<boolean>(false);
     const [transactionInfo, setTransactionInfo] = useState<null | PrecomposedTransactionFinal>(
         null,
@@ -59,6 +59,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         saveQuoteRequest,
         saveQuotes,
         saveTrade,
+        signTransaction,
         composeTransaction,
         saveTransactionInfo,
     } = useActions({
@@ -67,6 +68,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         saveTrade: coinmarketExchangeActions.saveTrade,
         composeTransaction: coinmarketExchangeActions.composeTransaction,
         saveTransactionInfo: coinmarketExchangeActions.saveTransactionInfo,
+        signTransaction: coinmarketExchangeActions.signTransaction,
     });
 
     const { goto } = useActions({ goto: routerActions.goto });
@@ -91,6 +93,19 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         } else {
             const [fixedQuotes, floatQuotes] = splitToFixedFloatQuotes(allQuotes, exchangeInfo);
             await saveQuotes(fixedQuotes, floatQuotes);
+            if (transactionInfo) {
+                const address =
+                    transactionInfo.transaction.outputs.find(o => o.address)?.address || '';
+                await signTransaction({
+                    account,
+                    address,
+                    transactionInfo,
+                    network,
+                    amount: transactionInfo.totalSpent,
+                });
+
+                return;
+            }
             goto('wallet-coinmarket-exchange-offers', {
                 symbol: account.symbol,
                 accountIndex: account.index,
@@ -159,7 +174,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         const placeholderAddress = await getComposeAddressPlaceholder();
         const result: PrecomposedLevels | undefined = await composeTransaction({
             account,
-            amount: formValues.buyCryptoInput || '0',
+            amount: data && data.amount ? data.amount : formValues.buyCryptoInput || '0',
             feeInfo,
             feePerUnit:
                 data && data.feePerUnit ? data.feePerUnit || '0' : selectedFeeLevel.feePerUnit,
@@ -167,7 +182,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
                 data && data.feeLimit ? data.feeLimit || '0' : selectedFeeLevel.feeLimit || '0',
             network,
             selectedFee,
-            isMaxActive: data ? typeof data.activeMaxLimit === 'number' : false,
+            isMaxActive: data && data.setMax ? data.setMax || false : false,
             address: placeholderAddress,
             token,
         });
@@ -175,14 +190,15 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         const transactionInfo = result ? result[selectedFeeLevel.label] : null;
         if (transactionInfo?.type === 'final') {
             setTransactionInfo(transactionInfo);
-            const amountToFill = new Bignumber(transactionInfo.max || '0').dividedBy(
-                data.activeMaxLimit || '1',
-            );
-
-            if (amountToFill && data.activeMaxLimit) {
-                const fixedAmount = amountToFill.toFixed(network.decimals);
-                setValue('buyCryptoInput', fixedAmount, { shouldValidate: true });
-                updateFiatValue(fixedAmount);
+            if (data.fillValue) {
+                let amountToFill = data.amount || '0';
+                if (data.setMax) {
+                    amountToFill = new BigNumber(transactionInfo.max || '0').toFixed(
+                        network.decimals,
+                    );
+                }
+                setValue('buyCryptoInput', amountToFill, { shouldValidate: true });
+                updateFiatValue(amountToFill);
             }
 
             saveTransactionInfo(transactionInfo);
@@ -234,10 +250,10 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         updateFiatValue,
         register: typedRegister,
         exchangeInfo,
+        isMax: setMax,
         setToken,
         saveQuoteRequest,
-        activeMaxLimit,
-        setActiveMaxLimit,
+        setMax: setSetMax,
         saveQuotes,
         quotesRequest,
         transactionInfo,

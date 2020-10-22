@@ -35,8 +35,8 @@ const BuyCryptoInput = () => {
         amountLimits,
         compose,
         token,
+        setMax,
         updateFiatValue,
-        setActiveMaxLimit,
         setValue,
     } = useCoinmarketExchangeFormContext();
     const buyCryptoInput = 'buyCryptoInput';
@@ -59,11 +59,14 @@ const BuyCryptoInput = () => {
                 clearErrors(fiatInput);
                 trigger([buyCryptoInput]);
             }}
-            onChange={event => {
-                setActiveMaxLimit(undefined);
+            onChange={async event => {
                 updateFiatValue(event.target.value);
                 clearErrors(fiatInput);
-                compose({});
+                setMax(false);
+                compose({
+                    setMax: false,
+                    amount: event.target.value,
+                });
             }}
             state={errors[buyCryptoInput] ? 'error' : undefined}
             name={buyCryptoInput}

@@ -1,5 +1,6 @@
 import { colors, variables } from '@trezor/components';
 import React from 'react';
+import BigNumber from 'bignumber.js';
 import styled from 'styled-components';
 import { useCoinmarketExchangeFormContext } from '@suite/hooks/wallet/useCoinmarketExchangeForm';
 
@@ -38,31 +39,47 @@ const Button = styled.div`
 `;
 
 const Bottom = () => {
-    const { compose, setActiveMaxLimit, token, account } = useCoinmarketExchangeFormContext();
+    const { compose, token, account, setMax, network } = useCoinmarketExchangeFormContext();
     const tokenData = account.tokens?.find(t => t.symbol === token);
+
     return (
         <Wrapper>
             <Left>
                 <Button
                     onClick={() => {
-                        setActiveMaxLimit(1);
-                        compose({ activeMaxLimit: 1 });
+                        setMax(true);
+                        compose({
+                            setMax: true,
+                            fillValue: true,
+                        });
                     }}
                 >
                     All
                 </Button>
                 <Button
                     onClick={async () => {
-                        setActiveMaxLimit(2);
-                        compose({ activeMaxLimit: 2 });
+                        setMax(false);
+                        compose({
+                            setMax: false,
+                            fillValue: true,
+                            amount: new BigNumber(account.formattedBalance)
+                                .dividedBy(2)
+                                .toFixed(network.decimals),
+                        });
                     }}
                 >
                     1/2
                 </Button>
                 <Button
                     onClick={async () => {
-                        setActiveMaxLimit(4);
-                        compose({ activeMaxLimit: 4 });
+                        setMax(false);
+                        compose({
+                            setMax: false,
+                            fillValue: true,
+                            amount: new BigNumber(account.formattedBalance)
+                                .dividedBy(4)
+                                .toFixed(network.decimals),
+                        });
                     }}
                 >
                     1/4

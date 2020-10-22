@@ -19,7 +19,7 @@ const BuyCryptoSelect = () => {
         control,
         setAmountLimits,
         account,
-        setActiveMaxLimit,
+        setMax,
         exchangeInfo,
         setToken,
     } = useCoinmarketExchangeFormContext();
@@ -38,7 +38,7 @@ const BuyCryptoSelect = () => {
                 return (
                     <CleanSelect
                         onChange={(selected: any) => {
-                            setActiveMaxLimit(undefined);
+                            setMax(false);
                             onChange(selected);
                             setAmountLimits(undefined);
                             const lowerCaseToken = selected.value.toLowerCase();
