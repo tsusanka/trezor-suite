@@ -26,6 +26,10 @@ const validChannels = [
 
     // window
     'window/is-maximized',
+
+    // metadata
+    'metadata/save',
+    'metadata/read',
 ];
 
 contextBridge.exposeInMainWorld('desktopApi', {
@@ -44,9 +48,13 @@ contextBridge.exposeInMainWorld('desktopApi', {
     },
     off: (channel: string, func: Function) => {
         if (validChannels.includes(channel)) {
-            ipcRenderer.off(channel, (_, ...args) => func(...args));
+            // @ts-ignore
+            ipcRenderer.off(channel, func);
         }
     },
+    // todo:
+    invoke: ipcRenderer.invoke,
+
     // Updater
     checkForUpdates: () => ipcRenderer.send('update/check'),
     downloadUpdate: () => ipcRenderer.send('update/download'),

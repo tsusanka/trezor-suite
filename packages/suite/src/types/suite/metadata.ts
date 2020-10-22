@@ -101,6 +101,7 @@ export abstract class AbstractMetadataProvider {
     ok(payload?: any) {
         const success = true as const;
         if (payload) {
+            console.warn('payload', payload);
             return {
                 success,
                 payload,

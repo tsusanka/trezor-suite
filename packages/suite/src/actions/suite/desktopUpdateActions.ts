@@ -12,8 +12,10 @@ export type DesktopUpdateActions =
     | { type: typeof DESKTOP_UPDATE.SKIP; payload: string }
     | { type: typeof DESKTOP_UPDATE.WINDOW; payload: UpdateWindow };
 
-export const checking = () => async (dispatch: Dispatch) =>
+export const checking = () => async (dispatch: Dispatch) => {
+    console.warn('checing update');
     dispatch({ type: DESKTOP_UPDATE.CHECKING });
+};
 
 export const available = (info: UpdateInfo) => async (dispatch: Dispatch) =>
     dispatch({

@@ -16,6 +16,17 @@ import * as modalActions from '@suite-actions/modalActions';
 import * as notificationActions from '@suite-actions/notificationActions';
 import DropboxProvider from '@suite/services/metadata/DropboxProvider';
 import GoogleProvider from '@suite/services/metadata/GoogleProvider';
+import UserDataProvider from '@suite/services/metadata/UserDataProvider';
+// import { isDesktop } from '@suite-utils/env';
+
+// todo: think, what is the philosophy behind local sync? is it on the same level
+// as cloud sync?
+// const localSyncAllowed = () => {
+//     // web     - disallowed
+//     // desktop - allowed
+//     // native  - ?
+//     return isDesktop();
+// };
 
 export type MetadataActions =
     | { type: typeof METADATA.ENABLE }
@@ -40,18 +51,21 @@ export type MetadataActions =
       };
 
 // needs to be declared here in top level context because it's not recommended to keep classes instances in redux state (serialization)
-let providerInstance: DropboxProvider | GoogleProvider | undefined;
+let providerInstance: DropboxProvider | GoogleProvider | UserDataProvider | undefined;
 const fetchIntervals: { [deviceState: string]: any } = {}; // any because of native at the moment, otherwise number | undefined
 
 const createProvider = (
     type: MetadataProviderCredentials['type'],
     token?: MetadataProviderCredentials['token'],
 ) => {
+    console.log('createProvider', type);
     switch (type) {
         case 'dropbox':
             return new DropboxProvider(token);
         case 'google':
             return new GoogleProvider(token);
+        case 'userData':
+            return new UserDataProvider();
         default:
             throw new Error(`provider of type ${type} is not implemented`);
     }
@@ -142,6 +156,7 @@ export const disconnectProvider = () => async (dispatch: Dispatch) => {
 const handleProviderError = (error: MetadataProviderError, action: string) => (
     dispatch: Dispatch,
 ) => {
+    console.log(error);
     // error should be of specified type, but in case it is not (catch is not typed) show generic error
     if (!error?.code) {
         // if this happens, it means that there is a hole in error handling and it should be fixed
@@ -262,6 +277,7 @@ export const fetchMetadata = (deviceState: string) => async (
 
             const json = { walletLabel: '' };
             if (result.payload) {
+                console.warn('result', result);
                 try {
                     Object.assign(
                         json,
@@ -272,8 +288,6 @@ export const fetchMetadata = (deviceState: string) => async (
                     );
                 } catch (err) {
                     const error = provider.error('OTHER_ERROR', err.message);
-                    // dispatch(handleProviderError(error, ProviderErrorAction.LOAD));
-                    // todo: ?
                     return reject(error);
                 }
             }
@@ -303,6 +317,8 @@ export const fetchMetadata = (deviceState: string) => async (
         const json = { accountLabel: '', outputLabels: {}, addressLabels: {} };
 
         if (response.payload) {
+            console.warn('response', response);
+
             try {
                 // we found associated metadata file for given account, decrypt it
                 // and save its metadata into reducer;
@@ -317,6 +333,7 @@ export const fetchMetadata = (deviceState: string) => async (
                 //     TODO: migration
                 // }
             } catch (err) {
+                console.warn(err);
                 // todo? ??
                 const error = provider.error('OTHER_ERROR', err.message);
                 return dispatch(handleProviderError(error, ProviderErrorAction.LOAD));
@@ -392,6 +409,7 @@ const syncMetadataKeys = () => (dispatch: Dispatch, getState: GetState) => {
 
 export const connectProvider = (type: MetadataProviderType) => async (dispatch: Dispatch) => {
     let provider = await dispatch(getProvider());
+
     if (!provider) {
         provider = createProvider(type);
     }
@@ -542,11 +560,11 @@ export const addAccountMetadata = (
     //     const onIpcRead = (sender, message) => {
     //         console.warn('onIpcRead', message);
     //     };
-    //     ipcRenderer.on('metadata-on-save', onIpcSave);
-    //     ipcRenderer.on('metadata-on-read', onIpcRead);
+    //     ipcRenderer.on(' metadata/save-result', onIpcSave);
+    //     ipcRenderer.on(' metadata/read-result', onIpcRead);
 
-    //     ipcRenderer.send('metadata-save', { file: 'foo.txt', content: 'content!' });
-    //     ipcRenderer.send('metadata-read', { file: 'foo.txt' });
+    //     ipcRenderer.send('metadata/save', { file: 'foo.txt', content: 'content!' });
+    //     ipcRenderer.send('metadata/read', { file: 'foo.txt' });
     // }
 };
 
