@@ -59,7 +59,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 const getDeviceContextModal = (props: Props) => {
     const { modal, device, router } = props;
     if (modal.context !== MODAL.CONTEXT_DEVICE || !device) return null;
-    const isCoinmarketOffers = router.route?.name === 'wallet-coinmarket-exchange-offers';
+    const isCoinmarketOffers = router.route?.name.startsWith('wallet-coinmarket');
 
     switch (modal.windowType) {
         // T1 firmware
