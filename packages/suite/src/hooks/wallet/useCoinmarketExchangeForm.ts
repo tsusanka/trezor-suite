@@ -6,6 +6,7 @@ import { getFeeLevels } from '@wallet-utils/sendFormUtils';
 import { PrecomposedLevels, PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 import { useInvityAPI } from '@wallet-hooks/useCoinmarket';
 import * as coinmarketExchangeActions from '@wallet-actions/coinmarketExchangeActions';
+import * as transactionActions from '@wallet-actions/transaction';
 import { useActions } from '@suite-hooks';
 import BigNumber from 'bignumber.js';
 import { NETWORKS } from '@wallet-config';
@@ -59,16 +60,14 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         saveQuoteRequest,
         saveQuotes,
         saveTrade,
-        signTransaction,
         composeTransaction,
         saveTransactionInfo,
     } = useActions({
         saveQuoteRequest: coinmarketExchangeActions.saveQuoteRequest,
         saveQuotes: coinmarketExchangeActions.saveQuotes,
         saveTrade: coinmarketExchangeActions.saveTrade,
-        composeTransaction: coinmarketExchangeActions.composeTransaction,
+        composeTransaction: transactionActions.composeTransaction,
         saveTransactionInfo: coinmarketExchangeActions.saveTransactionInfo,
-        signTransaction: coinmarketExchangeActions.signTransaction,
     });
 
     const { goto } = useActions({ goto: routerActions.goto });
@@ -93,19 +92,20 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         } else {
             const [fixedQuotes, floatQuotes] = splitToFixedFloatQuotes(allQuotes, exchangeInfo);
             await saveQuotes(fixedQuotes, floatQuotes);
-            if (transactionInfo) {
-                const address =
-                    transactionInfo.transaction.outputs.find(o => o.address)?.address || '';
-                await signTransaction({
-                    account,
-                    address,
-                    transactionInfo,
-                    network,
-                    amount: transactionInfo.totalSpent,
-                });
+            // if (transactionInfo) {
+            //     const address =
+            //         transactionInfo.transaction.outputs.find(o => o.address)?.address || '';
+            //     await signTransaction({
+            //         account,
+            //         address,
+            //         transactionInfo,
+            //         network,
+            //         amount: transactionInfo.totalSpent,
+            //         modalName: 'coinmarket-exchange-form',
+            //     });
 
-                return;
-            }
+            //     return;
+            // }
             goto('wallet-coinmarket-exchange-offers', {
                 symbol: account.symbol,
                 accountIndex: account.index,
@@ -250,7 +250,7 @@ export const useCoinmarketExchangeForm = (props: Props): ExchangeFormContextValu
         updateFiatValue,
         register: typedRegister,
         exchangeInfo,
-        isMax: setMax,
+        isMax: setMax || false,
         setToken,
         saveQuoteRequest,
         setMax: setSetMax,

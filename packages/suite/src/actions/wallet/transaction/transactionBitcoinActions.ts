@@ -1,15 +1,11 @@
 import TrezorConnect, { FeeLevel, SignTransaction } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
-import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
+import { ComposeTransactionData, SignTransactionData } from '@wallet-types/transaction';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { formatNetworkAmount } from '@wallet-utils/accountUtils';
 import { getBitcoinComposeOutputs } from '@wallet-utils/exchangeFormUtils';
 import { ZEC_SIGN_ENHANCEMENT } from '@wallet-constants/sendForm';
-import {
-    PrecomposedLevels,
-    PrecomposedTransaction,
-    PrecomposedTransactionFinal,
-} from '@wallet-types/sendForm';
+import { PrecomposedLevels, PrecomposedTransaction } from '@wallet-types/sendForm';
 import { Dispatch, GetState } from '@suite-types';
 
 export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async (
@@ -132,12 +128,13 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     return wrappedResponse;
 };
 
-export const signTransaction = (
-    transactionInfo: PrecomposedTransactionFinal,
-    address: string,
-) => async (dispatch: Dispatch, getState: GetState) => {
+export const signTransaction = (data: SignTransactionData) => async (
+    dispatch: Dispatch,
+    getState: GetState,
+) => {
     const { selectedAccount } = getState().wallet;
     const { device } = getState().suite;
+    const { transactionInfo, address } = data;
     if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return;
 
     // transactionInfo needs some additional changes:
@@ -196,8 +193,6 @@ export const signTransaction = (
         coin: account.symbol,
         ...signEnhancement,
     };
-
-    console.log('signPayload', signPayload);
 
     const signedTx = await TrezorConnect.signTransaction(signPayload);
 

@@ -57,13 +57,13 @@ const getState = (index: number, buttonRequests: number) => {
     return undefined;
 };
 
-const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
+const CoinmarketReviewTransaction = ({ selectedAccount, transaction, decision }: Props) => {
     const { device } = useDevice();
     const { cancelSignTx } = useActions({
         cancelSignTx: sendFormActions.cancelSignTx,
     });
 
-    const { transactionInfo, signedTx, exchangeAddress } = exchange;
+    const { transactionInfo, signedTx } = transaction;
     if (selectedAccount.status !== 'loaded' || !device || !transactionInfo) return null;
 
     const { symbol, networkType } = selectedAccount.account;
@@ -72,7 +72,7 @@ const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
         if (typeof o.address === 'string') {
             outputs.push({
                 type: 'regular',
-                label: exchangeAddress || '',
+                label: o.address,
                 value: o.amount,
                 token: transactionInfo.token,
             });
@@ -160,7 +160,9 @@ const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
                     <StyledButton
                         isDisabled={!signedTx}
                         onClick={() => {
-                            if (decision) decision.resolve(true);
+                            if (decision) {
+                                decision.resolve(true);
+                            }
                         }}
                     >
                         <Translation id="SEND_TRANSACTION" />
@@ -174,7 +176,6 @@ const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
 
                     return (
                         <Output
-                            address={exchangeAddress}
                             // it's safe to use array index since outputs do not change
                             // eslint-disable-next-line react/no-array-index-key
                             key={index}
@@ -190,4 +191,4 @@ const ReviewTransaction = ({ selectedAccount, exchange, decision }: Props) => {
     );
 };
 
-export default ReviewTransaction;
+export default CoinmarketReviewTransaction;

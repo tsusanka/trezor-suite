@@ -1,7 +1,7 @@
 import { ExternalOutput } from '@wallet-types/sendForm';
 import { amountToSatoshi, networkAmountToSatoshi } from '@wallet-utils/accountUtils';
 import { ComposeOutput } from 'trezor-connect';
-import { ComposeTransactionData } from '@wallet-actions/coinmarketExchangeActions';
+import { ComposeTransactionData } from '@wallet-types/transaction';
 
 export const getExternalComposeOutput = ({
     account,
@@ -81,8 +81,6 @@ export const getBitcoinComposeOutputs = ({
             });
         }
     }
-
-    console.log('result', result);
 
     return result;
 };

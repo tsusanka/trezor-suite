@@ -1,5 +1,6 @@
 import produce from 'immer';
 import { WalletAction, Account } from '@wallet-types';
+import { SignedTx } from '@wallet-types/transaction';
 import { PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 import {
     BuyTrade,
@@ -53,14 +54,15 @@ interface Exchange {
     floatQuotes: ExchangeTrade[];
     transactionId?: string;
     addressVerified?: string;
-    transactionInfo: PrecomposedTransactionFinal | null;
-    signedTx?: { tx: string; coin: string };
-    exchangeAddress: string | undefined;
 }
 
 interface State {
     buy: Buy;
     exchange: Exchange;
+    transaction: {
+        signedTx: SignedTx | undefined;
+        transactionInfo: PrecomposedTransactionFinal | undefined;
+    };
     trades: Trade[];
 }
 
@@ -88,9 +90,10 @@ export const initialState = {
         fixedQuotes: [],
         floatQuotes: [],
         addressVerified: undefined,
-        transactionInfo: null,
+    },
+    transaction: {
         signedTx: undefined,
-        exchangeAddress: undefined,
+        transactionInfo: undefined,
     },
     trades: [],
 };
@@ -151,17 +154,11 @@ const coinmarketReducer = (
                 draft.exchange.transactionId = action.transactionId;
                 break;
             case COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO:
-                draft.exchange.transactionInfo = action.transactionInfo;
+                draft.transaction.transactionInfo = action.transactionInfo;
                 break;
-            case COINMARKET_EXCHANGE.SAVE_EXCHANGE_ADDRESS:
-                draft.exchange.exchangeAddress = action.exchangeAddress;
-                break;
-            case COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION:
-                if (action.payload) {
-                    draft.exchange.signedTx = action.payload;
-                } else {
-                    delete draft.exchange.signedTx;
-                }
+            case COINMARKET_EXCHANGE.SAVE_SIGNED_TX:
+                draft.transaction.signedTx = action.signedTx;
+
                 break;
             case STORAGE.LOADED:
                 return action.payload.wallet.coinmarket;

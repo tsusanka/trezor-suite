@@ -57,10 +57,8 @@ export const useOffers = (props: Props) => {
         saveTransactionId,
         signTransaction,
         addNotification,
-        saveExchangeAddress,
     } = useActions({
         saveTrade: coinmarketExchangeActions.saveTrade,
-        saveExchangeAddress: coinmarketExchangeActions.saveExchangeAddress,
         openCoinmarketExchangeConfirmModal:
             coinmarketExchangeActions.openCoinmarketExchangeConfirmModal,
         saveTransactionId: coinmarketExchangeActions.saveTransactionId,
@@ -82,8 +80,8 @@ export const useOffers = (props: Props) => {
 
     const transactionInfo = useSelector<
         AppState,
-        AppState['wallet']['coinmarket']['exchange']['transactionInfo']
-    >(state => state.wallet.coinmarket.exchange.transactionInfo);
+        AppState['wallet']['coinmarket']['transaction']['transactionInfo']
+    >(state => state.wallet.coinmarket.transaction.transactionInfo);
 
     const exchangeCoinInfo = useSelector<
         AppState,
@@ -195,13 +193,14 @@ export const useOffers = (props: Props) => {
             transactionInfo &&
             transactionInfo?.totalSpent
         ) {
-            saveExchangeAddress(selectedQuote.sendAddress);
             const result = await signTransaction({
                 account,
                 address: selectedQuote.sendAddress,
+                rippleDestinationTag: selectedQuote.partnerPaymentExtraId,
                 transactionInfo,
                 network,
                 amount: transactionInfo.totalSpent,
+                modalName: 'coinmarket-review-transaction',
             });
             if (result) {
                 await saveTrade(selectedQuote, account, new Date().toISOString());

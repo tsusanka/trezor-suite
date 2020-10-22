@@ -25,7 +25,7 @@ import ConfirmAddress from './confirm/Address';
 import ConfirmXpub from './confirm/Xpub/Container';
 import ConfirmNoBackup from './confirm/NoBackup';
 import ReviewTransaction from './ReviewTransaction/Container';
-import ReviewTransactionExchange from './ReviewTransactionExchange/Container';
+import CoinmarketReviewTransaction from './CoinmarketReviewTransaction/Container';
 import ImportTransaction from './ImportTransaction';
 import ConfirmUnverifiedAddress from './confirm/UnverifiedAddress';
 import AddAccount from './AddAccount/Container';
@@ -104,7 +104,7 @@ const getDeviceContextModal = (props: Props) => {
         case 'ButtonRequest_ConfirmOutput':
         case 'ButtonRequest_SignTx': {
             if (isCoinmarketOffers) {
-                return <ReviewTransactionExchange type="sign-transaction" />;
+                return <CoinmarketReviewTransaction type="sign-transaction" />;
             }
 
             return <ReviewTransaction type="sign-transaction" />;
@@ -178,8 +178,8 @@ const getUserContextModal = (props: Props) => {
             return <PassphraseDuplicate device={payload.device} duplicate={payload.duplicate} />;
         case 'review-transaction':
             return <ReviewTransaction {...payload} />;
-        case 'review-transaction-exchange':
-            return <ReviewTransactionExchange {...payload} />;
+        case 'coinmarket-review-transaction':
+            return <CoinmarketReviewTransaction {...payload} />;
         case 'coinmarket-buy-terms':
             return (
                 <CoinmarketBuyTerms

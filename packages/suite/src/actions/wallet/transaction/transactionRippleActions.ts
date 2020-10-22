@@ -1,9 +1,6 @@
 import TrezorConnect, { FeeLevel, RipplePayment } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
-import {
-    ComposeTransactionData,
-    SignTransactionData,
-} from '@wallet-actions/coinmarketExchangeActions';
+import { ComposeTransactionData, SignTransactionData } from '@wallet-types/transaction';
 import * as notificationActions from '@suite-actions/notificationActions';
 import { calculateTotal, calculateMax } from '@wallet-utils/sendFormUtils';
 import { getExternalComposeOutput } from '@wallet-utils/exchangeFormUtils';
@@ -143,8 +140,8 @@ export const signTransaction = (data: SignTransactionData) => async (
         amount: networkAmountToSatoshi(data.amount, account.symbol),
     };
 
-    if (data.destinationTag) {
-        payment.destinationTag = parseInt(data.destinationTag, 10);
+    if (data.rippleDestinationTag) {
+        payment.destinationTag = parseInt(data.rippleDestinationTag, 10);
     }
 
     const signedTx = await TrezorConnect.rippleSignTransaction({

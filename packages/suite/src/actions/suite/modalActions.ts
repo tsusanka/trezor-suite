@@ -61,7 +61,7 @@ export type UserContextPayload =
           decision: Deferred<boolean>;
       }
     | {
-          type: 'review-transaction-exchange';
+          type: 'coinmarket-review-transaction';
           decision: Deferred<boolean>;
       }
     | {

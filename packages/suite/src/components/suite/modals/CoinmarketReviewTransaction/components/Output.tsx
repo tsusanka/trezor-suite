@@ -169,7 +169,6 @@ export type OutputProps =
 
 export type Props = OutputProps & {
     state: any;
-    address: string | undefined;
     symbol: Network['symbol'];
 };
 

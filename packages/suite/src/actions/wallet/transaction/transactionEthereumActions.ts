@@ -2,10 +2,7 @@ import TrezorConnect, { FeeLevel, TokenInfo } from 'trezor-connect';
 import BigNumber from 'bignumber.js';
 import { toWei } from 'web3-utils';
 import { getExternalComposeOutput } from '@wallet-utils/exchangeFormUtils';
-import {
-    ComposeTransactionData,
-    SignTransactionData,
-} from '@wallet-actions/coinmarketExchangeActions';
+import { ComposeTransactionData, SignTransactionData } from '@wallet-types/transaction';
 import * as notificationActions from '@suite-actions/notificationActions';
 import {
     calculateTotal,
@@ -63,14 +60,6 @@ const calculate = (
         } as const;
     }
 
-    if (availableTokenBalance && new BigNumber(amount).gt(availableTokenBalance)) {
-        return {
-            type: 'error',
-            error: 'AMOUNT_IS_NOT_ENOUGH',
-            errorMessage: { id: 'AMOUNT_IS_NOT_ENOUGH' },
-        } as const;
-    }
-
     const payloadData = {
         type: 'nonfinal',
         totalSpent: token ? amount : totalSpent.toString(),
@@ -104,7 +93,7 @@ const calculate = (
 };
 
 export const composeTransaction = (composeTransactionData: ComposeTransactionData) => async () => {
-    const { account, network, feeInfo } = composeTransactionData;
+    const { account, network, feeInfo, ethereumDataHex } = composeTransactionData;
 
     const composeOutputs = getExternalComposeOutput(composeTransactionData);
     if (!composeOutputs) return; // no valid Output
@@ -114,23 +103,23 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
 
     // additional calculation for gasLimit based on data size
     let customFeeLimit: string | undefined;
-    // if (typeof formValues.ethereumDataHex === 'string' && formValues.ethereumDataHex.length > 0) {
-    //     const response = await TrezorConnect.blockchainEstimateFee({
-    //         coin: account.symbol,
-    //         request: {
-    //             blocks: [2],
-    //             specific: {
-    //                 from: account.descriptor,
-    //                 to: account.descriptor,
-    //                 data: formValues.ethereumDataHex,
-    //             },
-    //         },
-    //     });
+    if (typeof ethereumDataHex === 'string' && ethereumDataHex.length > 0) {
+        const response = await TrezorConnect.blockchainEstimateFee({
+            coin: account.symbol,
+            request: {
+                blocks: [2],
+                specific: {
+                    from: account.descriptor,
+                    to: account.descriptor,
+                    data: ethereumDataHex,
+                },
+            },
+        });
 
-    //     if (response.success) {
-    //         customFeeLimit = response.payload.levels[0].feeLimit;
-    //     }
-    // }
+        if (response.success) {
+            customFeeLimit = response.payload.levels[0].feeLimit;
+        }
+    }
 
     // set gasLimit based on ERC20 transfer
     if (tokenInfo) {
