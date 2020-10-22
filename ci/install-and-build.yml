@@ -24,4 +24,5 @@ install and build:
             - packages/translations-manager/lib
     stage: setup environment
     script:
+        - export ELECTRON_SKIP_BINARY_DOWNLOAD=1
         - yarn install --pure-lockfile --cache-folder .yarn
