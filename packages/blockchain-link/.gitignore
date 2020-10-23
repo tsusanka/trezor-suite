@@ -1,9 +1,6 @@
 build
 lib
 
-# Dependency directory
-node_modules
-
 # OSX
 .DS_Store
 
