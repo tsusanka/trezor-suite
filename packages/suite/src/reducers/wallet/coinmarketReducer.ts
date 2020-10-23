@@ -11,7 +11,7 @@ import {
 } from 'invity-api';
 import { BuyInfo } from '@wallet-actions/coinmarketBuyActions';
 import { ExchangeInfo } from '@suite/actions/wallet/coinmarketExchangeActions';
-import { COINMARKET_BUY, COINMARKET_EXCHANGE } from '@wallet-actions/constants';
+import { COINMARKET_BUY, COINMARKET_EXCHANGE, COINMARKET_COMMON } from '@wallet-actions/constants';
 import { STORAGE } from '@suite-actions/constants';
 import { Action as SuiteAction } from '@suite-types';
 
@@ -134,6 +134,14 @@ const coinmarketReducer = (
             case COINMARKET_BUY.DISPOSE:
                 draft.buy.addressVerified = undefined;
                 break;
+            case COINMARKET_BUY.SAVE_TRADE:
+                if (action.key) {
+                    const trades = state.trades.filter(t => t.key !== action.key);
+                    const { type, ...trade } = action;
+                    trades.push(trade);
+                    draft.trades = trades;
+                }
+                break;
             case COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO:
                 draft.exchange.exchangeInfo = action.exchangeInfo;
                 break;
@@ -153,24 +161,14 @@ const coinmarketReducer = (
             case COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID:
                 draft.exchange.transactionId = action.transactionId;
                 break;
-            case COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO:
+            case COINMARKET_COMMON.SAVE_TRANSACTION_INFO:
                 draft.transaction.transactionInfo = action.transactionInfo;
                 break;
-            case COINMARKET_EXCHANGE.SAVE_SIGNED_TX:
+            case COINMARKET_COMMON.SAVE_SIGNED_TX:
                 draft.transaction.signedTx = action.signedTx;
-
                 break;
             case STORAGE.LOADED:
                 return action.payload.wallet.coinmarket;
-            case COINMARKET_EXCHANGE.SAVE_TRADE:
-            case COINMARKET_BUY.SAVE_TRADE:
-                if (action.key) {
-                    const trades = state.trades.filter(t => t.key !== action.key);
-                    const { type, ...trade } = action;
-                    trades.push(trade);
-                    draft.trades = trades;
-                }
-                break;
             // no default
         }
     });

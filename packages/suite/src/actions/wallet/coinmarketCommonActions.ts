@@ -1,10 +1,19 @@
 import TrezorConnect, { UI, ButtonRequestMessage } from 'trezor-connect';
 import * as modalActions from '@suite-actions/modalActions';
+import { SignedTx } from '@wallet-types/transaction';
 import * as notificationActions from '@suite-actions/notificationActions';
-import { COINMARKET_BUY, COINMARKET_EXCHANGE } from './constants';
+import { PrecomposedTransactionFinal } from '@wallet-types/sendForm';
+import { COINMARKET_BUY, COINMARKET_EXCHANGE, COINMARKET_COMMON } from './constants';
 import { Dispatch, GetState } from '@suite-types';
 import { getUnusedAddressFromAccount } from '@wallet-utils/coinmarket/coinmarketUtils';
 import { Account } from '@wallet-types';
+
+export type CoinmarketCommonActions =
+    | { type: typeof COINMARKET_COMMON.SAVE_SIGNED_TX; signedTx: SignedTx }
+    | {
+          type: typeof COINMARKET_COMMON.SAVE_TRANSACTION_INFO;
+          transactionInfo: PrecomposedTransactionFinal;
+      };
 
 export const verifyAddress = (account: Account, inExchange = false) => async (
     dispatch: Dispatch,
@@ -93,4 +102,20 @@ export const verifyAddress = (account: Account, inExchange = false) => async (
             }),
         );
     }
+};
+
+export const saveTransactionInfo = (transactionInfo: PrecomposedTransactionFinal) => async (
+    dispatch: Dispatch,
+) => {
+    dispatch({
+        type: COINMARKET_COMMON.SAVE_TRANSACTION_INFO,
+        transactionInfo,
+    });
+};
+
+export const saveSignedTx = (signedTx: SignedTx) => async (dispatch: Dispatch) => {
+    dispatch({
+        type: COINMARKET_COMMON.SAVE_SIGNED_TX,
+        signedTx,
+    });
 };

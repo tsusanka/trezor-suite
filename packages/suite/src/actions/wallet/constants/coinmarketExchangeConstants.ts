@@ -5,7 +5,3 @@ export const SAVE_QUOTES = '@coinmarket-exchange/save_exchange_quotes';
 export const VERIFY_ADDRESS = '@coinmarket-exchange/verify_address';
 export const SAVE_TRADE = '@coinmarket-exchange/save_trade';
 export const SAVE_TRANSACTION_ID = '@coinmarket-exchange/save_transaction_id';
-export const SAVE_TRANSACTION_INFO = '@coinmarket-exchange/save_transaction_info';
-export const REQUEST_SIGN_TRANSACTION = '@coinmarket-exchange/request_sign_transaction';
-export const REQUEST_PUSH_TRANSACTION = '@coinmarket-exchange/request_push_transaction';
-export const SAVE_SIGNED_TX = '@coinmarket-exchange/save_signed_tx';

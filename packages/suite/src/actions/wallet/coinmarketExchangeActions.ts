@@ -3,7 +3,8 @@ import * as transaction from '@wallet-actions/transaction';
 import * as transactionBitcoinActions from '@wallet-actions/transaction/transactionBitcoinActions';
 import * as transactionEthereumActions from '@wallet-actions/transaction/transactionEthereumActions';
 import * as transactionRippleActions from '@wallet-actions/transaction/transactionRippleActions';
-import { SignTransactionData, SignedTx } from '@wallet-types/transaction';
+import * as coinmarketCommonActions from '@wallet-actions/coinmarketCommonActions';
+import { SignTransactionData } from '@wallet-types/transaction';
 import { Dispatch } from '@suite-types';
 import {
     ExchangeListResponse,
@@ -15,7 +16,6 @@ import {
 import invityAPI from '@suite-services/invityAPI';
 import { COINMARKET_EXCHANGE } from './constants';
 import * as modalActions from '@suite-actions/modalActions';
-import { PrecomposedTransactionFinal } from '@wallet-types/sendForm';
 
 export interface ExchangeInfo {
     exchangeList?: ExchangeListResponse;
@@ -26,28 +26,13 @@ export interface ExchangeInfo {
 
 export type CoinmarketExchangeActions =
     | { type: typeof COINMARKET_EXCHANGE.SAVE_EXCHANGE_INFO; exchangeInfo: ExchangeInfo }
+    | { type: typeof COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST; request: ExchangeTradeQuoteRequest }
+    | { type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID; transactionId: string }
+    | { type: typeof COINMARKET_EXCHANGE.VERIFY_ADDRESS; addressVerified: string }
     | {
           type: typeof COINMARKET_EXCHANGE.SAVE_EXCHANGE_COIN_INFO;
           exchangeCoinInfo: ExchangeCoinInfo[];
       }
-    | {
-          type: typeof COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION;
-          payload?: {
-              tx: string;
-              coin: Account['symbol'];
-          };
-      }
-    | { type: typeof COINMARKET_EXCHANGE.SAVE_QUOTE_REQUEST; request: ExchangeTradeQuoteRequest }
-    | {
-          type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO;
-          transactionInfo: PrecomposedTransactionFinal;
-      }
-    | {
-          type: typeof COINMARKET_EXCHANGE.SAVE_SIGNED_TX;
-          signedTx: SignedTx;
-      }
-    | { type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_ID; transactionId: string }
-    | { type: typeof COINMARKET_EXCHANGE.VERIFY_ADDRESS; addressVerified: string }
     | {
           type: typeof COINMARKET_EXCHANGE.SAVE_QUOTES;
           fixedQuotes: ExchangeTrade[];
@@ -65,10 +50,6 @@ export type CoinmarketExchangeActions =
               accountIndex: Account['index'];
               accountType: Account['accountType'];
           };
-      }
-    | {
-          type: typeof COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO;
-          transactionInfo: PrecomposedTransactionFinal;
       };
 
 export async function loadExchangeInfo(): Promise<[ExchangeInfo, ExchangeCoinInfo[]]> {
@@ -181,22 +162,6 @@ export const saveTransactionId = (transactionId: string) => async (dispatch: Dis
     });
 };
 
-export const saveTransactionInfo = (transactionInfo: PrecomposedTransactionFinal) => async (
-    dispatch: Dispatch,
-) => {
-    dispatch({
-        type: COINMARKET_EXCHANGE.SAVE_TRANSACTION_INFO,
-        transactionInfo,
-    });
-};
-
-export const saveSignedTx = (signedTx: SignedTx) => async (dispatch: Dispatch) => {
-    dispatch({
-        type: COINMARKET_EXCHANGE.SAVE_SIGNED_TX,
-        signedTx,
-    });
-};
-
 export const saveQuotes = (fixedQuotes: ExchangeTrade[], floatQuotes: ExchangeTrade[]) => async (
     dispatch: Dispatch,
 ) => {
@@ -234,10 +199,6 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
         );
     }
 
-    if (transactionInfo) {
-        dispatch(saveTransactionInfo(transactionInfo));
-    }
-
     if (!serializedTx) return;
 
     const decision = await dispatch(
@@ -246,7 +207,7 @@ export const signTransaction = (signTransactionData: SignTransactionData) => asy
 
     const signedTx = { tx: serializedTx, coin: account.symbol };
 
-    dispatch(saveSignedTx(signedTx));
+    dispatch(coinmarketCommonActions.saveSignedTx(signedTx));
 
     if (decision && transactionInfo) {
         return dispatch(transaction.pushTransaction(signedTx, transactionInfo));

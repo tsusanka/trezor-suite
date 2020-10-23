@@ -1,6 +1,5 @@
 import { formatNetworkAmount, formatAmount } from '@wallet-utils/accountUtils';
 import TrezorConnect from 'trezor-connect';
-import { COINMARKET_EXCHANGE } from '../constants';
 import BigNumber from 'bignumber.js';
 import { ComposeTransactionData, SignedTx } from '@wallet-types/transaction';
 import { GetState, Dispatch } from '@suite-types';
@@ -32,11 +31,7 @@ export const composeTransaction = (composeTransactionData: ComposeTransactionDat
     }
 };
 
-// this should be refactored - remove dependency for COINMARKET_EXCHANGE
 export const cancelSignTx = (signedTx: SignedTx) => (dispatch: Dispatch) => {
-    dispatch({ type: COINMARKET_EXCHANGE.REQUEST_SIGN_TRANSACTION });
-    dispatch({ type: COINMARKET_EXCHANGE.REQUEST_PUSH_TRANSACTION });
-    // if transaction is not signed yet interrupt signing in TrezorConnect
     if (!signedTx) {
         TrezorConnect.cancel('tx-cancelled');
         return;
