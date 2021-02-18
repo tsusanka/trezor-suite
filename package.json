@@ -75,9 +75,16 @@
   },
   "release-it": {
       "github": {
-        "release": true,
-        "draft": true,
-        "assets": ["README.md"]
+          "release": true,
+          "draft": true,
+          "assets": ["README.md"],
+          "releaseNotes": "node ./ci/scripts/fetch_changelog.js"
+      },
+      "git": {
+          "requireCommits": true
+      },
+      "npm": {
+          "publish": false
       }
   }
 }
